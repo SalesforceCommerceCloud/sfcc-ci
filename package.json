@@ -1,0 +1,23 @@
+{
+  "name": "sfcc-ci",
+  "version": "1.0.0",
+  "description": "Command line tool to allow Continuous Integration practices with a Salesforce Commerce Cloud instance",
+  "main": "index.js",
+  "bin": {
+    "sfcc-ci": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://tobiaslohr@bitbucket.org/tobiaslohr/sfcc-ci.git"
+  },
+  "author": "Tobias Lohr",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/tobiaslohr/sfcc-ci#readme",
+  "dependencies": {
+    "btoa": "^1.1.2",
+    "commander": "^2.11.0"
+  }
+}

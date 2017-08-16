@@ -18,10 +18,16 @@ program
     });
 
 program
-    .command('instance:set <instance>')
-    .description('Sets a Commerce Cloud instance')
-    .action(function(instance) {
-        console.log('set instance "%s"', instance);
+    .command('client:clear')
+    .description('Clears the Commerce Cloud Open Commerce API client settings')
+    .action(function() {
+        require('./lib/auth').clear();
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci client:clear');
+        console.log();
     });
 
 program

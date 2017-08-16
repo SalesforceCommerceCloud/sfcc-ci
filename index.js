@@ -2,10 +2,19 @@
 var program = require('commander');
 
 program
-    .command('client:auth <client>')
-    .description('Authenticate a client')
-    .action(function(client) {
-        console.log('auth client "%s"', client);
+    .command('client:auth <client> <secret>')
+    .option('-r, --renew','Controls whether the authentication should be automatically renewed, once the token expires.')
+    .description('Authenticate an Commerce Cloud Open Commerce API client')
+    .action(function(client, secret, options) {
+        var renew = ( options.renew ? options.renew : false );
+        require('./lib/auth').auth(client, secret, renew);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci client:auth aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+        console.log('    $ sfcc-ci client:auth aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -r');
+        console.log();
     });
 
 program

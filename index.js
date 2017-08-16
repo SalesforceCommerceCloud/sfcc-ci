@@ -31,24 +31,60 @@ program
     });
 
 program
-    .command('instance:save <instance>')
-    .description('Perform a save snapshot on a Commerce Cloud instance')
-    .action(function(instance) {
-        console.log('save instance snapshot on "%s"', instance);
+    .command('instance:config <instance> [alias]')
+    .description('Adds a new Commerce Cloud instance to the list of configured instances')
+    .action(function(instance, alias) {
+        require('./lib/instance').config(instance, ( alias ? alias : instance ));
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci instance:config my-instance.demandware.net');
+        console.log('    $ sfcc-ci instance:config my-instance.demandware.net my-instance');
+        console.log();
     });
 
 program
-    .command('instance:reset <instance>')
-    .description('Perform a reset of a Commerce Cloud instance')
-    .action(function(instance) {
-        console.log('reset instance "%s"', instance);
+    .command('instance:set <alias>')
+    .description('Sets a Commerce Cloud instance as the current default instance')
+    .action(function(alias) {
+        require('./lib/instance').setDefault(alias);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci instance:set my-instance');
+        console.log();
     });
 
 program
-    .command('import:upload <instance> <import_file>')
-    .description('Upload a site import file to a Commerce Cloud instance')
-    .action(function(instance, import_file) {
-        console.log('upload site import file "%s" to instance "%s"', import_file, instance);
+    .command('instance:clear')
+    .description('Clears all configured Commerce Cloud instances')
+    .action(function() {
+        require('./lib/instance').clearAll();
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci instance:clear');
+        console.log();
+    });
+
+program
+    .command('instance:list')
+    .option('-v --verbose', 'Outputs additional details of the current configuration')
+    .description('List instance and client details currently configured')
+    .action(function(options) {
+        var verbose = ( options.verbose ? options.verbose : false );
+        require('./lib/instance').list(verbose);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci instance:list');
+        console.log('    $ sfcc-ci instance:list -v');
+        console.log();
+    });
     });
 
 program

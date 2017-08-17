@@ -109,10 +109,50 @@ program
     });
 
 program
-    .command('job:execute <instance> <job>')
-    .description('Execute a job on a Commerce Cloud instance')
-    .action(function(instance, job) {
-        console.log('execute job "%s" on instance "%s"', job, instance);
+    .command('job:run <job_id> [job_parameters...]')
+    .option('-i, --instance <instance>','Instance to run the job on. Can be an instance alias. If not specified the currently configured instance will be used.')
+    .description('Starts a job execution on a Commerce Cloud instance')
+    .action(function(job_id, job_parameters, options) {
+        var job_params = require('./lib/job').buildParameters(job_parameters);
+        var instance = require('./lib/instance').getInstance(options.instance);
+
+        require('./lib/job').run(instance, job_id, { 
+            parameters : job_params 
+        });
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci job:run my-job');
+        console.log('    $ sfcc-ci job:run my-job param1=value1 param2=value2');
+        console.log('    $ sfcc-ci job:run my-job -i my-instance-alias');
+        console.log('    $ sfcc-ci job:run my-job -i my-instance-alias param1=value1 param2=value2');
+        console.log('    $ sfcc-ci job:run my-job -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci job:run my-job -i my-instance.demandware.net param1=value1 param2=value2');
+        console.log();
+    });
+
+program
+    .command('job:status <job_id> <job_execution_id>')
+    .option('-i, --instance <instance>','Instance the job was executed on. Can be an instance alias. If not specified the currently configured instance will be used.')
+    .option('-v --verbose', 'Outputs additional details of the job execution')
+    .description('Get the status of a job execution on a Commerce Cloud instance')
+    .action(function(job_id, job_execution_id, options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        var verbose = ( options.verbose ? options.verbose : false );
+        
+        require('./lib/job').status(instance, job_id, job_execution_id, verbose);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci job:status my-job my-job-execution-id');
+        console.log('    $ sfcc-ci job:status my-job my-job-execution-id -v');
+        console.log('    $ sfcc-ci job:status my-job my-job-execution-id -i my-instance-alias');
+        console.log('    $ sfcc-ci job:status my-job my-job-execution-id -v -i my-instance-alias');
+        console.log('    $ sfcc-ci job:status my-job my-job-execution-id -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci job:status my-job my-job-execution-id -v -i my-instance.demandware.net');
+        console.log();
     });
 
 program.parse(process.argv);

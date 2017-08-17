@@ -155,4 +155,12 @@ program
         console.log();
     });
 
+program.on('--help', function() {
+    console.log('');
+    console.log('  Detailed Help:');
+    console.log('');
+    console.log('    Use <sub:command> --help to get detailed help and example usage of sub:commands');
+    console.log('');
+});
+
 program.parse(process.argv);

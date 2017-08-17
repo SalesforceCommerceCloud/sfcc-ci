@@ -163,7 +163,7 @@ program
 program
     .command('job:status <job_id> <job_execution_id>')
     .option('-i, --instance <instance>','Instance the job was executed on. Can be an instance alias. If not specified the currently configured instance will be used.')
-    .option('-v --verbose', 'Outputs additional details of the job execution')
+    .option('-v, --verbose', 'Outputs additional details of the job execution')
     .description('Get the status of a job execution on a Commerce Cloud instance')
     .action(function(job_id, job_execution_id, options) {
         var instance = require('./lib/instance').getInstance(options.instance);

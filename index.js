@@ -106,6 +106,22 @@ program
     .description('Activate the custom code version on a Commerce Cloud instance')
     .action(function(instance, version) {
         console.log('activate code "%s" on instance "%s"', version, instance);
+program
+    .command('import:site <import_file>')
+    .option('-i, --instance <instance>','Instance to run the site import on. Can be an instance alias. If not specified the currently configured instance will be used.')
+    .description('Perform a site import on a Commerce Cloud instance')
+    .action(function(import_file, options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+
+        require('./lib/import').site(instance, import_file);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci import:site my-site-import.zip');
+        console.log('    $ sfcc-ci import:site my-site-import.zip -i my-instance-alias');
+        console.log('    $ sfcc-ci import:site my-site-import.zip -i my-instance.demandware.net');
+        console.log();
     });
 
 program

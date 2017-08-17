@@ -102,10 +102,22 @@ program
     });
 
 program
-    .command('code:activate <instance> <version>')
+    .command('code:activate <version>')
+    .option('-i, --instance <instance>','Instance to activate the custom code version on. Can be an instance alias. If not specified the currently configured instance will be used.')
     .description('Activate the custom code version on a Commerce Cloud instance')
-    .action(function(instance, version) {
-        console.log('activate code "%s" on instance "%s"', version, instance);
+    .action(function(version, options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        require('./lib/code').activate(instance, version);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci code:activate version1');
+        console.log('    $ sfcc-ci code:activate version1 -i my-instance-alias');
+        console.log('    $ sfcc-ci code:activate version1 -i my-instance.demandware.net');
+        console.log();
+    });
+
 program
     .command('import:site <import_file>')
     .option('-i, --instance <instance>','Instance to run the site import on. Can be an instance alias. If not specified the currently configured instance will be used.')
@@ -175,7 +187,7 @@ program.on('--help', function() {
     console.log('');
     console.log('  Detailed Help:');
     console.log('');
-    console.log('    Use <sub:command> --help to get detailed help and example usage of sub:commands');
+    console.log('    Use sfcc-ci <sub:command> --help to get detailed help and example usage of sub:commands');
     console.log('');
 });
 

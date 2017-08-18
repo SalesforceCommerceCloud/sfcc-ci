@@ -106,13 +106,6 @@ program
     });
 
 program
-    .command('code:upload <instance> <repository>')
-    .description('Upload the custom code repository to a Commerce Cloud instance')
-    .action(function(instance, repository) {
-        console.log('upload custom code "%s" onto instance "%s"', repository, instance);
-    });
-
-program
     .command('code:activate <version>')
     .option('-i, --instance <instance>','Instance to activate the custom code version on. Can be an instance alias. If not specified the currently configured instance will be used.')
     .description('Activate the custom code version on a Commerce Cloud instance')

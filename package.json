@@ -1,7 +1,7 @@
 {
   "name": "sfcc-ci",
   "version": "1.0.0",
-  "description": "Command line tool to allow Continuous Integration practices with a Salesforce Commerce Cloud instance",
+  "description": "Command line tool to allow Continuous Integration practices with Salesforce Commerce Cloud instances",
   "main": "index.js",
   "bin": {
     "sfcc-ci": "./index.js"
@@ -17,7 +17,6 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/tobiaslohr/sfcc-ci#readme",
   "dependencies": {
-    "btoa": "^1.1.2",
     "cli-spinner": "^0.2.6",
     "commander": "^2.11.0",
     "conf": "^1.1.2",

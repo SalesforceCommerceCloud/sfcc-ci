@@ -85,13 +85,24 @@ program
         console.log('    $ sfcc-ci instance:list -v');
         console.log();
     });
+
+program
+    .command('instance:state:save')
+    .option('-i, --instance <instance>','Instance to save the state for. Can be an instance alias. If not specified the currently configured instance will be used.')
+    .description('Perform a save of the state of a Commerce Cloud instance')
+    .action(function(options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        console.log("DEBUG: obtained instance is " + instance);
+        require('./lib/instance').saveState(instance);
     });
 
 program
-    .command('import:site <instance> <import_file>')
-    .description('Perform a site import on Commerce Cloud instance')
-    .action(function(instance, import_file) {
-        console.log('perform site import of "%s" on instance "%s"', import_file, instance);
+    .command('instance:state:reset')
+    .option('-i, --instance <instance>','Instance to reset its state for. Can be an instance alias. If not specified the currently configured instance will be used.')
+    .description('Perform a reset of a previously saved state of a Commerce Cloud instance')
+    .action(function(options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        require('./lib/instance').resetState(instance);
     });
 
 program

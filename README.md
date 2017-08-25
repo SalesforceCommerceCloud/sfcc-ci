@@ -22,7 +22,7 @@ In order to perform certain commands the tool provides, you need to give permiss
 2. Navigate to Administration > Site Development > Open Commerce API Settings
 3. Make sure, that you select _Data API_ and _Global_ from the select boxes
 4. Add the permission set for your client ID to the settings. Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
-`
+
     {
       "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "resources":
@@ -47,7 +47,6 @@ In order to perform certain commands the tool provides, you need to give permiss
         }
       ]
     }
-`
 
 ### Dependencies ###
 

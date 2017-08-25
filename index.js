@@ -18,6 +18,19 @@ program
     });
 
 program
+    .command('client:auth:renew')
+    .description('Renews the client authentication. Requires the initial client authentication to be run with the --renew option.')
+    .action(function() {
+        require('./lib/auth').renew();
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci client:auth:renew');
+        console.log();
+    });
+
+program
     .command('client:clear')
     .description('Clears the Commerce Cloud Open Commerce API client settings')
     .action(function() {
@@ -92,7 +105,6 @@ program
     .description('Perform a save of the state of a Commerce Cloud instance')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        console.log("DEBUG: obtained instance is " + instance);
         require('./lib/instance').saveState(instance);
     });
 

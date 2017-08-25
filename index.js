@@ -210,3 +210,9 @@ program.on('--help', function() {
 });
 
 program.parse(process.argv);
+
+if(!program.args.length) {
+    program.help();
+} else {
+    console.error('Error: Unknown command "%s". Use "sfcc-ci --help".', program.args[0]);
+}

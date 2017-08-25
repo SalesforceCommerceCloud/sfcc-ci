@@ -44,16 +44,16 @@ program
     });
 
 program
-    .command('instance:config <instance> [alias]')
+    .command('instance:add <instance> [alias]')
     .description('Adds a new Commerce Cloud instance to the list of configured instances')
     .action(function(instance, alias) {
-        require('./lib/instance').config(instance, ( alias ? alias : instance ));
+        require('./lib/instance').add(instance, ( alias ? alias : instance ));
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci instance:config my-instance.demandware.net');
-        console.log('    $ sfcc-ci instance:config my-instance.demandware.net my-instance');
+        console.log('    $ sfcc-ci instance:add my-instance.demandware.net');
+        console.log('    $ sfcc-ci instance:add my-instance.demandware.net my-instance');
         console.log();
     });
 
@@ -85,7 +85,7 @@ program
 
 program
     .command('instance:list')
-    .option('-v --verbose', 'Outputs additional details of the current configuration')
+    .option('-v, --verbose', 'Outputs additional details of the current configuration')
     .description('List instance and client details currently configured')
     .action(function(options) {
         var verbose = ( options.verbose ? options.verbose : false );

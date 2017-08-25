@@ -21,6 +21,7 @@
     "commander": "^2.11.0",
     "conf": "^1.1.2",
     "configstore": "^3.1.0",
+    "open": "0.0.5",
     "superagent": "^3.5.2",
     "superagent-logger": "^1.1.0",
     "table": "^4.0.1"

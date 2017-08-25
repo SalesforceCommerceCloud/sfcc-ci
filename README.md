@@ -4,9 +4,15 @@ The Salesforce Commerce Cloud CI is a command line interface (CLI) for interacti
 
 ## What is this repository for? ##
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+The focus of the tool is to streamline and easy the communication with Commerce Cloud instances as part of the CI/CD processes. It focuses on the deployment part supporting quality checks such as test execution, not on the quality checks itself.
+
+**Features:**
+
+* Uses Open Commerce APIs completely
+* Authentication using Oauth2 only, no Business Manager user needed
+* Supported commands include: save state, code activate, site import, reset state
+* Configuration of multiple instances
+* Aliasing of instances
 
 ## How do I get set up? ##
 

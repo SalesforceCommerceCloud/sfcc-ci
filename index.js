@@ -3,8 +3,8 @@ var program = require('commander');
 
 program
     .command('client:auth <client> <secret>')
-    .option('-r, --renew','Controls whether the authentication should be automatically renewed, \
-        once the token expires.')
+    .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
+        'once the token expires.')
     .description('Authenticate an Commerce Cloud Open Commerce API client')
     .action(function(client, secret, options) {
         var renew = ( options.renew ? options.renew : false );
@@ -20,8 +20,8 @@ program
 
 program
     .command('client:auth:renew')
-    .description('Renews the client authentication. Requires the initial client authentication to \
-        be run with the --renew option.')
+    .description('Renews the client authentication. Requires the initial client authentication to ' +
+        'be run with the --renew option.')
     .action(function() {
         require('./lib/auth').renew();
     }).on('--help', function() {
@@ -103,8 +103,8 @@ program
 
 program
     .command('instance:state:save')
-    .option('-i, --instance <instance>','Instance to save the state for. Can be an instance alias. \
-        If not specified the currently configured instance will be used.')
+    .option('-i, --instance <instance>','Instance to save the state for. Can be an instance alias. ' +
+        'If not specified the currently configured instance will be used.')
     .description('Perform a save of the state of a Commerce Cloud instance')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
@@ -113,8 +113,8 @@ program
 
 program
     .command('instance:state:reset')
-    .option('-i, --instance <instance>','Instance to reset its state for. Can be an instance alias. \
-        If not specified the currently configured instance will be used.')
+    .option('-i, --instance <instance>','Instance to reset its state for. Can be an instance alias. ' +
+        'If not specified the currently configured instance will be used.')
     .description('Perform a reset of a previously saved state of a Commerce Cloud instance')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
@@ -123,8 +123,8 @@ program
 
 program
     .command('code:activate <version>')
-    .option('-i, --instance <instance>','Instance to activate the custom code version on. Can be an \
-        instance alias. If not specified the currently configured instance will be used.')
+    .option('-i, --instance <instance>','Instance to activate the custom code version on. Can be an ' +
+        'instance alias. If not specified the currently configured instance will be used.')
     .description('Activate the custom code version on a Commerce Cloud instance')
     .action(function(version, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
@@ -141,8 +141,8 @@ program
 
 program
     .command('import:site <import_file>')
-    .option('-i, --instance <instance>','Instance to run the site import on. Can be an instance alias. \
-        If not specified the currently configured instance will be used.')
+    .option('-i, --instance <instance>','Instance to run the site import on. Can be an instance alias. ' +
+        'If not specified the currently configured instance will be used.')
     .description('Perform a site import on a Commerce Cloud instance')
     .action(function(import_file, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
@@ -160,8 +160,8 @@ program
 
 program
     .command('job:run <job_id> [job_parameters...]')
-    .option('-i, --instance <instance>','Instance to run the job on. Can be an instance alias. If not \
-        specified the currently configured instance will be used.')
+    .option('-i, --instance <instance>','Instance to run the job on. Can be an instance alias. If not ' +
+        'specified the currently configured instance will be used.')
     .description('Starts a job execution on a Commerce Cloud instance')
     .action(function(job_id, job_parameters, options) {
         var job_params = require('./lib/job').buildParameters(job_parameters);
@@ -185,8 +185,8 @@ program
 
 program
     .command('job:status <job_id> <job_execution_id>')
-    .option('-i, --instance <instance>','Instance the job was executed on. Can be an instance alias. \
-        If not specified the currently configured instance will be used.')
+    .option('-i, --instance <instance>','Instance the job was executed on. Can be an instance alias. ' +
+        'If not specified the currently configured instance will be used.')
     .option('-v, --verbose', 'Outputs additional details of the job execution')
     .option('-l, --logfile', 'Opens the job log file in a browser')
     .description('Get the status of a job execution on a Commerce Cloud instance')

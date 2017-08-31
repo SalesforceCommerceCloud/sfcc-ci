@@ -1,0 +1,15 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+
+  "rules": {
+    "brace-style": ["error", "1tbs"],
+    "keyword-spacing": "error",
+    "no-multi-spaces": "error",
+    "max-len": ["error", 120],
+    "valid-jsdoc": "off",
+    "no-trailing-spaces": "error",
+    "indent": ["error", 4]
+  }
+}

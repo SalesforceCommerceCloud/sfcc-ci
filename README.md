@@ -83,4 +83,32 @@ You are now ready to use the tool by running the main command `sfcc-ci`.
 
 ## Using the Tool ##
 
-Use `sfcc-ci --help` to get started and see the list of commands available. Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a sub:command.
+Use `sfcc-ci --help` to get started and see the list of commands available:
+
+  Usage: sfcc-ci [options] [command]
+
+  Options:
+
+    -h, --help  output usage information
+
+  Commands:
+
+    client:auth [options] <client> <secret>           Authenticate an Commerce Cloud Open Commerce API client
+    client:auth:renew                                 Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
+    client:clear                                      Clears the Commerce Cloud Open Commerce API client settings
+    instance:add <instance> [alias]                   Adds a new Commerce Cloud instance to the list of configured instances
+    instance:set <alias>                              Sets a Commerce Cloud instance as the current default instance
+    instance:clear                                    Clears all configured Commerce Cloud instances
+    instance:list [options]                           List instance and client details currently configured
+    instance:state:save [options]                     Perform a save of the state of a Commerce Cloud instance
+    instance:state:reset [options]                    Perform a reset of a previously saved state of a Commerce Cloud instance
+    code:activate [options] <version>                 Activate the custom code version on a Commerce Cloud instance
+    import:site [options] <import_file>               Perform a site import on a Commerce Cloud instance
+    job:run [options] <job_id> [job_parameters...]    Starts a job execution on a Commerce Cloud instance
+    job:status [options] <job_id> <job_execution_id>  Get the status of a job execution on a Commerce Cloud instance
+
+  Detailed Help:
+
+    Use sfcc-ci <sub:command> --help to get detailed help and example usage of sub:commands
+
+Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a sub:command.

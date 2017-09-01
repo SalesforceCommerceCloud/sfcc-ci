@@ -9,7 +9,7 @@
     "no-multi-spaces": "error",
     "max-len": ["error", 120],
     "valid-jsdoc": "off",
-    "no-trailing-spaces": "error"
-    //"indent": ["error", 4],
+    "no-trailing-spaces": "error",
+    "indent": ["error", 4]
   }
 }

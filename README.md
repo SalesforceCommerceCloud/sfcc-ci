@@ -96,6 +96,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
     client:auth [options] <client> <secret>           Authenticate an Commerce Cloud Open Commerce API client
     client:auth:renew                                 Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
+    client:auth:token                                 Return the current authentication token
     client:clear                                      Clears the Commerce Cloud Open Commerce API client settings
     instance:add <instance> [alias]                   Adds a new Commerce Cloud instance to the list of configured instances
     instance:set <alias>                              Sets a Commerce Cloud instance as the current default instance

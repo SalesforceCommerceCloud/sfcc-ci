@@ -85,6 +85,7 @@ You are now ready to use the tool by running the main command `sfcc-ci`.
 
 Use `sfcc-ci --help` to get started and see the list of commands available:
 
+<code>
   Usage: sfcc-ci [options] [command]
 
   Options:
@@ -110,5 +111,6 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
   Detailed Help:
 
     Use sfcc-ci <sub:command> --help to get detailed help and example usage of sub:commands
+<code>
 
 Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a sub:command.

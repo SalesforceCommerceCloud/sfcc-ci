@@ -13,6 +13,7 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 * Supported commands include: save state, code activate, site import, reset state
 * Configuration of multiple instances
 * Aliasing of instances
+* Automatic renewal of Oauth2 token
 
 ## How do I get set up? ##
 

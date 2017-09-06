@@ -7,7 +7,7 @@
     "brace-style": ["error", "1tbs"],
     "keyword-spacing": "error",
     "no-multi-spaces": "error",
-    "max-len": ["error", 120],
+    "max-len": ["error", 120, {"ignoreComments": true}],
     "valid-jsdoc": "off",
     "no-trailing-spaces": "error",
     "indent": ["error", 4]

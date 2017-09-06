@@ -1,6 +1,6 @@
 # Salesforce Commerce Cloud CI #
 
-The Salesforce Commerce Cloud CI is a command line interface (CLI) for interacting with Commerce Cloud instances from the command line / shell of various operating systems in order to facilitate Continous Integration practices using Commerce Cloud.
+The Salesforce Commerce Cloud CI is a command line interface (CLI) for interacting with Commerce Cloud instances from the command line / shell of various operating systems in order to facilitate Continuous Integration practices using Commerce Cloud.
 
 ## What is this repository for? ##
 

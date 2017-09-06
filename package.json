@@ -4,7 +4,7 @@
   "description": "Command line tool to allow Continuous Integration practices with Salesforce Commerce Cloud instances",
   "main": "index.js",
   "bin": {
-    "sfcc-ci": "./index.js"
+    "sfcc-ci": "./cli.js"
   },
   "scripts": {
     "lint": "eslint ./",

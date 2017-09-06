@@ -62,7 +62,10 @@ program
     .command('instance:add <instance> [alias]')
     .description('Adds a new Commerce Cloud instance to the list of configured instances')
     .action(function(instance, alias) {
-        require('./lib/instance').add(instance, ( alias ? alias : instance ));
+        if (!alias) {
+            alias = instance.split('.')[0];
+        }
+        require('./lib/instance').add(instance, alias);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');

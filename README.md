@@ -2,6 +2,19 @@
 
 The Salesforce Commerce Cloud CI is a command line interface (CLI) for interacting with Commerce Cloud instances from the command line / shell of various operating systems in order to facilitate Continuous Integration practices using Commerce Cloud.
 
+# License #
+
+Licensed under the current NDA and licensing agreement in place with your organization. (This is explicitly not open source licensing.)
+
+# Who do I talk to? #
+
+Feel free to create issues and enhancement requests or discuss on the existing ones, this will help us understanding in which area the biggest need is. Please refer to documentation below before doing so.
+
+For discussions please start a topic on the [Community Suite discussion board](https://xchange.demandware.com/community/developer/community-suite/content) or join the #ci-automation channel in the [Community Slack Team](https://sfcc-community.slack.com).
+
+* Maintainer: @tobiaslohr
+* [Commerce Cloud Community Slack](https://sfcc-community.slack.com)
+
 ## What is this repository for? ##
 
 The focus of the tool is to streamline and easy the communication with Commerce Cloud instances as part of the CI/CD processes. It focuses on the deployment part supporting quality checks such as test execution, not on the quality checks itself.

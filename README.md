@@ -135,7 +135,7 @@ The API is structured into sub modules. You may require sub modules directly, e.
   const sfcc_job = require('sfcc-ci').job;
 ```
 
-The following APIs are available:
+The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`):
 
 ```
   sfcc.auth.auth(client_id, client_secret, success, error);
@@ -146,7 +146,7 @@ The following APIs are available:
 
 ### Authentication ###
 
-APIs available in `require('sfcc').auth`:
+APIs available in `require('sfcc-ci').auth`:
 
 `auth(client_id, client_secret[, success][, error])`
 
@@ -156,8 +156,8 @@ Param         | Type        | Description
 ------------- | ------------| --------------------------------
 client_id     | (String)    | The client ID
 client_secret | (String)    | The client secret
-success       | (Function)  | Callback function executed when the authentication succeeded. The token will be passed as only parameter to the success callback.
-error         | (Function)  | Callback function executed when the authentication failed. The error will be passed as only parameter to the error callback.
+success       | (Function)  | *(Optional)* Callback function executed when the authentication succeeded. The token will be passed as only parameter to the success callback.
+error         | (Function)  | *(Optional)* Callback function executed when the authentication failed. The error will be passed as only parameter to the error callback.
 
 **Returns:** (String) Returns the token, if the authentication succeeded and no success callback was used. Returns the error, if the authentication failed and no error callback was used.
 
@@ -165,7 +165,7 @@ error         | (Function)  | Callback function executed when the authentication
 
 ### Code ###
 
-APIs available in `require('sfcc').code`:
+APIs available in `require('sfcc-ci').code`:
 
 `activate(instance, code_version, token[, success][, error])`
 
@@ -176,8 +176,8 @@ Param         | Type        | Description
 instance      | (String)    | The instance to activate the code on
 code_version  | (String)    | The code version to activate
 token         | (String)    | The Oauth token to use use for authentication
-success       | (Function)  | Callback function executed when the code activation succeeded.
-error         | (Function)  | Callback function executed when the code activation failed. The error will be passed as only parameter to the error callback.
+success       | (Function)  | *(Optional)* function executed when the code activation succeeded.
+error         | (Function)  | *(Optional)* function executed when the code activation failed. The error will be passed as only parameter to the error callback.
 
 **Returns:** (String|Boolean) True, if the code activation succeeded and no success callback was used. Returns the error, if the code activation failed and no error callback was used.
 

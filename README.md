@@ -130,6 +130,23 @@ Make sfcc-ci available to your project by specifying the dependeny in your `pack
 The following APIs are available:
 
 ```
-  auth : function (client_id, client_secret, success, error);
-  activate : function (instance, code_version, token, success, error);
+  auth(client_id, client_secret, success, error);
+  activate(instance, code_version, token, success, error);
 ```
+
+### Authentication ###
+
+`auth(client_id, client_secret[, success] [, error])`
+
+Authenticates a clients and attempts to obtain a new Oauth2 token. Note, that tokens should be reused for subsequent operations. In case of a invalid token you may call this method again to obtain a new token.
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+client_id     | (String)    | The client ID
+client_secret | (String)    | The client secret
+success       | (Function)  | Callback function executed when the authentication succeeded. The token will be passed as only parameter to the success callback.
+error         | (Function)  | Callback function executed when the authentication failed. The error will be passed as only parameter to the error callback.
+
+**Returns:** (String) Returns the token, if the authentication succeeded and no success callback was used. Returns the error, if the authentication failed and no error callback was used.
+
+***

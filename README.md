@@ -132,16 +132,18 @@ The API is structured into sub modules. You may require sub modules directly, e.
 ```
   const sfcc_auth = require('sfcc-ci').auth;
   const sfcc_code = require('sfcc-ci').code;
+  const sfcc_instance = require('sfcc-ci').instance;
   const sfcc_job = require('sfcc-ci').job;
 ```
 
 The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`):
 
 ```
-  sfcc.auth.auth(client_id, client_secret, success, error);
-  sfcc.code.activate(instance, code_version, token, success, error);
-  sfcc.job.run(instance, job_id, job_params, token, success, error);
-  sfcc.job.status(instance, job_id, job_execution_id, token, success, error);
+  sfcc.auth.auth(client_id, client_secret, callback);
+  sfcc.code.activate(instance, code_version, token, callback);
+  sfcc.instance.import(instance, file_name, token, callback);
+  sfcc.job.run(instance, job_id, job_params, token, callback);
+  sfcc.job.status(instance, job_id, job_execution_id, token, callback);
 ```
 
 ### Authentication ###
@@ -159,6 +161,25 @@ client_secret | (String)    | The client secret
 callback      | (Function)  | Callback function executed as a result. The token and the error will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
+
+Example:
+
+```
+const sfcc = require('sfcc-ci');
+
+var client_id = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+var client_secret = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+
+sfcc.auth.auth(client_id, client_secret, function(token, err) {
+    if(token) {
+        console.log('Authentication succeeded. Token is %s', token);
+    }
+    if(err) {
+        console.error('Authentication error: %s', err);
+    }
+});
+
+```
 
 ***
 

@@ -121,40 +121,111 @@ program
     .command('instance:import <import_file>')
     .option('-i, --instance <instance>','Instance to run the import on. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
+    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Perform a instance import (aka site import) on a Commerce Cloud instance')
     .action(function(import_file, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-
-        require('./lib/instance').import(instance, import_file);
+        var sync = ( options.sync ? options.sync : false );
+        if (sync) {
+            require('./lib/instance').importSync(instance, import_file);
+        } else {
+            require('./lib/instance').import(instance, import_file);
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci instance:import my-site-import.zip');
         console.log('    $ sfcc-ci instance:import my-site-import.zip -i my-instance-alias');
+        console.log('    $ sfcc-ci instance:import my-site-import.zip -i my-instance-alias -s');
         console.log('    $ sfcc-ci instance:import my-site-import.zip -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci instance:import my-site-import.zip -i my-instance.demandware.net -s');
+        console.log('    $ sfcc-ci instance:import my-site-import.zip -s');
         console.log();
     });
+
+/*program
+    .command('instance:upload <import_file>')
+    .option('-i, --instance <instance>','Instance to upload the file to. Can be an instance alias. If not specified the currently configured instance will be used.')
+    .description('Upload a import file to a Commerce Cloud instance')
+    .action(function(import_file, options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        require('./lib/upload').site(instance, import_file);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci instance:upload my-site-import.zip');
+        console.log('    $ sfcc-ci instance:upload path/to/my-site-import.zip');
+        console.log('    $ sfcc-ci instance:upload path/to/my-site-import.zip -i my-instance-alias');
+        console.log('    $ sfcc-ci instance:upload path/to/my-site-import.zip -i my-instance.demandware.net');
+        console.log();
+    });
+*/
 
 program
     .command('instance:state:save')
     .option('-i, --instance <instance>','Instance to save the state for. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
+    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Perform a save of the state of a Commerce Cloud instance')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        require('./lib/instance').saveState(instance);
+        var sync = ( options.sync ? options.sync : false );
+        if (sync) {
+            require('./lib/instance').saveStateSync(instance);
+        } else {
+            require('./lib/instance').saveState(instance);
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci instance:state:save');
+        console.log('    $ sfcc-ci instance:state:save -i my-instance-alias');
+        console.log('    $ sfcc-ci instance:state:save -i my-instance-alias -s');
+        console.log('    $ sfcc-ci instance:state:save -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci instance:state:save -i my-instance.demandware.net -s');
+        console.log('    $ sfcc-ci instance:state:save -s');
+        console.log();
     });
 
 program
     .command('instance:state:reset')
     .option('-i, --instance <instance>','Instance to reset its state for. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
+    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Perform a reset of a previously saved state of a Commerce Cloud instance')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        require('./lib/instance').resetState(instance);
+        var sync = ( options.sync ? options.sync : false );
+        if (sync) {
+            require('./lib/instance').resetStateSync(instance);
+        } else {
+            require('./lib/instance').resetState(instance);
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci instance:state:reset');
+        console.log('    $ sfcc-ci instance:state:reset -i my-instance-alias');
+        console.log('    $ sfcc-ci instance:state:reset -i my-instance-alias -s');
+        console.log('    $ sfcc-ci instance:state:reset -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci instance:state:reset -i my-instance.demandware.net -s');
+        console.log('    $ sfcc-ci instance:state:reset -s');
+        console.log();
     });
+
+/*program
+    .command('code:upload <repository>')
+    .option('-i, --instance <instance>','Instance to upload code to. Can be an instance alias. If not specified the currently configured instance will be used.')
+    .description('Upload the custom code repository to a Commerce Cloud instance')
+    .action(function(repository) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        console.log('NOT SUPPORTED (upload custom code repository "%s" to instance "%s")', repository, instance);
+    });
+*/
 
 program
     .command('code:activate <version>')
@@ -178,14 +249,22 @@ program
     .command('job:run <job_id> [job_parameters...]')
     .option('-i, --instance <instance>','Instance to run the job on. Can be an instance alias. If not ' +
         'specified the currently configured instance will be used.')
+    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Starts a job execution on a Commerce Cloud instance')
     .action(function(job_id, job_parameters, options) {
         var job_params = require('./lib/job').buildParameters(job_parameters);
         var instance = require('./lib/instance').getInstance(options.instance);
+        var sync = ( options.sync ? options.sync : false );
 
-        require('./lib/job').run(instance, job_id, {
-            parameters : job_params
-        });
+        if (sync) {
+            require('./lib/job').runSync(instance, job_id, {
+                parameters : job_params
+            });
+        } else {
+            require('./lib/job').run(instance, job_id, {
+                parameters : job_params
+            });
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -196,6 +275,7 @@ program
         console.log('    $ sfcc-ci job:run my-job -i my-instance-alias param1=value1 param2=value2');
         console.log('    $ sfcc-ci job:run my-job -i my-instance.demandware.net');
         console.log('    $ sfcc-ci job:run my-job -i my-instance.demandware.net param1=value1 param2=value2');
+        console.log('    $ sfcc-ci job:run my-job -s');
         console.log();
     });
 

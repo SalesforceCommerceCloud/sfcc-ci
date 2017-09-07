@@ -168,12 +168,6 @@ APIs available in `require('sfcc').code`:
 
 Activate the custom code version on a Commerce Cloud instance. You may pass an optional success and error callback function to further handle success.
 
-* @param {String} instance The instance to activate the code on
-     * @param {String} code_version The code version to activate
-     * @param {String} token The Oauth token to use use for authentication
-     * @param {Function} success Callback function executed when the code activation succeeded.
-     * @param {Function} error Callback function executed when the code activation failed. The error will be passed as only parameter to the error callback.
-
 Param         | Type        | Description
 ------------- | ------------| --------------------------------
 instance      | (String)    | The instance to activate the code on

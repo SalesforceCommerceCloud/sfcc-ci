@@ -144,25 +144,6 @@ program
         console.log();
     });
 
-/*program
-    .command('instance:upload <import_file>')
-    .option('-i, --instance <instance>','Instance to upload the file to. Can be an instance alias. If not specified the currently configured instance will be used.')
-    .description('Upload a import file to a Commerce Cloud instance')
-    .action(function(import_file, options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
-        require('./lib/upload').site(instance, import_file);
-    }).on('--help', function() {
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci instance:upload my-site-import.zip');
-        console.log('    $ sfcc-ci instance:upload path/to/my-site-import.zip');
-        console.log('    $ sfcc-ci instance:upload path/to/my-site-import.zip -i my-instance-alias');
-        console.log('    $ sfcc-ci instance:upload path/to/my-site-import.zip -i my-instance.demandware.net');
-        console.log();
-    });
-*/
-
 program
     .command('instance:state:save')
     .option('-i, --instance <instance>','Instance to save the state for. Can be an instance alias. ' +
@@ -216,16 +197,6 @@ program
         console.log('    $ sfcc-ci instance:state:reset -s');
         console.log();
     });
-
-/*program
-    .command('code:upload <repository>')
-    .option('-i, --instance <instance>','Instance to upload code to. Can be an instance alias. If not specified the currently configured instance will be used.')
-    .description('Upload the custom code repository to a Commerce Cloud instance')
-    .action(function(repository) {
-        var instance = require('./lib/instance').getInstance(options.instance);
-        console.log('NOT SUPPORTED (upload custom code repository "%s" to instance "%s")', repository, instance);
-    });
-*/
 
 program
     .command('code:activate <version>')

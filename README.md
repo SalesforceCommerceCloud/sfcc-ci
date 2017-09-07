@@ -82,7 +82,7 @@ You need Node.js and npm to be installed. No other dependencies.
 
 You are now ready to use the tool by running the main command `sfcc-ci`. 
 
-## Using the Tool ##
+## Using the Command Line Interface ##
 
 Use `sfcc-ci --help` to get started and see the list of commands available:
 
@@ -116,3 +116,20 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 ```
 
 Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a sub:command.
+
+## Using the JavaScript API ##
+
+There is a JavaScript API available, which you can use to program against and integrate the commands into your own project.
+
+Make sfcc-ci available to your project by specifying the dependeny in your `package.json` first and running and `npm install` in your package. After that you require the API into your implementation using:
+
+```
+  var sfcc = require('sfcc-ci');
+```
+
+The following APIs are available:
+
+```
+  auth : function (client_id, client_secret, success, error);
+  activate : function (instance, code_version, token, success, error);
+```

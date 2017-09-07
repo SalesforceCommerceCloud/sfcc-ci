@@ -181,13 +181,32 @@ callback      | (Function)  | Callback function executed as a result. The error 
 
 ***
 
+### Instance ###
+
+APIs available in `require('sfcc').instance`:
+
+`import(instance, file_name, token, callback)`
+
+Perform an instance import (aka site import) on a Commerce Cloud instance. You may use the API job.status to get the execution status of the import.
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | Instance to start the import on
+file_name     | (String)    | The import file to run the import with
+token         | (String)    | The Oauth token to use use for authentication
+callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+
+**Returns:** (void) Function has no return value
+
+***
+
 ### Jobs ###
 
 APIs available in `require('sfcc').job`:
 
 `run(instance, job_id, job_params, token, callback)`
 
-Starts a job execution on a Commerce Cloud instance. The job is triggered and the result of the attempt to start the job is returned. You may use the API function status to get the current job execution status.
+Starts a job execution on a Commerce Cloud instance. The job is triggered and the result of the attempt to start the job is returned. You may use the API job.status to get the current job execution status.
 
 Param         | Type        | Description
 ------------- | ------------| --------------------------------

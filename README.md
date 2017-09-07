@@ -124,17 +124,26 @@ There is a JavaScript API available, which you can use to program against and in
 Make sfcc-ci available to your project by specifying the dependeny in your `package.json` first and running and `npm install` in your package. After that you require the API into your implementation using:
 
 ```
-  var sfcc = require('sfcc-ci');
+  const sfcc = require('sfcc-ci');
+```
+
+The API is structured into sub modules. You may require sub modules directly, e.g.
+
+```
+  const sfcc_auth = require('sfcc-ci').auth;
+  const sfcc_code = require('sfcc-ci').code;
 ```
 
 The following APIs are available:
 
 ```
-  auth(client_id, client_secret, success, error);
-  activate(instance, code_version, token, success, error);
+  sfcc.auth.auth(client_id, client_secret, success, error);
+  sfcc.code.activate(instance, code_version, token, success, error);
 ```
 
 ### Authentication ###
+
+APIs available in `require('sfcc').auth`:
 
 `auth(client_id, client_secret[, success] [, error])`
 
@@ -148,5 +157,31 @@ success       | (Function)  | Callback function executed when the authentication
 error         | (Function)  | Callback function executed when the authentication failed. The error will be passed as only parameter to the error callback.
 
 **Returns:** (String) Returns the token, if the authentication succeeded and no success callback was used. Returns the error, if the authentication failed and no error callback was used.
+
+***
+
+### Code ###
+
+APIs available in `require('sfcc').code`:
+
+`activate(client_id, client_secret[, success] [, error])`
+
+Activate the custom code version on a Commerce Cloud instance. You may pass an optional success and error callback function to further handle success.
+
+* @param {String} instance The instance to activate the code on
+     * @param {String} code_version The code version to activate
+     * @param {String} token The Oauth token to use use for authentication
+     * @param {Function} success Callback function executed when the code activation succeeded.
+     * @param {Function} error Callback function executed when the code activation failed. The error will be passed as only parameter to the error callback.
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to activate the code on
+code_version  | (String)    | The code version to activate
+token         | (String)    | The Oauth token to use use for authentication
+success       | (Function)  | Callback function executed when the code activation succeeded.
+error         | (Function)  | Callback function executed when the code activation failed. The error will be passed as only parameter to the error callback.
+
+**Returns:** (String|Boolean) True, if the code activation succeeded and no success callback was used. Returns the error, if the code activation failed and no error callback was used.
 
 ***

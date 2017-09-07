@@ -132,6 +132,7 @@ The API is structured into sub modules. You may require sub modules directly, e.
 ```
   const sfcc_auth = require('sfcc-ci').auth;
   const sfcc_code = require('sfcc-ci').code;
+  const sfcc_job = require('sfcc-ci').job;
 ```
 
 The following APIs are available:
@@ -139,13 +140,15 @@ The following APIs are available:
 ```
   sfcc.auth.auth(client_id, client_secret, success, error);
   sfcc.code.activate(instance, code_version, token, success, error);
+  sfcc.job.run(instance, job_id, job_params, token, success, error);
+  sfcc.job.status(instance, job_id, job_execution_id, token, success, error);
 ```
 
 ### Authentication ###
 
 APIs available in `require('sfcc').auth`:
 
-`auth(client_id, client_secret[, success] [, error])`
+`auth(client_id, client_secret[, success][, error])`
 
 Authenticates a clients and attempts to obtain a new Oauth2 token. Note, that tokens should be reused for subsequent operations. In case of a invalid token you may call this method again to obtain a new token.
 
@@ -164,15 +167,9 @@ error         | (Function)  | Callback function executed when the authentication
 
 APIs available in `require('sfcc').code`:
 
-`activate(client_id, client_secret[, success] [, error])`
+`activate(instance, code_version, token[, success][, error])`
 
 Activate the custom code version on a Commerce Cloud instance. You may pass an optional success and error callback function to further handle success.
-
-* @param {String} instance The instance to activate the code on
-     * @param {String} code_version The code version to activate
-     * @param {String} token The Oauth token to use use for authentication
-     * @param {Function} success Callback function executed when the code activation succeeded.
-     * @param {Function} error Callback function executed when the code activation failed. The error will be passed as only parameter to the error callback.
 
 Param         | Type        | Description
 ------------- | ------------| --------------------------------
@@ -183,5 +180,43 @@ success       | (Function)  | Callback function executed when the code activatio
 error         | (Function)  | Callback function executed when the code activation failed. The error will be passed as only parameter to the error callback.
 
 **Returns:** (String|Boolean) True, if the code activation succeeded and no success callback was used. Returns the error, if the code activation failed and no error callback was used.
+
+***
+
+### Jobs ###
+
+APIs available in `require('sfcc').job`:
+
+`run(instance, job_id, job_params, token[, success][, error])`
+
+Starts a job execution on a Commerce Cloud instance. The job is triggered and the result of the attempt to start the job is returned. You may use the API function status to get the current job execution status.
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | Instance to start the job on
+job_id        | (String)    | The job to start
+token         | (String)    | The Oauth token to use use for authentication
+job_params    | (Array)     | Array containing job parameters. A job parameter must be denoted by an object holding a key and a value property.
+success       | (Function)  | Callback function executed when starting the job succeeded. The job execution id will be passed as only parameter to the success callback
+error         | (Function)  | Callback function executed when starting the job failed. The error will be passed as only parameter to the error callback.
+
+**Returns:** (String|Boolean) True, if the job start succeeded and no success callback was used. Returns the error, if the job start failed and no error callback was used.
+
+***
+
+`status(instance, job_id, job_execution_id, token[, success][, error])`
+
+Get the status of a job execution on a Commerce Cloud instance.
+
+Param            | Type        | Description
+---------------- | ------------| --------------------------------
+instance         | (String)    | Instance the job was executed on.
+job_id           | (String)    | The job to get the execution status for
+job_execution_id | (String)    | The job execution id to get the status for
+token            | (String)    | The Oauth token to use use for authentication
+success          | (Function)  | Callback function executed when getting the job execution status succeeded. The job execution details will be passed as only parameter to the success callback
+error            | (Function)  | Callback function executed when getting the job execution status failed. The error will be passed as only parameter to the error callback.
+
+**Returns:** (Object|Boolean) Execution details, if getting the job execution status succeeded and no success callback was used. Returns false, if the getting the job execution status failed and no error callback was used.
 
 ***

@@ -3,6 +3,8 @@ image: node:6.9.4
 pipelines:
   default:
     - step:
+        caches:
+          - node
         script:
           - npm install
           - npm run lint

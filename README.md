@@ -92,6 +92,7 @@ You need Node.js and npm to be installed. No other dependencies.
 * Make sure Node.js and npm are installed.
 * Clone or download this tool.
 * `cd` into the directory and run `npm install`
+* Check if installation was successful by running `sfcc-ci --help`. In case you encouter any issues with running `sfcc-ci`, you may run `npm link` to create a symbolic link
 
 You are now ready to use the tool by running the main command `sfcc-ci`. 
 

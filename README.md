@@ -98,6 +98,8 @@ You are now ready to use the tool by running the main command `sfcc-ci`.
 
 ## Using the Command Line Interface ##
 
+### Available Commands ###
+
 Use `sfcc-ci --help` to get started and see the list of commands available:
 
 ```
@@ -130,6 +132,10 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 ```
 
 Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a sub:command.
+
+### Configuration ###
+
+sfcc-ci CLI keeps it’s own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
 
 ## Using the JavaScript API ##
 

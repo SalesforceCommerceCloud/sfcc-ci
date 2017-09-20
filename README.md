@@ -1,6 +1,6 @@
 # Salesforce Commerce Cloud CI #
 
-The Salesforce Commerce Cloud CI is a command line interface (CLI) for interacting with Commerce Cloud instances from the command line / shell of various operating systems in order to facilitate Continuous Integration practices using Commerce Cloud.
+The Salesforce Commerce Cloud CI is a command line interface (CLI) for interacting with Commerce Cloud instances from the command line / shell of various operating systems in order to facilitate Continuous Integration practices using Commerce Cloud. It provides a JavaScript API which can be used to integrate with higher level build tools.
 
 # License #
 
@@ -135,7 +135,7 @@ Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a s
 
 ### Configuration ###
 
-sfcc-ci CLI keeps itâ€™s own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
+sfcc-ci CLI keeps it’s own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
 
 ## Using the JavaScript API ##
 

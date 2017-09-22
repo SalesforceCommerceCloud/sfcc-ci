@@ -118,29 +118,29 @@ program
     });
 
 program
-    .command('instance:import <import_file>')
+    .command('instance:import <archive>')
     .option('-i, --instance <instance>','Instance to run the import on. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Perform a instance import (aka site import) on a Commerce Cloud instance')
-    .action(function(import_file, options) {
+    .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
         var sync = ( options.sync ? options.sync : false );
         if (sync) {
-            require('./lib/instance').importSync(instance, import_file);
+            require('./lib/instance').importSync(instance, archive);
         } else {
-            require('./lib/instance').import(instance, import_file);
+            require('./lib/instance').import(instance, archive);
         }
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci instance:import my-site-import.zip');
-        console.log('    $ sfcc-ci instance:import my-site-import.zip -i my-instance-alias');
-        console.log('    $ sfcc-ci instance:import my-site-import.zip -i my-instance-alias -s');
-        console.log('    $ sfcc-ci instance:import my-site-import.zip -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci instance:import my-site-import.zip -i my-instance.demandware.net -s');
-        console.log('    $ sfcc-ci instance:import my-site-import.zip -s');
+        console.log('    $ sfcc-ci instance:import archive.zip');
+        console.log('    $ sfcc-ci instance:import archive.zip -i my-instance-alias');
+        console.log('    $ sfcc-ci instance:import archive.zip -i my-instance-alias -s');
+        console.log('    $ sfcc-ci instance:import archive.zip -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci instance:import archive.zip -i my-instance.demandware.net -s');
+        console.log('    $ sfcc-ci instance:import archive.zip -s');
         console.log();
     });
 

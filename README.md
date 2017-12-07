@@ -119,6 +119,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     instance:set <alias>                              Sets a Commerce Cloud instance as the current default instance
     instance:clear                                    Clears all configured Commerce Cloud instances
     instance:list [options]                           List instance and client details currently configured
+    instance:upload [options] <archive>               Uploads an instance import file onto a Commerce Cloud instance
     instance:import [options] <archive>               Perform a instance import (aka site import) on a Commerce Cloud instance
     instance:state:save [options]                     Perform a save of the state of a Commerce Cloud instance
     instance:state:reset [options]                    Perform a reset of a previously saved state of a Commerce Cloud instance

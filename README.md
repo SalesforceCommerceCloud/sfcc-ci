@@ -50,6 +50,12 @@ Use the following snippet as your client's permission set, replace `aaaaaaaaaaaa
       "resources":
       [
         {
+          "resource_id":"/code_versions",
+          "methods":["get"],
+          "read_attributes":"(**)",
+          "write_attributes":"(**)"
+        },
+        {
           "resource_id":"/code_versions/*",
           "methods":["patch"],
           "read_attributes":"(**)",
@@ -123,6 +129,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     instance:import [options] <archive>               Perform a instance import (aka site import) on a Commerce Cloud instance
     instance:state:save [options]                     Perform a save of the state of a Commerce Cloud instance
     instance:state:reset [options]                    Perform a reset of a previously saved state of a Commerce Cloud instance
+    code:list [options]                               List all custom code versions deployed on the Commerce Cloud instance
     code:activate [options] <version>                 Activate the custom code version on a Commerce Cloud instance
     job:run [options] <job_id> [job_parameters...]    Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>  Get the status of a job execution on a Commerce Cloud instance
@@ -162,6 +169,7 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
 ```
   sfcc.auth.auth(client_id, client_secret, callback);
   sfcc.code.activate(instance, code_version, token, callback);
+  sfcc.code.list(instance, token, callback);
   sfcc.instance.import(instance, file_name, token, callback);
   sfcc.job.run(instance, job_id, job_params, token, callback);
   sfcc.job.status(instance, job_id, job_execution_id, token, callback);
@@ -207,6 +215,20 @@ sfcc.auth.auth(client_id, client_secret, function(token, err) {
 ### Code ###
 
 APIs available in `require('sfcc-ci').code`:
+
+`list(instance, token, callback)`
+
+Get all custom code versions deployed on a Commerce Cloud instance.
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to activate the code on
+token         | (String)    | The Oauth token to use use for authentication
+callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+
+**Returns:** (void) Function has no return value
+
+***
 
 `activate(instance, code_version, token, callback)`
 

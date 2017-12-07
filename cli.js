@@ -121,10 +121,12 @@ program
     .command('instance:upload <archive>')
     .option('-i, --instance <instance>','Instance to upload the import file to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
+    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Uploads an instance import file onto a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        require('./lib/webdav').uploadInstanceImport(instance, archive);
+        var sync = ( options.sync ? options.sync : false );
+        require('./lib/webdav').uploadInstanceImport(instance, archive, sync);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -132,6 +134,7 @@ program
         console.log('    $ sfcc-ci instance:upload archive.zip');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance-alias');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net -s');
         console.log();
     });
 

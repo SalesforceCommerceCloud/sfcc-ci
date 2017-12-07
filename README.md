@@ -95,7 +95,7 @@ Note, if you already have OCAPI Settings configured, e.g. for other clients, add
 Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
 
     {  
-      "client_id":"2b7d3cb2-9cbf-4de7-9943-119a3569bb0c",
+      "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "permissions":
       [  
         {  

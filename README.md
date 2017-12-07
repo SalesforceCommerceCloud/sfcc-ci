@@ -162,6 +162,7 @@ The API is structured into sub modules. You may require sub modules directly, e.
   const sfcc_code = require('sfcc-ci').code;
   const sfcc_instance = require('sfcc-ci').instance;
   const sfcc_job = require('sfcc-ci').job;
+  const sfcc_webdav = require('sfcc-ci').webdav;
 ```
 
 The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`):
@@ -170,9 +171,11 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
   sfcc.auth.auth(client_id, client_secret, callback);
   sfcc.code.activate(instance, code_version, token, callback);
   sfcc.code.list(instance, token, callback);
+  sfcc.instance.upload(instance, file, token, callback);
   sfcc.instance.import(instance, file_name, token, callback);
   sfcc.job.run(instance, job_id, job_params, token, callback);
   sfcc.job.status(instance, job_id, job_execution_id, token, callback);
+  sfcc.webdav.upload(instance, path, file, token, callback);
 ```
 
 ### Authentication ###
@@ -249,6 +252,21 @@ callback      | (Function)  | Callback function executed as a result. The error 
 
 APIs available in `require('sfcc').instance`:
 
+`upload(instance, file, token, callback)`
+
+Uploads an instance import file onto a Commerce Cloud instance.
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to upload the import file to
+file          | (String)    | The file to upload
+token         | (String)    | The Oauth token to use use for authentication
+callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
+
+**Returns:** (void) Function has no return value
+
+***
+
 `import(instance, file_name, token, callback)`
 
 Perform an instance import (aka site import) on a Commerce Cloud instance. You may use the API job.status to get the execution status of the import.
@@ -295,6 +313,26 @@ job_id           | (String)    | The job to get the execution status for
 job_execution_id | (String)    | The job execution id to get the status for
 token            | (String)    | The Oauth token to use use for authentication
 callback         | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+
+**Returns:** (void) Function has no return value
+
+***
+
+### WebDAV ###
+
+APIs available in `require('sfcc').webdav`:
+
+`upload(instance, path, file, token, callback)`
+
+Uploads an arbitrary file onto a Commerce Cloud instance.
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to upload the import file to
+path          | (String)    | The path relative to .../webdav/Sites where the file to upload to
+file          | (String)    | The file to upload
+token         | (String)    | The Oauth token to use use for authentication
+callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
 
 **Returns:** (void) Function has no return value
 

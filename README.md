@@ -36,7 +36,7 @@ Ensure you have a valid Open Commerce API client ID set up. You'll need the clie
 
 ### Configuration ###
 
-In order to perform certain commands the tool provides, you need to give permission to do that on your Commerce Cloud instance(s). You can do that by modifying the Open Commerce API Settings. 
+In order to perform certain commands the tool provides, you need to give permission to do that on your Commerce Cloud instance(s). You can do that by modifying the Open Commerce API Settings as well as the WebDAV Client Permissions.
 
 1. Log into the Business Manager
 2. Navigate to Administration > Site Development > Open Commerce API Settings
@@ -80,6 +80,36 @@ Note, if you already have OCAPI Settings configured, e.g. for other clients, add
 
     {
       "_v":"17.7",
+      "clients":
+      [ 
+        {
+          ...
+        },
+        <!-- the new permission set goes here -->
+      ]
+    }
+    
+5. Navigate to Administration >  Organization >  WebDAV Client Permissions
+6. Add the permission set for your client ID to the permission settings.
+
+Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
+
+    {  
+      "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "permissions":
+      [  
+        {  
+          "path": "/impex",
+          "operations": [  
+            "read_write"
+          ]
+        }
+      ]
+    }
+    
+Note, if you already have WebDAV Client Permissions configured, e.g. for other clients, add this snippet to the list permission sets for the other clients as follows:
+
+    {
       "clients":
       [ 
         {
@@ -143,7 +173,7 @@ Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a s
 
 ### Configuration ###
 
-sfcc-ci CLI keeps it’s own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
+sfcc-ci CLI keeps itï¿½s own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
 
 ## Using the JavaScript API ##
 

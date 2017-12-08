@@ -238,6 +238,27 @@ program
     });
 
 program
+    .command('code:deploy <archive>')
+    .option('-i, --instance <instance>','Instance to deploy the custom code archive to. Can be an ' +
+        'instance alias. If not specified the currently configured instance will be used.')
+    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
+    .description('Deploys a custom code archive onto a Commerce Cloud instance')
+    .action(function(archive, options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        var sync = ( options.sync ? options.sync : false );
+        require('./lib/webdav').deployCode(instance, archive, sync);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci code:deploy code.zip');
+        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance-alias');
+        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net -s');
+        console.log();
+    });
+
+program
     .command('code:activate <version>')
     .option('-i, --instance <instance>','Instance to activate the custom code version on. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')

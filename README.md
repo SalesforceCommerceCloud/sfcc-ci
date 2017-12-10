@@ -44,7 +44,7 @@ In order to perform certain commands the tool provides, you need to give permiss
 4. Add the permission set for your client ID to the settings. 
 
 Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
-
+```JSON
     {
       "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "resources":
@@ -75,9 +75,9 @@ Use the following snippet as your client's permission set, replace `aaaaaaaaaaaa
         }
       ]
     }
-    
+```    
 Note, if you already have OCAPI Settings configured, e.g. for other clients, add this snippet to the list permission sets for the other clients as follows:
-
+```JSON
     {
       "_v":"17.7",
       "clients":
@@ -88,12 +88,12 @@ Note, if you already have OCAPI Settings configured, e.g. for other clients, add
         <!-- the new permission set goes here -->
       ]
     }
-    
+```    
 5. Navigate to Administration >  Organization >  WebDAV Client Permissions
 6. Add the permission set for your client ID to the permission settings.
 
 Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
-
+```JSON
     {  
       "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "permissions":
@@ -103,12 +103,18 @@ Use the following snippet as your client's permission set, replace `aaaaaaaaaaaa
           "operations": [  
             "read_write"
           ]
+        },
+        {  
+          "path": "/cartridges",
+          "operations": [  
+            "read_write"
+          ]
         }
       ]
     }
-    
+```    
 Note, if you already have WebDAV Client Permissions configured, e.g. for other clients, add this snippet to the list permission sets for the other clients as follows:
-
+```JSON
     {
       "clients":
       [ 
@@ -118,6 +124,8 @@ Note, if you already have WebDAV Client Permissions configured, e.g. for other c
         <!-- the new permission set goes here -->
       ]
     }
+```
+Note: After some testing, the `cartridges` folder can only be added in the WebDAV permissions on Commerce Cloud Digital versions greater than **15.5**.
 
 ### Dependencies ###
 
@@ -138,7 +146,7 @@ You are now ready to use the tool by running the main command `sfcc-ci`.
 
 Use `sfcc-ci --help` to get started and see the list of commands available:
 
-```
+```bash
   Usage: sfcc-ci [options] [command]
 
   Options:
@@ -159,6 +167,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     instance:import [options] <archive>               Perform a instance import (aka site import) on a Commerce Cloud instance
     instance:state:save [options]                     Perform a save of the state of a Commerce Cloud instance
     instance:state:reset [options]                    Perform a reset of a previously saved state of a Commerce Cloud instance
+    code:deploy <archive> [options]                   Deploys a custom code archive onto a Commerce Cloud instance
     code:list [options]                               List all custom code versions deployed on the Commerce Cloud instance
     code:activate [options] <version>                 Activate the custom code version on a Commerce Cloud instance
     job:run [options] <job_id> [job_parameters...]    Starts a job execution on a Commerce Cloud instance
@@ -181,13 +190,13 @@ There is a JavaScript API available, which you can use to program against and in
 
 Make sfcc-ci available to your project by specifying the dependeny in your `package.json` first and running and `npm install` in your package. After that you require the API into your implementation using:
 
-```
+```javascript
   const sfcc = require('sfcc-ci');
 ```
 
 The API is structured into sub modules. You may require sub modules directly, e.g.
 
-```
+```javascript
   const sfcc_auth = require('sfcc-ci').auth;
   const sfcc_code = require('sfcc-ci').code;
   const sfcc_instance = require('sfcc-ci').instance;
@@ -197,9 +206,10 @@ The API is structured into sub modules. You may require sub modules directly, e.
 
 The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`):
 
-```
-  sfcc.auth.auth(client_id, client_secret, callback);
+```javascript
+  sfcc.auth.auth(client_id, client_secret, auto_renew, callback);
   sfcc.code.activate(instance, code_version, token, callback);
+  sfcc.code.deploy(instance, archive, sync, callback);
   sfcc.code.list(instance, token, callback);
   sfcc.instance.upload(instance, file, token, callback);
   sfcc.instance.import(instance, file_name, token, callback);
@@ -212,7 +222,7 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
 
 APIs available in `require('sfcc-ci').auth`:
 
-`auth(client_id, client_secret, callback)`
+`auth(client_id, client_secret, auto_renew, callback)`
 
 Authenticates a clients and attempts to obtain a new Oauth2 token. Note, that tokens should be reused for subsequent operations. In case of a invalid token you may call this method again to obtain a new token.
 
@@ -220,13 +230,14 @@ Param         | Type        | Description
 ------------- | ------------| --------------------------------
 client_id     | (String)    | The client ID
 client_secret | (String)    | The client secret
+auto_renew    | (Boolean)   | The flag to allows token renewal
 callback      | (Function)  | Callback function executed as a result. The token and the error will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
 
 Example:
 
-```
+```javascript
 const sfcc = require('sfcc-ci');
 
 var client_id = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
@@ -240,7 +251,6 @@ sfcc.auth.auth(client_id, client_secret, function(token, err) {
         console.error('Authentication error: %s', err);
     }
 });
-
 ```
 
 ***
@@ -248,6 +258,21 @@ sfcc.auth.auth(client_id, client_secret, function(token, err) {
 ### Code ###
 
 APIs available in `require('sfcc-ci').code`:
+
+`deploy(instance, archive, sync, callback)`
+
+Deploys a custom code archive onto a Commerce Cloud instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to activate the code on
+archive       | (String)    | The path to the ZIP archive to deploy
+sync          | (Boolean)   | Operates in synchronous mode and waits until the operation has been finished.
+callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+
+**Returns:** (void) Function has no return value
+
+***
 
 `list(instance, token, callback)`
 

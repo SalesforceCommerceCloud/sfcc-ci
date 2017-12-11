@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 var program = require('commander');
-
+var dwjson = require('./lib/dwjson').init({process: process});
 program
-    .command('client:auth <client> <secret>')
+    .command('client:auth [client] [secret]')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
         'once the token expires.')
     .description('Authenticate an Commerce Cloud Open Commerce API client')
     .action(function(client, secret, options) {
         var renew = ( options.renew ? options.renew : false );
-        require('./lib/auth').auth(client, secret, renew);
+        require('./lib/auth').auth(client || dwjson['client-id'] , secret || dwjson['client-secret'], renew);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -59,7 +59,7 @@ program
     });
 
 program
-    .command('instance:add <instance> [alias]')
+    .command('instance:add [instance] [alias]')
     .description('Adds a new Commerce Cloud instance to the list of configured instances')
     .action(function(instance, alias) {
         if (!alias) {
@@ -119,12 +119,12 @@ program
 
 program
     .command('instance:upload <archive>')
-    .option('-i, --instance <instance>','Instance to upload the import file to. Can be an ' +
+    .option('-i, --instance [instance]','Instance to upload the import file to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Uploads an instance import file onto a Commerce Cloud instance')
     .action(function(archive, options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
+        var instance = require('./lib/instance').getInstance(options.instance) || dwjson['hostname'];
         var sync = ( options.sync ? options.sync : false );
         require('./lib/webdav').uploadInstanceImport(instance, archive, sync);
     }).on('--help', function() {
@@ -145,7 +145,7 @@ program
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Perform a instance import (aka site import) on a Commerce Cloud instance')
     .action(function(archive, options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
+        var instance = require('./lib/instance').getInstance(options.instance) || dwjson['hostname'];
         var sync = ( options.sync ? options.sync : false );
         if (sync) {
             require('./lib/instance').importSync(instance, archive);

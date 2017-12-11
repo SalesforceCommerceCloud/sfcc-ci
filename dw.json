@@ -1,0 +1,9 @@
+{
+    "hostname": "dev01-performance06-qa.demandware.net",
+    "username": "bm.support@demandware.com",
+    "password": "Demandware1!",
+    "cartridge": ["plugin_experience"],
+    "code-version": "version1",
+    "client-id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "client-secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+}

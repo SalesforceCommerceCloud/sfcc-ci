@@ -2,7 +2,7 @@
 
 # authorize client using client:auth, uses params $1 (client_id), $2 (client_secret)
 echo "Testing command ´sfcc-ci client:auth´:"
-sfcc-ci client:auth $1 $2
+/usr/local/bin/sfcc-ci client:auth $1 $2
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -12,7 +12,7 @@ fi
 
 # do an auth renewal using client:auth:renew, uses pre-authorized client auth, no parameters
 echo "Testing command ´sfcc-ci client:renew´ (expected to fail):"
-sfcc-ci client:auth:renew
+/usr/local/bin/sfcc-ci client:auth:renew
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -22,7 +22,7 @@ fi
 
 # authorize client using client:auth with --renew flag, uses params $1 (client_id), $2 (client_secret)
 echo "Testing command ´sfcc-ci client:auth´ with flag --renew:"
-sfcc-ci client:auth $1 $2 --renew
+/usr/local/bin/sfcc-ci client:auth $1 $2 --renew
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -32,7 +32,7 @@ fi
 
 # do an auth renewal using client:auth:renew, uses pre-authorized client auth, no parameters
 echo "Testing command ´sfcc-ci client:renew´ (expected to succeed):"
-sfcc-ci client:auth:renew
+/usr/local/bin/sfcc-ci client:auth:renew
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -42,7 +42,7 @@ fi
 
 # clears any client settings, using client:clear, uses pre-authorized client auth, no parameters
 echo "Testing command ´sfcc-ci client:clear´:"
-sfcc-ci client:clear
+/usr/local/bin/sfcc-ci client:clear
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -52,7 +52,7 @@ fi
 
 # add an instance, using instance:add, uses param $3 (instance)
 echo "Testing command ´sfcc-ci instance:add´ (without alias):"
-sfcc-ci instance:add $3
+/usr/local/bin/sfcc-ci instance:add $3
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -62,7 +62,7 @@ fi
 
 # clear instances, using instance:clear
 echo "Testing command ´sfcc-ci instance:clear´:"
-sfcc-ci instance:clear
+/usr/local/bin/sfcc-ci instance:clear
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -72,7 +72,7 @@ fi
 
 # add an instance, using instance:add with alias option, uses param $3 (instance) and hardcoded alias "my"
 echo "Testing command ´sfcc-ci instance:add´ (with alias):"
-sfcc-ci instance:add $3 my
+/usr/local/bin/sfcc-ci instance:add $3 my
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -82,7 +82,7 @@ fi
 
 # add an invalid instance, using instance:add, uses hardcoded instance
 echo "Testing command ´sfcc-ci instance:add´ with invalid instance (expected to fail):"
-sfcc-ci instance:add my-instance.demandware.net
+/usr/local/bin/sfcc-ci instance:add my-instance.demandware.net
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -92,7 +92,7 @@ fi
 
 # add another valid instance, using instance:add, uses param $3 (instance)
 echo "Testing command ´sfcc-ci instance:add´:"
-sfcc-ci instance:add $3 someotheralias
+/usr/local/bin/sfcc-ci instance:add $3 someotheralias
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -102,7 +102,7 @@ fi
 
 # set instance, using instance:set, uses hardcoded alias "my"
 echo "Testing command ´sfcc-ci instance:set´:"
-sfcc-ci instance:set my
+/usr/local/bin/sfcc-ci instance:set my
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

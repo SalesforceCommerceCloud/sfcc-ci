@@ -81,7 +81,7 @@ Use the following snippet as your client's permission set, replace `aaaaaaaaaaaa
 Note, if you already have OCAPI Settings configured, e.g. for other clients, add this snippet to the list permission sets for the other clients as follows:
 
     {
-      "_v":"17.7",
+      "_v":"17.8",
       "clients":
       [ 
         {

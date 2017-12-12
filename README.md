@@ -23,10 +23,12 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 
 * Uses Open Commerce APIs completely
 * Authentication using Oauth2 only, no Business Manager user needed
-* Supported commands include: save state, code activate, site import, reset state
+* Supported commands include: save state, code deploy, code activate, site import upload, site import, reset state
+* WebDAV connectivity
 * Configuration of multiple instances
 * Aliasing of instances
 * Automatic renewal of Oauth2 token
+* Command line client and JavaScript API
 
 ## How do I get set up? ##
 
@@ -94,13 +96,19 @@ Note, if you already have OCAPI Settings configured, e.g. for other clients, add
 
 Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
 
-    {  
+    {
       "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "permissions":
-      [  
-        {  
+      [
+        {
           "path": "/impex",
-          "operations": [  
+          "operations": [
+            "read_write"
+          ]
+        },
+        {
+          "path": "/cartridges",
+          "operations": [
             "read_write"
           ]
         }
@@ -160,6 +168,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     instance:state:save [options]                     Perform a save of the state of a Commerce Cloud instance
     instance:state:reset [options]                    Perform a reset of a previously saved state of a Commerce Cloud instance
     code:list [options]                               List all custom code versions deployed on the Commerce Cloud instance
+    code:deploy [options] <archive>                   Deploys a custom code archive onto a Commerce Cloud instance
     code:activate [options] <version>                 Activate the custom code version on a Commerce Cloud instance
     job:run [options] <job_id> [job_parameters...]    Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>  Get the status of a job execution on a Commerce Cloud instance

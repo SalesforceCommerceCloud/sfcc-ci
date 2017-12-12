@@ -109,3 +109,23 @@ else
 	echo -e "\t> FAILED"
 	exit 1
 fi
+
+# site import upload, using instance:upload, uses hardcoded test file
+echo "Testing command ´sfcc-ci instance:upload´:"
+node ./cli.js instance:upload ./test/cli/site_import.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+# code deploy, using code:deploy, uses hardcoded test file
+echo "Testing command ´sfcc-ci code:deploy´:"
+node ./cli.js code:deploy ./test/cli/custom_code.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi

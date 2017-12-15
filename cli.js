@@ -2,9 +2,9 @@
 var program = require('commander');
 var dwjson = require('./lib/dwjson').init({process: process});
 
-if( dwjson && dwjson['self-signed']) {
+if ( dwjson && dwjson['self-signed']) {
     // @todo replace superagent with npm request module to allow removal of this hack
-    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;    
+    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 }
 
 program
@@ -14,7 +14,8 @@ program
     .description('Authenticate an Commerce Cloud Open Commerce API client')
     .action(function(client, secret, options) {
         var renew = ( options.renew ? options.renew : false );
-        require('./lib/auth').auth(client || dwjson['client-id'] , secret || dwjson['client-secret'], renew,dwjson['account-manager'] ) ;
+        require('./lib/auth').auth(client || dwjson['client-id'] ,
+            secret || dwjson['client-secret'], renew, dwjson['account-manager'] ) ;
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -205,7 +206,7 @@ program
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Perform a reset of a previously saved state of a Commerce Cloud instance')
     .action(function(options) {
-        var instance = require('./lib/instance').getInstance(options.instance, );
+        var instance = require('./lib/instance').getInstance(options.instance);
         var sync = ( options.sync ? options.sync : false );
         if (sync) {
             require('./lib/instance').resetStateSync(instance);
@@ -305,7 +306,7 @@ program
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
-        console.log();
+        console.log('');
         console.log('    $ sfcc-ci job:run my-job');
         console.log('    $ sfcc-ci job:run my-job param1=value1 param2=value2');
         console.log('    $ sfcc-ci job:run my-job -i my-instance-alias');

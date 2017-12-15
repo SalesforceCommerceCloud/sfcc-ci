@@ -179,7 +179,7 @@ program
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Perform a save of the state of a Commerce Cloud instance')
     .action(function(options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
+        var instance = require('./lib/instance').getInstance(options.instance) || dwjson['hostname'];
         var sync = ( options.sync ? options.sync : false );
         if (sync) {
             require('./lib/instance').saveStateSync(instance);
@@ -206,7 +206,7 @@ program
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Perform a reset of a previously saved state of a Commerce Cloud instance')
     .action(function(options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
+        var instance = require('./lib/instance').getInstance(options.instance) || dwjson['hostname'];
         var sync = ( options.sync ? options.sync : false );
         if (sync) {
             require('./lib/instance').resetStateSync(instance);
@@ -251,7 +251,7 @@ program
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Deploys a custom code archive onto a Commerce Cloud instance')
     .action(function(archive, options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
+        var instance = require('./lib/instance').getInstance(options.instance) || dwjson['hostname'];
         var sync = ( options.sync ? options.sync : false );
         require('./lib/webdav').deployCode(instance, archive, sync);
     }).on('--help', function() {

@@ -2,6 +2,19 @@
 var program = require('commander');
 
 program
+    .command('auth:login <client> <secret>')
+    .description('Login a present user')
+    .action(function(client, secret) {
+        require('./lib/auth').login(client, secret);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci auth:login app-client-id app-client-secret');
+        console.log();
+    });
+
+program
     .command('client:auth <client> <secret>')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
         'once the token expires.')
@@ -55,6 +68,77 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci client:clear');
+        console.log();
+    });
+
+program
+    .command('sandbox:list')
+    .description('List all sandboxes currently created')
+    .option('-j, --json','Formats the output in json')
+    .action(function(options) {
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/ccdx').cli.list(asJson);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:list');
+        console.log('    $ sfcc-ci sandbox:list --json');
+        console.log();
+    });
+
+program
+    .command('sandbox:create <realm>')
+    .description('Triggers the creation of a new sandbox')
+    .action(function(realm) {
+        require('./lib/ccdx').cli.create(realm);
+    }).on('--help', function() {
+        /*
+        The sandbox will be created for the realm using the <realm> argument. You must have
+        permission to create a new sandbox for the realm. The number of sandboxes allowed to create is limited.
+        The command only triggers the creation and does not wait until the sandbox is fully provisioned and
+        available to use. Use may use `sfcc-ci sandbox:list` to check the status of the creation.
+        */
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:create my-realm');
+        console.log();
+    });
+
+program
+    .command('sandbox:get <sandbox_id>')
+    .description('Retrieves details of a sandbox')
+    .option('-j, --json','Formats the output in json')
+    .option('-h, --host','Return the host name of the sandbox')
+    .option('-o, --open','Opens a browser with the Business Manager on the sandbox')
+    .action(function(sandbox_id, options) {
+        var asJson = ( options.json ? options.json : false );
+        var hostOnly = ( options.host ? options.host : false );
+        var openBrowser = ( options.open ? options.open : false );
+        require('./lib/ccdx').cli.get(sandbox_id, asJson, hostOnly, openBrowser);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:get my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:get my-sandbox-id -h');
+        console.log();
+    });
+
+program
+    .command('sandbox:remove <sandbox_id>')
+    .description('Triggers the removal of an existing sandbox')
+    .action(function(sandbox_id) {
+        require('./lib/ccdx').cli.remove(sandbox_id);
+    }).on('--help', function() {
+        /*
+        The sandbox must be identified by its id. Use may use `sfcc-ci sandbox:list` to identify the id of your sandboxes.
+        */
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:remove my-sandbox-id');
         console.log();
     });
 

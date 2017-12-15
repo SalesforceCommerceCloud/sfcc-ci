@@ -23,8 +23,10 @@
     "cli-spinner": "^0.2.6",
     "commander": "^2.11.0",
     "conf": "^1.1.2",
+    "netrc": "^0.1.4",
     "open": "0.0.5",
     "request": "^2.82.0",
+    "request-debug": "^0.2.0",
     "superagent": "^3.5.2",
     "superagent-logger": "^1.1.0",
     "table": "^4.0.1"

@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 var program = require('commander');
 var dwjson = require('./lib/dwjson').init({process: process});
+
+if( dwjson && dwjson['self-signed']) {
+    // @todo replace superagent with npm request module to allow removal of this hack
+    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;    
+}
+
 program
     .command('client:auth [client] [secret]')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
@@ -8,7 +14,7 @@ program
     .description('Authenticate an Commerce Cloud Open Commerce API client')
     .action(function(client, secret, options) {
         var renew = ( options.renew ? options.renew : false );
-        require('./lib/auth').auth(client || dwjson['client-id'] , secret || dwjson['client-secret'], renew);
+        require('./lib/auth').auth(client || dwjson['client-id'] , secret || dwjson['client-secret'], renew,dwjson['account-manager'] ) ;
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -199,7 +205,7 @@ program
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Perform a reset of a previously saved state of a Commerce Cloud instance')
     .action(function(options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
+        var instance = require('./lib/instance').getInstance(options.instance, );
         var sync = ( options.sync ? options.sync : false );
         if (sync) {
             require('./lib/instance').resetStateSync(instance);

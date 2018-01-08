@@ -127,7 +127,8 @@ Note, if you already have WebDAV Client Permissions configured, e.g. for other c
       ]
     }
 ```
-Note: The `cartridges` folder can only be added in the WebDAV permissions on Commerce Cloud Digital versions greater than **15.5**.
+Note: WebDAV client permission to `cartridges` is available in Commerce Cloud Digital versions greater than **17.8**.
+
 ### Dependencies ###
 
 You need Node.js and npm to be installed. No other dependencies.

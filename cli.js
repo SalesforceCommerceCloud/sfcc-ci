@@ -3,7 +3,6 @@ var program = require('commander');
 
 program
     .command('auth:login <client> <secret>')
-    .description('Login a present user')
     .description('Authorize the client with a present user for interactive use')
     .action(function(client, secret) {
         require('./lib/auth').login(client, secret);

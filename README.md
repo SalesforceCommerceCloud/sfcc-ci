@@ -155,6 +155,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Commands:
 
+    auth:login <client> <secret>                      Authorize the client with a present user for interactive use
     client:auth [options] <client> <secret>           Authenticate an Commerce Cloud Open Commerce API client
     client:auth:renew                                 Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                 Return the current authentication token
@@ -182,7 +183,7 @@ Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a s
 
 ### Configuration ###
 
-sfcc-ci CLI keeps it�s own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
+sfcc-ci CLI keeps it's own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
 
 ## Using the JavaScript API ##
 

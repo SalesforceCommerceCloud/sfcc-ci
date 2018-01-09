@@ -46,7 +46,7 @@ In order to perform certain commands the tool provides, you need to give permiss
 4. Add the permission set for your client ID to the settings. 
 
 Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
-
+```JSON
     {
       "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "resources":
@@ -77,9 +77,9 @@ Use the following snippet as your client's permission set, replace `aaaaaaaaaaaa
         }
       ]
     }
-    
+```
 Note, if you already have OCAPI Settings configured, e.g. for other clients, add this snippet to the list permission sets for the other clients as follows:
-
+```JSON
     {
       "_v":"17.8",
       "clients":
@@ -90,12 +90,12 @@ Note, if you already have OCAPI Settings configured, e.g. for other clients, add
         <!-- the new permission set goes here -->
       ]
     }
-    
+```
 5. Navigate to Administration >  Organization >  WebDAV Client Permissions
 6. Add the permission set for your client ID to the permission settings.
 
 Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
-
+```JSON
     {
       "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "permissions":
@@ -114,9 +114,9 @@ Use the following snippet as your client's permission set, replace `aaaaaaaaaaaa
         }
       ]
     }
-    
+```
 Note, if you already have WebDAV Client Permissions configured, e.g. for other clients, add this snippet to the list permission sets for the other clients as follows:
-
+```JSON
     {
       "clients":
       [ 
@@ -126,6 +126,8 @@ Note, if you already have WebDAV Client Permissions configured, e.g. for other c
         <!-- the new permission set goes here -->
       ]
     }
+```
+Note: WebDAV client permission to `cartridges` is available in Commerce Cloud Digital versions greater than **17.8**.
 
 ### Dependencies ###
 
@@ -146,7 +148,7 @@ You are now ready to use the tool by running the main command `sfcc-ci`.
 
 Use `sfcc-ci --help` to get started and see the list of commands available:
 
-```
+```bash
   Usage: sfcc-ci [options] [command]
 
   Options:
@@ -191,13 +193,13 @@ There is a JavaScript API available, which you can use to program against and in
 
 Make sfcc-ci available to your project by specifying the dependeny in your `package.json` first and running and `npm install` in your package. After that you require the API into your implementation using:
 
-```
+```javascript
   const sfcc = require('sfcc-ci');
 ```
 
 The API is structured into sub modules. You may require sub modules directly, e.g.
 
-```
+```javascript
   const sfcc_auth = require('sfcc-ci').auth;
   const sfcc_code = require('sfcc-ci').code;
   const sfcc_instance = require('sfcc-ci').instance;
@@ -207,9 +209,10 @@ The API is structured into sub modules. You may require sub modules directly, e.
 
 The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`):
 
-```
+```javascript
   sfcc.auth.auth(client_id, client_secret, callback);
   sfcc.code.activate(instance, code_version, token, callback);
+  sfcc.code.deploy(instance, archive, token, callback);
   sfcc.code.list(instance, token, callback);
   sfcc.instance.upload(instance, file, token, callback);
   sfcc.instance.import(instance, file_name, token, callback);
@@ -236,7 +239,7 @@ callback      | (Function)  | Callback function executed as a result. The token 
 
 Example:
 
-```
+```javascript
 const sfcc = require('sfcc-ci');
 
 var client_id = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
@@ -258,6 +261,21 @@ sfcc.auth.auth(client_id, client_secret, function(token, err) {
 ### Code ###
 
 APIs available in `require('sfcc-ci').code`:
+
+`deploy(instance, archive, token, callback)`
+
+Deploys a custom code archive onto a Commerce Cloud instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to activate the code on
+archive       | (String)    | The ZIP archive filename to deploy
+token         | (String)    | The Oauth token to use use for authentication
+callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+
+**Returns:** (void) Function has no return value
+
+***
 
 `list(instance, token, callback)`
 

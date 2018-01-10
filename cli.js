@@ -13,8 +13,8 @@ program
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci client:auth aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-        console.log('    $ sfcc-ci client:auth aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -r');
+        console.log('    $ sfcc-ci client:auth my_client_id my_client_secret');
+        console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -r');
         console.log();
     });
 

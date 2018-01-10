@@ -9,7 +9,8 @@
   "scripts": {
     "lint": "eslint ./",
     "test": "npm run test:unit",
-    "test:unit": "node_modules/.bin/_mocha test/unit --recursive"
+    "test:unit": "node_modules/.bin/_mocha test/unit --recursive",
+    "test:functional:cli": "bin/test-cli.sh"
   },
   "repository": {
     "type": "git",

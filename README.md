@@ -45,10 +45,10 @@ In order to perform certain commands the tool provides, you need to give permiss
 3. Make sure, that you select _Data API_ and _Global_ from the select boxes
 4. Add the permission set for your client ID to the settings. 
 
-Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
+Use the following snippet as your client's permission set, replace `my_client_id` with your client ID:
 ```JSON
     {
-      "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "client_id":"my_client_id",
       "resources":
       [
         {
@@ -94,10 +94,10 @@ Note, if you already have OCAPI Settings configured, e.g. for other clients, add
 5. Navigate to Administration >  Organization >  WebDAV Client Permissions
 6. Add the permission set for your client ID to the permission settings.
 
-Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
+Use the following snippet as your client's permission set, replace `my_client_id` with your client ID:
 ```JSON
     {
-      "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "client_id":"my_client_id",
       "permissions":
       [
         {
@@ -242,8 +242,8 @@ Example:
 ```javascript
 const sfcc = require('sfcc-ci');
 
-var client_id = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-var client_secret = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+var client_id = 'my_client_id';
+var client_secret = 'my_client_id';
 
 sfcc.auth.auth(client_id, client_secret, function(token, err) {
     if(token) {

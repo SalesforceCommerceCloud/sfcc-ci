@@ -50,6 +50,17 @@ else
 	exit 1
 fi
 
+# re-authorize client using client:auth, uses params $1 (client_id), $2 (client_secret)
+# this ensure, that we have a proper authentication after calling the client:clear (above)
+echo "Testing command ´sfcc-ci client:auth´ again:"
+node ./cli.js client:auth $1 $2
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 # add an instance, using instance:add, uses param $3 (instance)
 echo "Testing command ´sfcc-ci instance:add´ (without alias):"
 node ./cli.js instance:add $3
@@ -109,6 +120,8 @@ else
 	echo -e "\t> FAILED"
 	exit 1
 fi
+
+# the next set of tests are testing real interactions with a Commerce Cloud instance
 
 # site import upload, using instance:upload, uses hardcoded test file
 echo "Testing command ´sfcc-ci instance:upload´:"

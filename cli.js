@@ -150,9 +150,13 @@ program
 
 program
     .command('sandbox:remove <sandbox_id>')
+    //.option('-a, --alias <value>', 'Alias of the sandbox to remove.')
+    //.option('-h, --host <value>', 'Host of the sandbox to remove.')
+    //.option('-r, --realm <value>', 'Realm of the sandbox to remove.')
+    //.option('-i, --instance <value>', 'Instance of the sandbox to remove.')
     .description('Triggers the removal of an existing sandbox')
-    .action(function(sandbox_id) {
-        require('./lib/ccdx').cli.remove(sandbox_id);
+    .action(function(sandbox_id, options) {
+        require('./lib/ccdx').cli.remove({ id : sandbox_id });
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -161,9 +165,18 @@ program
         console.log('  identify the id of your sandboxes. You must have permission to remove a sandbox. The command');
         console.log('  only triggers the deletion and does not wait until the sandbox is fully removed. Use may use');
         console.log('  `sfcc-ci sandbox:list` to check the status of the removal.');
+        //console.log('  Alternatively you may use other ways to identify the sandbox to remove, such as the alias,');
+        //console.log('  the host or the realm along with the instance.');
+        //console.log();
+        //console.log('  If a sandbox_id was passed, arguments alias, host, realm and instance will be ignored. If');
+        //console.log('  alias pass passed, the sandbox is being looked up in the list of instances configured.');
+        //console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:remove my-sandbox-id');
+        //console.log('    $ sfcc-ci sandbox:remove -a my-alias');
+        //console.log('    $ sfcc-ci sandbox:remove -h sandbox-host');
+        //console.log('    $ sfcc-ci sandbox:remove -r my-realm -i s01');
         console.log();
     });
 

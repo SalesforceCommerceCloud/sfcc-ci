@@ -88,21 +88,43 @@ program
     });
 
 program
-    .command('sandbox:create <realm>')
+    .command('sandbox:create <realm> [alias]')
+    .option('-j, --json','Formats the output in json')
+    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
+    .option('-d, --default', 'Sets the created sandbox as default instance.')
     .description('Triggers the creation of a new sandbox')
-    .action(function(realm) {
-        require('./lib/ccdx').cli.create(realm);
+    .action(function(realm, alias, options) {
+        var asJson = ( options.json ? options.json : false );
+        var sync = ( options.sync ? options.sync : false );
+        var setAsDefault = ( options.default ? options.default : false );
+        require('./lib/ccdx').cli.create(realm, alias, asJson, sync, setAsDefault);
     }).on('--help', function() {
-        /*
-        The sandbox will be created for the realm using the <realm> argument. You must have
-        permission to create a new sandbox for the realm. The number of sandboxes allowed to create is limited.
-        The command only triggers the creation and does not wait until the sandbox is fully provisioned and
-        available to use. Use may use `sfcc-ci sandbox:list` to check the status of the creation.
-        */
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The sandbox will be created for the realm using the <realm> argument. You must have');
+        console.log('  permission to create a new sandbox for the realm. The number of sandboxes allowed to create');
+        console.log('  is limited. The command only trigger the creation and does not wait until the sandbox is');
+        console.log('  fully up and running. Use may use `sfcc-ci sandbox:list` to check the status of the creation.');
+        console.log();
+        console.log('  You can force the command to wait until the creation of the sandbox has been finished and the');
+        console.log('  is available to use (in "started" status) by using the --sync flag.');
+        console.log();
+        console.log('  The created sandbox is being added to the list of instances with its host name. The optional');
+        console.log('  [alias] is used as alias for the new instance. If [alias] is omitted, the host is used as');
+        console.log('  alias.');
+        console.log();
+        console.log('  If executed with --default flag, the created sandbox will be set as new default instance.');
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:create my-realm');
+        console.log('    $ sfcc-ci sandbox:create my-realm an-alias');
+        console.log('    $ sfcc-ci sandbox:create my-realm an-alias -d');
+        console.log('    $ sfcc-ci sandbox:create my-realm -s');
+        console.log('    $ sfcc-ci sandbox:create my-realm an-alias -s');
+        console.log('    $ sfcc-ci sandbox:create my-realm an-alias -s -d');
+        console.log('    $ sfcc-ci sandbox:create my-realm -s -j');
         console.log();
     });
 
@@ -132,10 +154,13 @@ program
     .action(function(sandbox_id) {
         require('./lib/ccdx').cli.remove(sandbox_id);
     }).on('--help', function() {
-        /*
-        The sandbox must be identified by its id. Use may use `sfcc-ci sandbox:list` to identify the id of your sandboxes.
-        */
         console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The sandbox to remove must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes. You must have permission to remove a sandbox. The command');
+        console.log('  only triggers the deletion and does not wait until the sandbox is fully removed. Use may use');
+        console.log('  `sfcc-ci sandbox:list` to check the status of the removal.');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:remove my-sandbox-id');

@@ -104,7 +104,7 @@ program
 
 program
     .command('instance:list')
-    .option('-j, --json', 'Format output as json')
+    .option('-j, --json', 'Formats the output in json')
     .option('-v, --verbose', 'Outputs additional details of the current configuration')
     .description('List instance and client details currently configured')
     .action(function(options) {

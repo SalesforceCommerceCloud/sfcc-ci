@@ -19,7 +19,7 @@ describe('Tests for lib/instance.js', function() {
             require('../../lib/instance').getInstance();
 
             get.restore();
-            sinon.assert.calledWith(get, 'SFCC_INSTANCE');
+            sinon.assert.calledWith(get, 'default_instance');
         });
     });
 });

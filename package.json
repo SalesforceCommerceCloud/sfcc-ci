@@ -24,6 +24,7 @@
     "cli-spinner": "^0.2.6",
     "commander": "^2.11.0",
     "conf": "^1.1.2",
+    "jsonwebtoken": "^8.1.0",
     "netrc": "^0.1.4",
     "open": "0.0.5",
     "request": "^2.82.0",

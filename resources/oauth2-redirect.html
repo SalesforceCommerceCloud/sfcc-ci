@@ -1,0 +1,35 @@
+
+<!doctype html>
+<html lang="en">
+<body onload="process()">
+</body>
+</html>
+<script>
+    'use strict';
+    function process () {
+        var sentState = undefined;
+        var redirectUrl = [ window.location.protocol, '//', window.location.host, window.location.pathname ].join();
+
+        // the query params transported in the hash
+        var qp = window.location.hash.substring(1);
+        var arr = qp.split("&");
+
+        arr.forEach(function (v,i,_arr) { _arr[i] = '"' + v.replace('=', '":"') + '"';});
+        qp = qp ? JSON.parse('{' + arr.join() + '}',
+                function (key, value) {
+                    return key === "" ? value : decodeURIComponent(value)
+                }
+        ) : {};
+
+        var valid = ( qp['error'] ? false : true );
+
+        if ( valid ) {
+            redirectUrl += '?access_token=' + encodeURIComponent(['access_token']);
+        } else {
+            redirectUrl += '?error=' + encodeURIComponent(qp['error']) +
+                ( qp['error_description'] ? '&error_description=' + encodeURIComponent(qp['error_description']) : '' );
+        }
+
+        location.href = redirectUrl;
+    }
+</script>

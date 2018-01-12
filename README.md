@@ -162,6 +162,10 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     client:auth:renew                                 Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                 Return the current authentication token
     client:clear                                      Clears the Commerce Cloud Open Commerce API client settings
+    sandbox:list [options]                            List all sandboxes currently created
+    sandbox:create [options] <realm> [alias]          Triggers the creation of a new sandbox
+    sandbox:get [options] <sandbox_id>                Retrieves details of a sandbox
+    sandbox:remove <sandbox_id>                       Triggers the removal of an existing sandbox
     instance:add [options] <instance> [alias]         Adds a new Commerce Cloud instance to the list of configured instances
     instance:set <alias>                              Sets a Commerce Cloud instance as the default instance
     instance:clear                                    Clears all configured Commerce Cloud instances

@@ -2,14 +2,25 @@
 var program = require('commander');
 
 program
-    .command('auth:login <client> <secret>')
-    .description('Authorize the client with a present user for interactive use')
+    .command('auth:login <client> [secret]')
+    .description('Authenticate a present user for interactive use')
     .action(function(client, secret) {
         require('./lib/auth').login(client, secret);
     }).on('--help', function() {
         console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Authenticate a user (resource owner) for interactive use. The user must be present and must');
+        console.log('  provide his login credentials as part of the authorization flow. The authorization requires');
+        console.log('  an API key (client).');
+        console.log();
+        console.log('  The client [secret] is optional. If the secret is not provided, the authentication is done');
+        console.log('  using the Oauth2 authorization code grant. If the secret is provided, the authentication is');
+        console.log('  done using the Oauth2 implicit grant.');
+        console.log();
         console.log('  Examples:');
         console.log();
+        console.log('    $ sfcc-ci auth:login app-client-id');
         console.log('    $ sfcc-ci auth:login app-client-id app-client-secret');
         console.log();
     });

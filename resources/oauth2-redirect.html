@@ -24,7 +24,10 @@
         var valid = ( qp['error'] ? false : true );
 
         if ( valid ) {
-            redirectUrl += '?access_token=' + encodeURIComponent(['access_token']);
+            redirectUrl += '?access_token=' + encodeURIComponent(qp['access_token']);
+            if (qp['id_token']) {
+                redirectUrl += '&id_token=' + encodeURIComponent(qp['id_token']);
+            }
         } else {
             redirectUrl += '?error=' + encodeURIComponent(qp['error']) +
                 ( qp['error_description'] ? '&error_description=' + encodeURIComponent(qp['error_description']) : '' );

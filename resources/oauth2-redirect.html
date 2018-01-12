@@ -8,7 +8,7 @@
     'use strict';
     function process () {
         var sentState = undefined;
-        var redirectUrl = [ window.location.protocol, '//', window.location.host, window.location.pathname ].join();
+        var redirectUrl = [ window.location.protocol, '//', window.location.host, window.location.pathname ].join('');
 
         // the query params transported in the hash
         var qp = window.location.hash.substring(1);

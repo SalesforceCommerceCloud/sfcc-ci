@@ -26,17 +26,28 @@ program
     });
 
 program
-    .command('client:auth <client> <secret>')
+    .command('client:auth <client> <secret> [user] [user_password]')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
         'once the token expires.')
-    .description('Authenticate an Commerce Cloud Open Commerce API client')
-    .action(function(client, secret, options) {
+    .description('Authenticate an API client with an optional user for automation use')
+    .action(function(client, secret, user, user_password, options) {
         var renew = ( options.renew ? options.renew : false );
-        require('./lib/auth').auth(client, secret, renew);
+        require('./lib/auth').auth(client, secret, user, user_password, renew);
     }).on('--help', function() {
         console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Authenticate an API client for automation use, where presense of the resource owner is not');
+        console.log('  required. Optionally, user (resource owner) credentials can be provided to grant access to');
+        console.log('  user specific resources.');
+        console.log();
+        console.log('  The user and the user password are optional. If not provided, the authentication is done');
+        console.log('  using the Oauth2 client credentials grant. If user and user password are provided, the');
+        console.log('  authentication is done using the Oauth2 resource owner password credentials.');
+        console.log();
         console.log('  Examples:');
         console.log();
+        console.log('    $ sfcc-ci client:auth my_client_id my_client_secret user_name user_password');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -r');
         console.log();

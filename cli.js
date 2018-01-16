@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 var program = require('commander');
-var dwjson = require('./lib/dwjson').init({process: process});
+var dwjson = require('./lib/dwjson').init();
 
 if ( dwjson && dwjson['self-signed']) {
     // @todo replace superagent with npm request module to allow removal of this hack

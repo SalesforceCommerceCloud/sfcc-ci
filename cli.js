@@ -2,7 +2,7 @@
 var program = require('commander');
 
 program
-    .command('client:auth <client> <secret>')
+    .command('client:auth [client] [secret]')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
         'once the token expires.')
     .description('Authenticate an Commerce Cloud Open Commerce API client')
@@ -11,6 +11,14 @@ program
         require('./lib/auth').auth(client, secret, renew);
     }).on('--help', function() {
         console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Authenticate an API client for automation use, where presense of the resource owner is not');
+        console.log('  required.');
+        console.log();
+        console.log('  The client and the client secret are optional. If not provided, client and secret are read');
+        console.log('  from a dw.json file located in the current working directory.');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret');
@@ -122,7 +130,7 @@ program
 
 program
     .command('instance:upload <archive>')
-    .option('-i, --instance <instance>','Instance to upload the import file to. Can be an ' +
+    .option('-i, --instance [instance]','Instance to upload the import file to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Uploads an instance import file onto a Commerce Cloud instance')
@@ -302,7 +310,7 @@ program
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
-        console.log();
+        console.log('');
         console.log('    $ sfcc-ci job:run my-job');
         console.log('    $ sfcc-ci job:run my-job param1=value1 param2=value2');
         console.log('    $ sfcc-ci job:run my-job -i my-instance-alias');

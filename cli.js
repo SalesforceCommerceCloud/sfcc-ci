@@ -26,7 +26,7 @@ program
     });
 
 program
-    .command('client:auth <client> <secret> [user] [user_password]')
+    .command('client:auth [client] [secret] [user] [user_password]')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
         'once the token expires.')
     .description('Authenticate an API client with an optional user for automation use')
@@ -43,13 +43,18 @@ program
         console.log();
         console.log('  The user and the user password are optional. If not provided, the authentication is done');
         console.log('  using the Oauth2 client credentials grant. If user and user password are provided, the');
-        console.log('  authentication is done using the Oauth2 resource owner password credentials.');
+        console.log('  authentication is done using the Oauth2 resource owner password credentials grant.');
+        console.log();
+        console.log('  The client and the client secret are optional. If not provided, client and secret are read');
+        console.log('  from a dw.json file located in the current working directory. When reading credentials from');
+        console.log('  a dw.json file, the Oauth2 client credentials grant is used and user credentials are ignored.');
         console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret user_name user_password');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -r');
+        console.log('    $ sfcc-ci client:auth');
         console.log();
     });
 
@@ -266,7 +271,7 @@ program
 
 program
     .command('instance:upload <archive>')
-    .option('-i, --instance <instance>','Instance to upload the import file to. Can be an ' +
+    .option('-i, --instance [instance]','Instance to upload the import file to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Uploads an instance import file onto a Commerce Cloud instance')
@@ -446,7 +451,7 @@ program
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
-        console.log();
+        console.log('');
         console.log('    $ sfcc-ci job:run my-job');
         console.log('    $ sfcc-ci job:run my-job param1=value1 param2=value2');
         console.log('    $ sfcc-ci job:run my-job -i my-instance-alias');

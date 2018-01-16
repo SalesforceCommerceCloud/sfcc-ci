@@ -157,28 +157,28 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Commands:
 
-    auth:login <client> <secret>                      Authorize the client with a present user for interactive use
-    client:auth [options] [client] [secret]           Authenticate an Commerce Cloud Open Commerce API client
-    client:auth:renew                                 Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
-    client:auth:token                                 Return the current authentication token
-    client:clear                                      Clears the Commerce Cloud Open Commerce API client settings
-    sandbox:list [options]                            List all sandboxes currently created
-    sandbox:create [options] <realm> [alias]          Triggers the creation of a new sandbox
-    sandbox:get [options] <sandbox_id>                Retrieves details of a sandbox
-    sandbox:remove <sandbox_id>                       Triggers the removal of an existing sandbox
-    instance:add [options] <instance> [alias]         Adds a new Commerce Cloud instance to the list of configured instances
-    instance:set <alias>                              Sets a Commerce Cloud instance as the default instance
-    instance:clear                                    Clears all configured Commerce Cloud instances
-    instance:list [options]                           List instance and client details currently configured
-    instance:upload [options] <archive>               Uploads an instance import file onto a Commerce Cloud instance
-    instance:import [options] <archive>               Perform a instance import (aka site import) on a Commerce Cloud instance
-    instance:state:save [options]                     Perform a save of the state of a Commerce Cloud instance
-    instance:state:reset [options]                    Perform a reset of a previously saved state of a Commerce Cloud instance
-    code:list [options]                               List all custom code versions deployed on the Commerce Cloud instance
-    code:deploy [options] <archive>                   Deploys a custom code archive onto a Commerce Cloud instance
-    code:activate [options] <version>                 Activate the custom code version on a Commerce Cloud instance
-    job:run [options] <job_id> [job_parameters...]    Starts a job execution on a Commerce Cloud instance
-    job:status [options] <job_id> <job_execution_id>  Get the status of a job execution on a Commerce Cloud instance
+    auth:login <client> [secret]                                    Authenticate a present user for interactive use
+    client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
+    client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
+    client:auth:token                                               Return the current authentication token
+    client:clear                                                    Clears the Commerce Cloud Open Commerce API client settings
+    sandbox:list [options]                                          List all sandboxes currently created
+    sandbox:create [options] <realm> [alias]                        Triggers the creation of a new sandbox
+    sandbox:get [options] <sandbox_id>                              Retrieves details of a sandbox
+    sandbox:remove <sandbox_id>                                     Triggers the removal of an existing sandbox
+    instance:add [options] <instance> [alias]                       Adds a new Commerce Cloud instance to the list of configured instances
+    instance:set <alias>                                            Sets a Commerce Cloud instance as the default instance
+    instance:clear                                                  Clears all configured Commerce Cloud instances
+    instance:list [options]                                         List instance and client details currently configured
+    instance:upload [options] <archive>                             Uploads an instance import file onto a Commerce Cloud instance
+    instance:import [options] <archive>                             Perform a instance import (aka site import) on a Commerce Cloud instance
+    instance:state:save [options]                                   Perform a save of the state of a Commerce Cloud instance
+    instance:state:reset [options]                                  Perform a reset of a previously saved state of a Commerce Cloud instance
+    code:list [options]                                             List all custom code versions deployed on the Commerce Cloud instance
+    code:deploy [options] <archive>                                 Deploys a custom code archive onto a Commerce Cloud instance
+    code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
+    job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
+    job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
 
   Detailed Help:
 

@@ -20,8 +20,8 @@ program
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci client:auth aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-        console.log('    $ sfcc-ci client:auth aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -r');
+        console.log('    $ sfcc-ci client:auth my_client_id my_client_secret');
+        console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -r');
         console.log();
     });
 
@@ -66,25 +66,30 @@ program
     });
 
 program
+<<<<<<< HEAD
     .command('instance:add [instance] [alias]')
+=======
+    .command('instance:add <instance> [alias]')
+    .option('-d, --default', 'Set the new instance as default')
+>>>>>>> master
     .description('Adds a new Commerce Cloud instance to the list of configured instances')
-    .action(function(instance, alias) {
-        if (!alias) {
-            alias = instance.split('.')[0];
-        }
-        require('./lib/instance').add(instance, alias);
+    .action(function(instance, alias, options) {
+        var asDefault = ( options.default ? options.default : false );
+        require('./lib/instance').add(instance, alias, asDefault);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci instance:add my-instance.demandware.net');
+        console.log('    $ sfcc-ci instance:add my-instance.demandware.net -d');
         console.log('    $ sfcc-ci instance:add my-instance.demandware.net my-instance');
+        console.log('    $ sfcc-ci instance:add my-instance.demandware.net my-instance -d');
         console.log();
     });
 
 program
     .command('instance:set <alias>')
-    .description('Sets a Commerce Cloud instance as the current default instance')
+    .description('Sets a Commerce Cloud instance as the default instance')
     .action(function(alias) {
         require('./lib/instance').setDefault(alias);
     }).on('--help', function() {
@@ -110,11 +115,13 @@ program
 
 program
     .command('instance:list')
+    .option('-j, --json', 'Formats the output in json')
     .option('-v, --verbose', 'Outputs additional details of the current configuration')
     .description('List instance and client details currently configured')
     .action(function(options) {
         var verbose = ( options.verbose ? options.verbose : false );
-        require('./lib/instance').list(verbose);
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/instance').list(verbose, asJson);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');

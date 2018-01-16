@@ -45,10 +45,10 @@ In order to perform certain commands the tool provides, you need to give permiss
 3. Make sure, that you select _Data API_ and _Global_ from the select boxes
 4. Add the permission set for your client ID to the settings. 
 
-Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
+Use the following snippet as your client's permission set, replace `my_client_id` with your client ID:
 ```JSON
     {
-      "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "client_id":"my_client_id",
       "resources":
       [
         {
@@ -85,19 +85,19 @@ Note, if you already have OCAPI Settings configured, e.g. for other clients, add
       "clients":
       [ 
         {
-          ...
+          /* ... */
         },
-        <!-- the new permission set goes here -->
+        /* the new permission set goes here */
       ]
     }
 ```
 5. Navigate to Administration >  Organization >  WebDAV Client Permissions
 6. Add the permission set for your client ID to the permission settings.
 
-Use the following snippet as your client's permission set, replace `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` with your client ID:
+Use the following snippet as your client's permission set, replace `my_client_id` with your client ID:
 ```JSON
     {
-      "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "client_id":"my_client_id",
       "permissions":
       [
         {
@@ -121,9 +121,9 @@ Note, if you already have WebDAV Client Permissions configured, e.g. for other c
       "clients":
       [ 
         {
-          ...
+          /* ... */
         },
-        <!-- the new permission set goes here -->
+        /* the new permission set goes here */
       ]
     }
 ```
@@ -161,8 +161,8 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     client:auth:renew                                 Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                 Return the current authentication token
     client:clear                                      Clears the Commerce Cloud Open Commerce API client settings
-    instance:add <instance> [alias]                   Adds a new Commerce Cloud instance to the list of configured instances
-    instance:set <alias>                              Sets a Commerce Cloud instance as the current default instance
+    instance:add [options] <instance> [alias]         Adds a new Commerce Cloud instance to the list of configured instances
+    instance:set <alias>                              Sets a Commerce Cloud instance as the default instance
     instance:clear                                    Clears all configured Commerce Cloud instances
     instance:list [options]                           List instance and client details currently configured
     instance:upload [options] <archive>               Uploads an instance import file onto a Commerce Cloud instance
@@ -241,8 +241,8 @@ Example:
 ```javascript
 const sfcc = require('sfcc-ci');
 
-var client_id = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-var client_secret = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+var client_id = 'my_client_id';
+var client_secret = 'my_client_id';
 
 sfcc.auth.auth(client_id, client_secret, function(token, err) {
     if(token) {

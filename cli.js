@@ -66,12 +66,8 @@ program
     });
 
 program
-<<<<<<< HEAD
-    .command('instance:add [instance] [alias]')
-=======
     .command('instance:add <instance> [alias]')
     .option('-d, --default', 'Set the new instance as default')
->>>>>>> master
     .description('Adds a new Commerce Cloud instance to the list of configured instances')
     .action(function(instance, alias, options) {
         var asDefault = ( options.default ? options.default : false );

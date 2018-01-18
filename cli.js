@@ -108,7 +108,7 @@ program
     .option('-j, --json','Formats the output in json')
     .action(function(options) {
         var asJson = ( options.json ? options.json : false );
-        require('./lib/ccdx').cli.list(asJson);
+        require('./lib/sandbox').cli.list(asJson);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -128,7 +128,7 @@ program
         var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
         var setAsDefault = ( options.default ? options.default : false );
-        require('./lib/ccdx').cli.create(realm, alias, asJson, sync, setAsDefault);
+        require('./lib/sandbox').cli.create(realm, alias, asJson, sync, setAsDefault);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -169,7 +169,7 @@ program
         var asJson = ( options.json ? options.json : false );
         var hostOnly = ( options.host ? options.host : false );
         var openBrowser = ( options.open ? options.open : false );
-        require('./lib/ccdx').cli.get(sandbox_id, asJson, hostOnly, openBrowser);
+        require('./lib/sandbox').cli.get(sandbox_id, asJson, hostOnly, openBrowser);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -187,7 +187,7 @@ program
     //.option('-i, --instance <value>', 'Instance of the sandbox to remove.')
     .description('Triggers the removal of an existing sandbox')
     .action(function(sandbox_id, options) {
-        require('./lib/ccdx').cli.remove({ id : sandbox_id });
+        require('./lib/sandbox').cli.remove({ id : sandbox_id });
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');

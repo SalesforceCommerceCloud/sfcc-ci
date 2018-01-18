@@ -12,17 +12,21 @@ program
         console.log('  Details:');
         console.log();
         console.log('  Authenticate a user (resource owner) for interactive use. The user must be present and must');
-        console.log('  provide his login credentials as part of the authorization flow. The authorization requires');
+        console.log('  provide his login credentials as part of the authentication flow. The authentication requires');
         console.log('  an API key (client).');
-        console.log();
-        console.log('  The client [secret] is optional. If the secret is not provided, the authentication is done');
-        console.log('  using the Oauth2 authorization code grant. If the secret is provided, the authentication is');
-        console.log('  done using the Oauth2 implicit grant.');
+        if ( require('./lib/auth').OAUTH_AUTHORIZATION_CODE_GRANT_ALLOWED ) {
+            console.log();
+            console.log('  The client [secret] is optional. If the secret is not provided, the authentication is done');
+            console.log('  using the Oauth2 authorization code grant. If the secret is not provided, the ');
+            console.log('  authentication is done using the Oauth2 implicit grant.');
+        }
         console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci auth:login app-client-id');
-        console.log('    $ sfcc-ci auth:login app-client-id app-client-secret');
+        if ( require('./lib/auth').OAUTH_AUTHORIZATION_CODE_GRANT_ALLOWED ) {
+            console.log('    $ sfcc-ci auth:login app-client-id app-client-secret');
+        }
         console.log('    $ sfcc-ci auth:login app-client-id -a account.demandware.com');
         console.log();
     });

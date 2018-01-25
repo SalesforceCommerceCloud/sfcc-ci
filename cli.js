@@ -140,9 +140,17 @@ program
         require('./lib/webdav').uploadInstanceImport(instance, archive, sync);
     }).on('--help', function() {
         console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Uploads the passed site import archive file onto an instance. The archive must be a zip file');
+        console.log('  If the archive file does not have the file extension *.zip it will be appended.');
+        console.log();
+        console.log('  The archive may include a path to the actual archive file where the file resides locally.');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci instance:upload archive.zip');
+        console.log('    $ sfcc-ci instance:upload path/to/archive.zip');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance-alias');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net -s');

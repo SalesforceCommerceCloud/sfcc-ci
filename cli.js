@@ -132,12 +132,10 @@ program
     .command('instance:upload <archive>')
     .option('-i, --instance [instance]','Instance to upload the import file to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
-    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Uploads an instance import file onto a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        var sync = ( options.sync ? options.sync : false );
-        require('./lib/webdav').uploadInstanceImport(instance, archive, sync);
+        require('./lib/webdav').uploadInstanceImport(instance, archive);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -153,7 +151,6 @@ program
         console.log('    $ sfcc-ci instance:upload path/to/archive.zip');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance-alias');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net -s');
         console.log();
     });
 
@@ -260,12 +257,10 @@ program
     .command('code:deploy <archive>')
     .option('-i, --instance <instance>','Instance to deploy the custom code archive to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
-    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Deploys a custom code archive onto a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        var sync = ( options.sync ? options.sync : false );
-        require('./lib/webdav').deployCode(instance, archive, sync);
+        require('./lib/webdav').deployCode(instance, archive);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -273,7 +268,6 @@ program
         console.log('    $ sfcc-ci code:deploy code.zip');
         console.log('    $ sfcc-ci code:deploy code.zip -i my-instance-alias');
         console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net -s');
         console.log();
     });
 

@@ -21,7 +21,6 @@
   "homepage": "https://bitbucket.org/demandware/sfcc-ci#readme",
   "dependencies": {
     "chalk": "^2.3.0",
-    "cli-spinner": "^0.2.6",
     "commander": "^2.11.0",
     "conf": "^1.1.2",
     "open": "0.0.5",

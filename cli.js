@@ -32,6 +32,19 @@ program
     });
 
 program
+    .command('auth:logout')
+    .description('End the current sessions and clears the authentication')
+    .action(function() {
+        require('./lib/auth').cli.logout();
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci auth:logout');
+        console.log();
+    });
+
+program
     .command('client:auth [client] [secret] [user] [user_password]')
     .option('-a, --authserver [authserver]','The authorization server used to authenticate')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
@@ -90,19 +103,6 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci client:auth:token');
-        console.log();
-    });
-
-program
-    .command('client:clear')
-    .description('Clears the Commerce Cloud Open Commerce API client settings')
-    .action(function() {
-        require('./lib/auth').clear();
-    }).on('--help', function() {
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci client:clear');
         console.log();
     });
 

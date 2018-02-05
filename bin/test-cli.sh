@@ -40,9 +40,9 @@ else
 	exit 1
 fi
 
-# clears any client settings, using client:clear, uses pre-authorized client auth, no parameters
-echo "Testing command ´sfcc-ci client:clear´:"
-node ./cli.js client:clear
+# clears any client settings, using auth:logout, uses pre-authorized client auth, no parameters
+echo "Testing command ´sfcc-ci auth:logout´:"
+node ./cli.js auth:logout
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -51,7 +51,7 @@ else
 fi
 
 # re-authorize client using client:auth, uses params $1 (client_id), $2 (client_secret)
-# this ensure, that we have a proper authentication after calling the client:clear (above)
+# this ensure, that we have a proper authentication after calling the auth:logout (above)
 echo "Testing command ´sfcc-ci client:auth´ again:"
 node ./cli.js client:auth $1 $2
 if [ $? -eq 0 ]; then

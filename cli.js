@@ -240,10 +240,12 @@ program
     .command('code:list')
     .option('-i, --instance <instance>','Instance to get list of custom code versions from. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
+    .option('-j, --json', 'Formats the output in json')
     .description('List all custom code versions deployed on the Commerce Cloud instance')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        require('./lib/code').list(instance);
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/code').list(instance, asJson);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -251,6 +253,7 @@ program
         console.log('    $ sfcc-ci code:list');
         console.log('    $ sfcc-ci code:list -i my-instance-alias');
         console.log('    $ sfcc-ci code:list -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci code:list -j');
         console.log();
     });
 

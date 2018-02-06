@@ -331,15 +331,17 @@ program
     .command('job:status <job_id> <job_execution_id>')
     .option('-i, --instance <instance>','Instance the job was executed on. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
-    .option('-v, --verbose', 'Outputs additional details of the job execution')
+    .option('-j, --json', 'Formats the output in json')
     .option('-l, --logfile', 'Opens the job log file in a browser')
+    .option('-v, --verbose', 'Outputs additional details of the job execution')
     .description('Get the status of a job execution on a Commerce Cloud instance')
     .action(function(job_id, job_execution_id, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        var verbose = ( options.verbose ? options.verbose : false );
+        var asJson = ( options.json ? options.json : false );
         var logfile = ( options.logfile ? options.logfile : false );
+        var verbose = ( options.verbose ? options.verbose : false );
 
-        require('./lib/job').status(instance, job_id, job_execution_id, verbose, logfile);
+        require('./lib/job').status(instance, job_id, job_execution_id, verbose, logfile, asJson);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -350,6 +352,7 @@ program
         console.log('    $ sfcc-ci job:status my-job my-job-execution-id -v -i my-instance-alias');
         console.log('    $ sfcc-ci job:status my-job my-job-execution-id -i my-instance.demandware.net');
         console.log('    $ sfcc-ci job:status my-job my-job-execution-id -v -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci job:status my-job my-job-execution-id -j');
         console.log();
     });
 

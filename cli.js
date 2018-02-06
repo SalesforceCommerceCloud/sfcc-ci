@@ -132,10 +132,15 @@ program
     .command('instance:upload <archive>')
     .option('-i, --instance [instance]','Instance to upload the import file to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
+    .option('-c, --certificate [certificate]','Path to the certificate to use for two factor authentication.')
+    .option('-p, --passphrase [passphrase]','Passphrase to be used to read the given certificate.')
     .description('Uploads an instance import file onto a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        require('./lib/webdav').uploadInstanceImport(instance, archive);
+        require('./lib/webdav').uploadInstanceImport(instance, archive, {
+            pfx: options.certificate,
+            passphrase: options.passphrase
+        });
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -151,6 +156,8 @@ program
         console.log('    $ sfcc-ci instance:upload path/to/archive.zip');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance-alias');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net'
+            + '-c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
         console.log();
     });
 
@@ -257,10 +264,15 @@ program
     .command('code:deploy <archive>')
     .option('-i, --instance <instance>','Instance to deploy the custom code archive to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
+    .option('-c, --certificate [certificate]','Path to the certificate to use for two factor authentication.')
+    .option('-p, --passphrase [passphrase]','Passphrase to be used to read the given certificate.')
     .description('Deploys a custom code archive onto a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        require('./lib/webdav').deployCode(instance, archive);
+        require('./lib/webdav').deployCode(instance, archive, {
+            pfx: options.certificate,
+            passphrase: options.passphrase
+        });
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -268,6 +280,8 @@ program
         console.log('    $ sfcc-ci code:deploy code.zip');
         console.log('    $ sfcc-ci code:deploy code.zip -i my-instance-alias');
         console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net'
+            + '-c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
         console.log();
     });
 

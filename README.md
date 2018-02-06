@@ -217,7 +217,7 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
   sfcc.instance.import(instance, file_name, token, callback);
   sfcc.job.run(instance, job_id, job_params, token, callback);
   sfcc.job.status(instance, job_id, job_execution_id, token, callback);
-  sfcc.webdav.upload(instance, path, file, token, callback);
+  sfcc.webdav.upload(instance, path, file, token, options, callback);
 ```
 
 ### Authentication ###
@@ -270,7 +270,7 @@ Param         | Type        | Description
 instance      | (String)    | The instance to activate the code on
 archive       | (String)    | The ZIP archive filename to deploy
 token         | (String)    | The Oauth token to use use for authentication
-options       | (Object)    | The options parameter can contains client certificate buffer and related passphrase in case of two factor authentication
+options       | (Object)    | The options parameter can contains two properties: pfx: the path to the client certificate to use for two factor authentication. passphrase: the optional passphrase to use with the client certificate
 callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
@@ -319,7 +319,7 @@ Param         | Type        | Description
 instance      | (String)    | The instance to upload the import file to
 file          | (String)    | The file to upload
 token         | (String)    | The Oauth token to use use for authentication
-options       | (Object)    | The options parameter can contains client certificate buffer and related passphrase in case of two factor authentication
+options       | (Object)    | The options parameter can contains two properties: pfx: the path to the client certificate to use for two factor authentication. passphrase: the optional passphrase to use with the client certificate
 callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
 
 **Returns:** (void) Function has no return value
@@ -381,7 +381,7 @@ callback         | (Function)  | Callback function executed as a result. The job
 
 APIs available in `require('sfcc').webdav`:
 
-`upload(instance, path, file, token, callback)`
+`upload(instance, path, file, token, options, callback)`
 
 Uploads an arbitrary file onto a Commerce Cloud instance.
 
@@ -391,6 +391,7 @@ instance      | (String)    | The instance to upload the import file to
 path          | (String)    | The path relative to .../webdav/Sites where the file to upload to
 file          | (String)    | The file to upload
 token         | (String)    | The Oauth token to use use for authentication
+options       | (Object)    | The options parameter can contains two properties: pfx: the path to the client certificate to use for two factor authentication. passphrase: the optional passphrase to use with the client certificate
 callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
 
 **Returns:** (void) Function has no return value

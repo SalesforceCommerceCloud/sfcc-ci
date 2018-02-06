@@ -162,7 +162,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     client:auth:renew                                 Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                 Return the current authentication token
     instance:add [options] <instance> [alias]         Adds a new Commerce Cloud instance to the list of configured instances
-    instance:set <alias>                              Sets a Commerce Cloud instance as the default instance
+    instance:set <alias_or_host>                      Sets a Commerce Cloud instance as the default instance
     instance:clear                                    Clears all configured Commerce Cloud instances
     instance:list [options]                           List instance and client details currently configured
     instance:upload [options] <archive>               Uploads an instance import file onto a Commerce Cloud instance

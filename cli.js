@@ -170,16 +170,31 @@ program
     .option('-h, --host','Return the host name of the sandbox')
     .option('-o, --open','Opens a browser with the Business Manager on the sandbox')
     .action(function(sandbox_id, options) {
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split('-');
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
         var asJson = ( options.json ? options.json : false );
         var hostOnly = ( options.host ? options.host : false );
         var openBrowser = ( options.open ? options.open : false );
-        require('./lib/sandbox').cli.get(sandbox_id, asJson, hostOnly, openBrowser);
+        require('./lib/sandbox').cli.get(spec, asJson, hostOnly, openBrowser);
     }).on('--help', function() {
+        console.log('');
+        console.log('  The sandbox to lookup must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:get my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:get my-sandbox-id -j');
         console.log('    $ sfcc-ci sandbox:get my-sandbox-id -h');
+        console.log('    $ sfcc-ci sandbox:get my-sandbox-id -o');
         console.log();
     });
 
@@ -206,6 +221,7 @@ program
         console.log('  `sfcc-ci sandbox:list` to check the status of the removal.');
         console.log();
         console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:remove my-sandbox-id');

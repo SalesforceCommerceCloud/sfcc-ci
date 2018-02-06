@@ -85,15 +85,16 @@ program
     });
 
 program
-    .command('instance:set <alias>')
+    .command('instance:set <alias_or_host>')
     .description('Sets a Commerce Cloud instance as the default instance')
-    .action(function(alias) {
-        require('./lib/instance').setDefault(alias);
+    .action(function(alias_or_host) {
+        require('./lib/instance').cli.setDefault(alias_or_host);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci instance:set my-instance');
+        console.log('    $ sfcc-ci instance:set my-instance.demandware.net');
         console.log();
     });
 

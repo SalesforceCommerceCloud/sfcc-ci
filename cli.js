@@ -157,7 +157,7 @@ program
         console.log('    $ sfcc-ci instance:upload path/to/archive.zip');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance-alias');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net'
+        console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net '
             + '-c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
         console.log();
     });
@@ -281,7 +281,7 @@ program
         console.log('    $ sfcc-ci code:deploy code.zip');
         console.log('    $ sfcc-ci code:deploy code.zip -i my-instance-alias');
         console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net'
+        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net '
             + '-c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
         console.log();
     });

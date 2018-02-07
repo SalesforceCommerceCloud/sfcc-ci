@@ -133,6 +133,34 @@ else
 	exit 1
 fi
 
+# site import, using instance:import, uses hardcoded test file
+echo "Testing command ´sfcc-ci instance:import´ without options:"
+node ./cli.js instance:import site_import.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:import´ with --sync option:"
+node ./cli.js instance:import site_import.zip --sync
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:import´ with --json option:"
+node ./cli.js instance:import site_import.zip --json
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 # code deploy, using code:deploy, uses hardcoded test file
 echo "Testing command ´sfcc-ci code:deploy´:"
 node ./cli.js code:deploy ./test/cli/custom_code.zip

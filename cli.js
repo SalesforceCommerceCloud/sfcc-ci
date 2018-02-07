@@ -166,15 +166,17 @@ program
     .command('instance:import <archive>')
     .option('-i, --instance <instance>','Instance to run the import on. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
+    .option('-j, --json', 'Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Perform a instance import (aka site import) on a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
+        var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
         if (sync) {
-            require('./lib/instance').importSync(instance, archive);
+            require('./lib/instance').importSync(instance, archive, asJson);
         } else {
-            require('./lib/instance').import(instance, archive);
+            require('./lib/instance').import(instance, archive, asJson);
         }
     }).on('--help', function() {
         console.log('');
@@ -185,7 +187,9 @@ program
         console.log('    $ sfcc-ci instance:import archive.zip -i my-instance-alias -s');
         console.log('    $ sfcc-ci instance:import archive.zip -i my-instance.demandware.net');
         console.log('    $ sfcc-ci instance:import archive.zip -i my-instance.demandware.net -s');
+        console.log('    $ sfcc-ci instance:import archive.zip -j');
         console.log('    $ sfcc-ci instance:import archive.zip -s');
+        console.log('    $ sfcc-ci instance:import archive.zip -s -j');
         console.log();
     });
 

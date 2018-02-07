@@ -297,21 +297,23 @@ program
     .command('job:run <job_id> [job_parameters...]')
     .option('-i, --instance <instance>','Instance to run the job on. Can be an instance alias. If not ' +
         'specified the currently configured instance will be used.')
+    .option('-j, --json', 'Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Starts a job execution on a Commerce Cloud instance')
     .action(function(job_id, job_parameters, options) {
         var job_params = require('./lib/job').buildParameters(job_parameters);
         var instance = require('./lib/instance').getInstance(options.instance);
+        var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
 
         if (sync) {
             require('./lib/job').runSync(instance, job_id, {
                 parameters : job_params
-            });
+            }, asJson);
         } else {
             require('./lib/job').run(instance, job_id, {
                 parameters : job_params
-            });
+            }, asJson);
         }
     }).on('--help', function() {
         console.log('');
@@ -323,7 +325,9 @@ program
         console.log('    $ sfcc-ci job:run my-job -i my-instance-alias param1=value1 param2=value2');
         console.log('    $ sfcc-ci job:run my-job -i my-instance.demandware.net');
         console.log('    $ sfcc-ci job:run my-job -i my-instance.demandware.net param1=value1 param2=value2');
+        console.log('    $ sfcc-ci job:run my-job -j');
         console.log('    $ sfcc-ci job:run my-job -s');
+        console.log('    $ sfcc-ci job:run my-job -s -j');
         console.log();
     });
 

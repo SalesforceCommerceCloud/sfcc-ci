@@ -18,9 +18,9 @@ TEST_CLIENT_SECRET=$3
 TEST_HOST=$4
 
 # scope of tests, either 'minimal' or 'full'
-if [ "$TEST_SCOPE" = "minimal" ]; then
+if [ $TEST_SCOPE = "minimal" ]; then
 	echo -e "Running default test scope with limited coverage of commands and options..."
-elif [ "$TEST_SCOPE" = "full" ]; then
+elif [ $TEST_SCOPE = "full" ]; then
 	echo -e "Running full test scope with maximum coverage of commands and options..."
 else
 	echo -e "Unknown test scope $TEST_SCOPE. Please provide either 'minimal' or 'full'."
@@ -271,7 +271,7 @@ fi
 
 echo "Testing command ´sfcc-ci instance:import´ with --json and --sync option:"
 TEST_RESULT=`node ./cli.js instance:import site_import.zip --json --sync | jq '.exit_status.code' -r`
-if [ $? -eq 0 ] && [ "$TEST_RESULT" = "OK" ]; then
+if [ $? -eq 0 ] && [ $TEST_RESULT = "OK" ]; then
     echo -e "\t> OK"
 else
 	echo -e "\t> FAILED"
@@ -331,7 +331,7 @@ fi
 
 echo "Testing command ´sfcc-ci code:list´ with --json option:"
 TEST_RESULT=`node ./cli.js code:list --json | jq '.count'`
-if [ $? -eq 0 ] && [ $TEST_RESULT > 0 ]; then
+if [ $? -eq 0 ] && [ $TEST_RESULT -gt 0 ]; then
     echo -e "\t> OK"
 else
 	echo -e "\t> FAILED"

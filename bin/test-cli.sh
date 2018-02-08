@@ -40,9 +40,9 @@ else
 	exit 1
 fi
 
-# clears any client settings, using client:clear, uses pre-authorized client auth, no parameters
-echo "Testing command ´sfcc-ci client:clear´:"
-node ./cli.js client:clear
+# clears any client settings, using auth:logout, uses pre-authorized client auth, no parameters
+echo "Testing command ´sfcc-ci auth:logout´:"
+node ./cli.js auth:logout
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -51,7 +51,7 @@ else
 fi
 
 # re-authorize client using client:auth, uses params $1 (client_id), $2 (client_secret)
-# this ensure, that we have a proper authentication after calling the client:clear (above)
+# this ensure, that we have a proper authentication after calling the auth:logout (above)
 echo "Testing command ´sfcc-ci client:auth´ again:"
 node ./cli.js client:auth $1 $2
 if [ $? -eq 0 ]; then
@@ -126,6 +126,34 @@ fi
 # site import upload, using instance:upload, uses hardcoded test file
 echo "Testing command ´sfcc-ci instance:upload´:"
 node ./cli.js instance:upload ./test/cli/site_import.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+# site import, using instance:import, uses hardcoded test file
+echo "Testing command ´sfcc-ci instance:import´ without options:"
+node ./cli.js instance:import site_import.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:import´ with --sync option:"
+node ./cli.js instance:import site_import.zip --sync
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:import´ with --json option:"
+node ./cli.js instance:import site_import.zip --json
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

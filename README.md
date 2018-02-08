@@ -157,12 +157,12 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Commands:
 
+    auth:logout                                       End the current sessions and clears the authentication
     client:auth [options] [client] [secret]           Authenticate an Commerce Cloud Open Commerce API client
     client:auth:renew                                 Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                 Return the current authentication token
-    client:clear                                      Clears the Commerce Cloud Open Commerce API client settings
     instance:add [options] <instance> [alias]         Adds a new Commerce Cloud instance to the list of configured instances
-    instance:set <alias>                              Sets a Commerce Cloud instance as the default instance
+    instance:set <alias_or_host>                      Sets a Commerce Cloud instance as the default instance
     instance:clear                                    Clears all configured Commerce Cloud instances
     instance:list [options]                           List instance and client details currently configured
     instance:upload [options] <archive>               Uploads an instance import file onto a Commerce Cloud instance
@@ -211,13 +211,13 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
 ```javascript
   sfcc.auth.auth(client_id, client_secret, callback);
   sfcc.code.activate(instance, code_version, token, callback);
-  sfcc.code.deploy(instance, archive, token, callback);
+  sfcc.code.deploy(instance, archive, token, options, callback);
   sfcc.code.list(instance, token, callback);
-  sfcc.instance.upload(instance, file, token, callback);
+  sfcc.instance.upload(instance, file, token, options, callback);
   sfcc.instance.import(instance, file_name, token, callback);
   sfcc.job.run(instance, job_id, job_params, token, callback);
   sfcc.job.status(instance, job_id, job_execution_id, token, callback);
-  sfcc.webdav.upload(instance, path, file, token, callback);
+  sfcc.webdav.upload(instance, path, file, token, options, callback);
 ```
 
 ### Authentication ###
@@ -261,7 +261,7 @@ sfcc.auth.auth(client_id, client_secret, function(token, err) {
 
 APIs available in `require('sfcc-ci').code`:
 
-`deploy(instance, archive, token, callback)`
+`deploy(instance, archive, token, options, callback)`
 
 Deploys a custom code archive onto a Commerce Cloud instance
 
@@ -270,6 +270,7 @@ Param         | Type        | Description
 instance      | (String)    | The instance to activate the code on
 archive       | (String)    | The ZIP archive filename to deploy
 token         | (String)    | The Oauth token to use use for authentication
+options       | (Object)    | The options parameter can contains two properties: pfx: the path to the client certificate to use for two factor authentication. passphrase: the optional passphrase to use with the client certificate
 callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
@@ -309,7 +310,7 @@ callback      | (Function)  | Callback function executed as a result. The error 
 
 APIs available in `require('sfcc').instance`:
 
-`upload(instance, file, token, callback)`
+`upload(instance, file, token, options, callback)`
 
 Uploads an instance import file onto a Commerce Cloud instance.
 
@@ -318,6 +319,7 @@ Param         | Type        | Description
 instance      | (String)    | The instance to upload the import file to
 file          | (String)    | The file to upload
 token         | (String)    | The Oauth token to use use for authentication
+options       | (Object)    | The options parameter can contains two properties: pfx: the path to the client certificate to use for two factor authentication. passphrase: the optional passphrase to use with the client certificate
 callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
 
 **Returns:** (void) Function has no return value
@@ -379,7 +381,7 @@ callback         | (Function)  | Callback function executed as a result. The job
 
 APIs available in `require('sfcc').webdav`:
 
-`upload(instance, path, file, token, callback)`
+`upload(instance, path, file, token, options, callback)`
 
 Uploads an arbitrary file onto a Commerce Cloud instance.
 
@@ -389,6 +391,7 @@ instance      | (String)    | The instance to upload the import file to
 path          | (String)    | The path relative to .../webdav/Sites where the file to upload to
 file          | (String)    | The file to upload
 token         | (String)    | The Oauth token to use use for authentication
+options       | (Object)    | The options parameter can contains two properties: pfx: the path to the client certificate to use for two factor authentication. passphrase: the optional passphrase to use with the client certificate
 callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
 
 **Returns:** (void) Function has no return value

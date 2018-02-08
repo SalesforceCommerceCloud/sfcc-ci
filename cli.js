@@ -2,6 +2,19 @@
 var program = require('commander');
 
 program
+    .command('auth:logout')
+    .description('End the current sessions and clears the authentication')
+    .action(function() {
+        require('./lib/auth').cli.logout();
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci auth:logout');
+        console.log();
+    });
+
+program
     .command('client:auth [client] [secret]')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
         'once the token expires.')
@@ -54,19 +67,6 @@ program
     });
 
 program
-    .command('client:clear')
-    .description('Clears the Commerce Cloud Open Commerce API client settings')
-    .action(function() {
-        require('./lib/auth').clear();
-    }).on('--help', function() {
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci client:clear');
-        console.log();
-    });
-
-program
     .command('instance:add <instance> [alias]')
     .option('-d, --default', 'Set the new instance as default')
     .description('Adds a new Commerce Cloud instance to the list of configured instances')
@@ -85,15 +85,16 @@ program
     });
 
 program
-    .command('instance:set <alias>')
+    .command('instance:set <alias_or_host>')
     .description('Sets a Commerce Cloud instance as the default instance')
-    .action(function(alias) {
-        require('./lib/instance').setDefault(alias);
+    .action(function(alias_or_host) {
+        require('./lib/instance').cli.setDefault(alias_or_host);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci instance:set my-instance');
+        console.log('    $ sfcc-ci instance:set my-instance.demandware.net');
         console.log();
     });
 
@@ -132,20 +133,32 @@ program
     .command('instance:upload <archive>')
     .option('-i, --instance [instance]','Instance to upload the import file to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
-    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
+    .option('-c, --certificate [certificate]','Path to the certificate to use for two factor authentication.')
+    .option('-p, --passphrase [passphrase]','Passphrase to be used to read the given certificate.')
     .description('Uploads an instance import file onto a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        var sync = ( options.sync ? options.sync : false );
-        require('./lib/webdav').uploadInstanceImport(instance, archive, sync);
+        require('./lib/webdav').uploadInstanceImport(instance, archive, {
+            pfx: options.certificate,
+            passphrase: options.passphrase
+        });
     }).on('--help', function() {
         console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Uploads the passed site import archive file onto an instance. The archive must be a zip file');
+        console.log('  If the archive file does not have the file extension *.zip it will be appended.');
+        console.log();
+        console.log('  The archive may include a path to the actual archive file where the file resides locally.');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci instance:upload archive.zip');
+        console.log('    $ sfcc-ci instance:upload path/to/archive.zip');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance-alias');
         console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net -s');
+        console.log('    $ sfcc-ci instance:upload archive.zip -i my-instance.demandware.net '
+            + '-c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
         console.log();
     });
 
@@ -153,15 +166,17 @@ program
     .command('instance:import <archive>')
     .option('-i, --instance <instance>','Instance to run the import on. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
+    .option('-j, --json', 'Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Perform a instance import (aka site import) on a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
+        var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
         if (sync) {
-            require('./lib/instance').importSync(instance, archive);
+            require('./lib/instance').importSync(instance, archive, asJson);
         } else {
-            require('./lib/instance').import(instance, archive);
+            require('./lib/instance').import(instance, archive, asJson);
         }
     }).on('--help', function() {
         console.log('');
@@ -172,7 +187,9 @@ program
         console.log('    $ sfcc-ci instance:import archive.zip -i my-instance-alias -s');
         console.log('    $ sfcc-ci instance:import archive.zip -i my-instance.demandware.net');
         console.log('    $ sfcc-ci instance:import archive.zip -i my-instance.demandware.net -s');
+        console.log('    $ sfcc-ci instance:import archive.zip -j');
         console.log('    $ sfcc-ci instance:import archive.zip -s');
+        console.log('    $ sfcc-ci instance:import archive.zip -s -j');
         console.log();
     });
 
@@ -234,10 +251,12 @@ program
     .command('code:list')
     .option('-i, --instance <instance>','Instance to get list of custom code versions from. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
+    .option('-j, --json', 'Formats the output in json')
     .description('List all custom code versions deployed on the Commerce Cloud instance')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        require('./lib/code').list(instance);
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/code').list(instance, asJson);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -245,6 +264,7 @@ program
         console.log('    $ sfcc-ci code:list');
         console.log('    $ sfcc-ci code:list -i my-instance-alias');
         console.log('    $ sfcc-ci code:list -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci code:list -j');
         console.log();
     });
 
@@ -252,12 +272,15 @@ program
     .command('code:deploy <archive>')
     .option('-i, --instance <instance>','Instance to deploy the custom code archive to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
-    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
+    .option('-c, --certificate [certificate]','Path to the certificate to use for two factor authentication.')
+    .option('-p, --passphrase [passphrase]','Passphrase to be used to read the given certificate.')
     .description('Deploys a custom code archive onto a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        var sync = ( options.sync ? options.sync : false );
-        require('./lib/webdav').deployCode(instance, archive, sync);
+        require('./lib/webdav').deployCode(instance, archive, {
+            pfx: options.certificate,
+            passphrase: options.passphrase
+        });
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -265,7 +288,8 @@ program
         console.log('    $ sfcc-ci code:deploy code.zip');
         console.log('    $ sfcc-ci code:deploy code.zip -i my-instance-alias');
         console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net -s');
+        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net '
+            + '-c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
         console.log();
     });
 
@@ -291,21 +315,23 @@ program
     .command('job:run <job_id> [job_parameters...]')
     .option('-i, --instance <instance>','Instance to run the job on. Can be an instance alias. If not ' +
         'specified the currently configured instance will be used.')
+    .option('-j, --json', 'Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .description('Starts a job execution on a Commerce Cloud instance')
     .action(function(job_id, job_parameters, options) {
         var job_params = require('./lib/job').buildParameters(job_parameters);
         var instance = require('./lib/instance').getInstance(options.instance);
+        var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
 
         if (sync) {
             require('./lib/job').runSync(instance, job_id, {
                 parameters : job_params
-            });
+            }, asJson);
         } else {
             require('./lib/job').run(instance, job_id, {
                 parameters : job_params
-            });
+            }, asJson);
         }
     }).on('--help', function() {
         console.log('');
@@ -317,7 +343,9 @@ program
         console.log('    $ sfcc-ci job:run my-job -i my-instance-alias param1=value1 param2=value2');
         console.log('    $ sfcc-ci job:run my-job -i my-instance.demandware.net');
         console.log('    $ sfcc-ci job:run my-job -i my-instance.demandware.net param1=value1 param2=value2');
+        console.log('    $ sfcc-ci job:run my-job -j');
         console.log('    $ sfcc-ci job:run my-job -s');
+        console.log('    $ sfcc-ci job:run my-job -s -j');
         console.log();
     });
 
@@ -325,15 +353,17 @@ program
     .command('job:status <job_id> <job_execution_id>')
     .option('-i, --instance <instance>','Instance the job was executed on. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
-    .option('-v, --verbose', 'Outputs additional details of the job execution')
+    .option('-j, --json', 'Formats the output in json')
     .option('-l, --logfile', 'Opens the job log file in a browser')
+    .option('-v, --verbose', 'Outputs additional details of the job execution')
     .description('Get the status of a job execution on a Commerce Cloud instance')
     .action(function(job_id, job_execution_id, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        var verbose = ( options.verbose ? options.verbose : false );
+        var asJson = ( options.json ? options.json : false );
         var logfile = ( options.logfile ? options.logfile : false );
+        var verbose = ( options.verbose ? options.verbose : false );
 
-        require('./lib/job').status(instance, job_id, job_execution_id, verbose, logfile);
+        require('./lib/job').status(instance, job_id, job_execution_id, verbose, logfile, asJson);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -344,6 +374,7 @@ program
         console.log('    $ sfcc-ci job:status my-job my-job-execution-id -v -i my-instance-alias');
         console.log('    $ sfcc-ci job:status my-job my-job-execution-id -i my-instance.demandware.net');
         console.log('    $ sfcc-ci job:status my-job my-job-execution-id -v -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci job:status my-job my-job-execution-id -j');
         console.log();
     });
 

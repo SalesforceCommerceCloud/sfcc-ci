@@ -7,7 +7,7 @@
     "sfcc-ci": "./cli.js"
   },
   "scripts": {
-    "lint": "eslint ./",
+    "lint": "eslint --ignore-path .gitignore ./",
     "test": "npm run test:unit",
     "test:unit": "node_modules/.bin/_mocha test/unit --recursive",
     "test:unit:coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha test/unit --recursive",

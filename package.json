@@ -7,9 +7,10 @@
     "sfcc-ci": "./cli.js"
   },
   "scripts": {
-    "lint": "eslint ./",
+    "lint": "eslint --ignore-path .gitignore ./",
     "test": "npm run test:unit",
     "test:unit": "node_modules/.bin/_mocha test/unit --recursive",
+    "test:unit:coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha test/unit --recursive",
     "test:functional:cli": "bin/test-cli.sh"
   },
   "repository": {
@@ -33,6 +34,7 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "eslint": "^4.5.0",
+    "istanbul": "^0.4.5",
     "mocha": "^3.5.2",
     "sinon": "^3.2.1"
   }

@@ -10,12 +10,12 @@ describe('Tests for lib/auth.js', function() {
     var auth = require('../../lib/auth');
     var config = require('../../lib/config').obtain();
 
-    describe('clear function', function() {
+    describe('cli.logout function', function() {
 
         it('should call config.delete on relevant configuration keys', function() {
             var deleteSpy = sinon.spy(config, 'delete');
 
-            auth.clear();
+            auth.cli.logout();
 
             sinon.assert.calledWith(deleteSpy, 'SFCC_CLIENT_ID');
             sinon.assert.calledWith(deleteSpy, 'SFCC_CLIENT_TOKEN');

@@ -6,7 +6,10 @@ pipelines:
         caches:
           - node
         script:
+          # install deps
+          - apt-get update && apt-get install -y jq
           - npm install
+          # run tests
           - npm run lint
           - npm run test:unit:coverage
           - npm run test:functional:cli minimal $TEST_SFCC_CLIENT_ID $TEST_SFCC_CLIENT_SECRET $TEST_SFCC_INSTANCE
@@ -16,7 +19,10 @@ pipelines:
           caches:
             - node
           script:
+            # install deps
+            - apt-get update && apt-get install -y jq
             - npm install
+            # run tests
             - npm run lint
             - npm run test:unit:coverage
             - npm run test:functional:cli full $TEST_SFCC_CLIENT_ID $TEST_SFCC_CLIENT_SECRET $TEST_SFCC_INSTANCE

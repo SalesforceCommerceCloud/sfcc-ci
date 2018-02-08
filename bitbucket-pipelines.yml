@@ -8,8 +8,8 @@ pipelines:
         script:
           - npm install
           - npm run lint
-          - npm run test
-          - npm run test:functional:cli $TEST_SFCC_CLIENT_ID $TEST_SFCC_CLIENT_SECRET $TEST_SFCC_INSTANCE
+          - npm run test:unit:coverage
+          - npm run test:functional:cli minimal $TEST_SFCC_CLIENT_ID $TEST_SFCC_CLIENT_SECRET $TEST_SFCC_INSTANCE
   custom:
     regression:
       - step:
@@ -18,5 +18,5 @@ pipelines:
           script:
             - npm install
             - npm run lint
-            - npm run test
-            - npm run test:functional:cli $TEST_SFCC_CLIENT_ID $TEST_SFCC_CLIENT_SECRET $TEST_SFCC_INSTANCE
+            - npm run test:unit:coverage
+            - npm run test:functional:cli full $TEST_SFCC_CLIENT_ID $TEST_SFCC_CLIENT_SECRET $TEST_SFCC_INSTANCE

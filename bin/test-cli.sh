@@ -28,6 +28,37 @@ else
 fi
 
 ###############################################################################
+###### Testing ´sfcc-ci´
+###############################################################################
+
+echo "Testing command ´sfcc-ci´ without command and option:"
+node ./cli.js
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci´ without command and --help option:"
+node ./cli.js --help
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci´ and unknown command (expected to fail):"
+node ./cli.js unknown
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
 ###### Testing ´sfcc-ci client:auth´
 ###############################################################################
 

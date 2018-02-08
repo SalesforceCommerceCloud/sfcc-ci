@@ -552,4 +552,9 @@ program.parse(process.argv);
 
 if (!program.args.length) {
     program.help();
+} else if ( typeof(program.args[program.args.length-1]) !== 'object') {
+    // the last argument represents the command,
+    // if this is not a known Command, exit with error
+    require('./lib/log').error('Unknown command `%s`. Use `sfcc-ci --help` for help.', program.args[0]);
+    process.exitCode = 1;
 }

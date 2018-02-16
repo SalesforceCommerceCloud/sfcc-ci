@@ -162,6 +162,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                               Return the current authentication token
+    sandbox:realms [options]                                        List realms eligible to manage sandboxes for
     sandbox:list [options]                                          List all sandboxes currently created
     sandbox:create [options] <realm> [alias]                        Triggers the creation of a new sandbox
     sandbox:get [options] <sandbox_id>                              Retrieves details of a sandbox

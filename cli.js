@@ -107,6 +107,22 @@ program
     });
 
 program
+    .command('sandbox:realms')
+    .description('List realms eligible to manage sandboxes for')
+    .option('-j, --json','Formats the output in json')
+    .action(function(options) {
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/sandbox').cli.realms(asJson);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:realms');
+        console.log('    $ sfcc-ci sandbox:realms --json');
+        console.log();
+    });
+
+program
     .command('sandbox:list')
     .description('List all sandboxes currently created')
     .option('-j, --json','Formats the output in json')

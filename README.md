@@ -236,6 +236,57 @@ export DEBUG=*
 
 If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
 
+### CLI Examples ###
+
+The examples below assume you have defined a set of environment variables:
+
+* a Client ID (API Key)
+* a Client Secret (API Secret)
+* a User Name (a user in Account Manager)
+* a User Password
+
+You can do this as follows:
+
+```bash
+export API_KEY=<my-api-key>
+export API_SECRET=<my-api-secret>
+export API_USER=<my-user>
+export API_USER_PW=<my-user-pw>
+```
+
+Note: Some CLI commands provide structured output of the operation result as JSON. To process this JSON a tool called `jq` comes in handy. Installation and documentation of `jq` is located at https://stedolan.github.io/jq/manual/. 
+
+#### Authentication ####
+
+In an interactive mode you usually authenticate as follows:
+
+```bash
+sfcc-ci auth:login $API_KEY
+```
+
+In an automation scenario (where no user is physically present) authentication is done as follows:
+
+```bash
+sfcc-ci client:auth $API_KEY $API_SECRET $API_USER $API_USER_PW
+```
+
+Logging out (and removing any traces of secrets from the machine):
+
+```bash
+sfcc-ci auth:logout
+```
+
+#### Sandboxes ####
+
+Provision a new sandbox, uploading code and running an instance import:
+
+```bash
+SANDBOX=`sfcc-ci sandbox:create <a-realm> -s -j`
+SANDBOX_HOST=`$SANDBOX | jq '.instance.host' -r`
+sfcc-ci code:deploy <path/to/code.zip> -i $SANDBOX_HOST
+sfcc-ci instance:upload <path/to/data.zip> -i $SANDBOX_HOST -s
+```
+
 ## Using the JavaScript API ##
 
 There is a JavaScript API available, which you can use to program against and integrate the commands into your own project.

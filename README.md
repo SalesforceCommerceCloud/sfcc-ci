@@ -190,24 +190,16 @@ Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a s
 
 ## Configuration ##
 
-sfcc-ci CLI keeps it's own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
+The CLI keeps it's own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
 
 ## Environment Variables ##
 
-`sfcc-ci` respects a set of environment variables which you can use to control, how the CLI works:
+`sfcc-ci` respects the following environment variables which you can use to control, how the CLI works:
 
 * `SFCC_LOGIN_URL` The login url used for authentication.
 * `SFCC_OAUTH_LOCAL_PORT` Oauth local port for authentication flow.
 * `SFCC_SANDBOX_API_HOST` Sandbox API host.
 * `DEBUG` Debugging mode.
-
-## Debugging ##
-
-You can force `sfcc-ci` to write debug messages to the console using the env var `DEBUG`. You can do this globally by setting the env var, so that any following CLI command will write debug messages:
-
-```bash
-export DEBUG=*
-```
 
 If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
 
@@ -291,6 +283,30 @@ Logging out (and removing any traces of secrets from the machine):
 sfcc-ci auth:logout
 ```
 
+### Pushing Code ###
+
+Pushing code to any SFCC instance and activate it:
+
+```bash
+sfcc-ci code:deploy <path/to/code_version.zip> -i your-instance.demandware.net
+sfcc-ci code:activate <code_version> -i your-instance.demandware.net
+```
+
+### Data Import ###
+
+Running an instance import (aka site import) on any SFCC instance:
+
+```bash
+sfcc-ci instance:upload <path/to/data.zip> -i your-instance.demandware.net
+sfcc-ci instance:import <data.zip> -i your-instance.demandware.net -s
+```
+
+Running the instance import without waiting for the import to finish you omit the `--sync,-c` flag:
+
+```bash
+sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
+```
+
 ### Sandboxes ###
 
 Provision a new sandbox, uploading code and running an instance import:
@@ -302,7 +318,7 @@ sfcc-ci code:deploy <path/to/code.zip> -i $SANDBOX_HOST
 sfcc-ci instance:upload <path/to/data.zip> -i $SANDBOX_HOST -s
 ```
 
-## Using the JavaScript API ##
+# Using the JavaScript API #
 
 There is a JavaScript API available, which you can use to program against and integrate the commands into your own project.
 

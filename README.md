@@ -142,9 +142,9 @@ You need Node.js and npm to be installed. No other dependencies.
 
 You are now ready to use the tool by running the main command `sfcc-ci`. 
 
-## Using the Command Line Interface ##
+# Using the Command Line Interface #
 
-### Available Commands ###
+## Commands ##
 
 Use `sfcc-ci --help` to get started and see the list of commands available:
 
@@ -188,15 +188,30 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
 Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a sub:command.
 
-### Configuration ###
+## Configuration ##
 
 sfcc-ci CLI keeps it's own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
 
-### Environment Variables ###
+## Environment Variables ##
 
-`sfcc-ci` respects a set of environment variables which control, how the CLI works.
+`sfcc-ci` respects a set of environment variables which you can use to control, how the CLI works:
 
-#### Authorization Server ####
+* `SFCC_LOGIN_URL` The login url used for authentication.
+* `SFCC_OAUTH_LOCAL_PORT` Oauth local port for authentication flow.
+* `SFCC_SANDBOX_API_HOST` Sandbox API host.
+* `DEBUG` Debugging mode.
+
+## Debugging ##
+
+You can force `sfcc-ci` to write debug messages to the console using the env var `DEBUG`. You can do this globally by setting the env var, so that any following CLI command will write debug messages:
+
+```bash
+export DEBUG=*
+```
+
+If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
+
+## Authentication ##
 
 `sfcc-ci` uses a default authorization server. You can overwrite this authorization server and use an alternative login url using the env var `SFCC_LOGIN_URL`:
 
@@ -206,7 +221,7 @@ export SFCC_LOGIN_URL=<alternative-authorization-server>
 
 Removing the env var (`unset SFCC_LOGIN_URL`) will make the CLI use the default authorization server again.
 
-#### Oauth Local Port ####
+## Oauth Local Port ##
 
 `sfcc-ci` uses a default Oauth local port for authentication flow. You can overwrite this port and use an alternative port number (e.g. if the default port is used on your machine and you cannot use is) using the env var `SFCC_OAUTH_LOCAL_PORT`:
 
@@ -216,7 +231,7 @@ export SFCC_OAUTH_LOCAL_PORT=<alternative-port>
 
 Removing the env var (`unset SFCC_OAUTH_LOCAL_PORT`) will make the CLI use the default port again.
 
-#### Sandbox API ####
+## Sandbox API ##
 
 `sfcc-ci` uses a default host for the sandbox API. You can overwrite this host and use an alternative host using the env var `SFCC_SANDBOX_API_HOST`:
 
@@ -226,7 +241,7 @@ export SFCC_SANDBOX_API_HOST=<alternative-sandbox-api-host>
 
 Removing the env var (`unset SFCC_SANDBOX_API_HOST`) will make the CLI use the default host again.
 
-#### Debugging ####
+## Debugging ##
 
 You can force `sfcc-ci` to write debug messages to the console using the env var `DEBUG`. You can do this for globally by setting the env var, so that any following CLI command will write debug messages:
 
@@ -236,7 +251,7 @@ export DEBUG=*
 
 If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
 
-### CLI Examples ###
+## CLI Examples ##
 
 The examples below assume you have defined a set of environment variables:
 
@@ -256,7 +271,7 @@ export API_USER_PW=<my-user-pw>
 
 Note: Some CLI commands provide structured output of the operation result as JSON. To process this JSON a tool called `jq` comes in handy. Installation and documentation of `jq` is located at https://stedolan.github.io/jq/manual/. 
 
-#### Authentication ####
+### Authentication ###
 
 In an interactive mode you usually authenticate as follows:
 
@@ -276,7 +291,7 @@ Logging out (and removing any traces of secrets from the machine):
 sfcc-ci auth:logout
 ```
 
-#### Sandboxes ####
+### Sandboxes ###
 
 Provision a new sandbox, uploading code and running an instance import:
 

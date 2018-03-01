@@ -237,8 +237,8 @@ sfcc-ci auth:logout
 Pushing code to any SFCC instance and activate it:
 
 ```bash
-sfcc-ci code:deploy <path/to/code_version.zip> -i your-instance.demandware.net
-sfcc-ci code:activate <code_version> -i your-instance.demandware.net
+sfcc-ci code:deploy path/to/code_version.zip -i your-instance.demandware.net
+sfcc-ci code:activate code_version -i your-instance.demandware.net
 ```
 
 ### Data Import ###
@@ -246,14 +246,14 @@ sfcc-ci code:activate <code_version> -i your-instance.demandware.net
 Running an instance import (aka site import) on any SFCC instance:
 
 ```bash
-sfcc-ci instance:upload <path/to/data.zip> -i your-instance.demandware.net
-sfcc-ci instance:import <data.zip> -i your-instance.demandware.net -s
+sfcc-ci instance:upload path/to/data.zip -i your-instance.demandware.net
+sfcc-ci instance:import data.zip -i your-instance.demandware.net -s
 ```
 
-Running the instance import without waiting for the import to finish you omit the `--sync,-c` flag:
+Running the instance import without waiting for the import to finish you omit the `--sync,-s` flag:
 
 ```bash
-sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
+sfcc-ci instance:import data.zip -i your-instance.demandware.net
 ```
 
 # Using the JavaScript API #

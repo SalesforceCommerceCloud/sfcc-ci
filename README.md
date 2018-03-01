@@ -142,9 +142,9 @@ You need Node.js and npm to be installed. No other dependencies.
 
 You are now ready to use the tool by running the main command `sfcc-ci`. 
 
-## Using the Command Line Interface ##
+# Using the Command Line Interface #
 
-### Available Commands ###
+## Commands ##
 
 Use `sfcc-ci --help` to get started and see the list of commands available:
 
@@ -182,11 +182,81 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
 Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a sub:command.
 
-### Configuration ###
+## Configuration ##
 
-sfcc-ci CLI keeps it�s own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
+The CLI keeps it�s own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
 
-## Using the JavaScript API ##
+## Environment Variables ##
+
+`sfcc-ci` respects the following environment variables which you can use to control, how the CLI works:
+
+* `DEBUG` Debugging mode.
+
+## Debugging ##
+
+You can force `sfcc-ci` to write debug messages to the console using the env var `DEBUG`. You can do this globally by setting the env var, so that any following CLI command will write debug messages:
+
+```bash
+export DEBUG=*
+```
+
+If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
+
+## CLI Examples ##
+
+The examples below assume you have defined a set of environment variables:
+
+* a Client ID (API Key)
+* a Client Secret (API Secret)
+
+You can do this as follows:
+
+```bash
+export API_KEY=<my-api-key>
+export API_SECRET=<my-api-secret>
+```
+
+Note: Some CLI commands provide structured output of the operation result as JSON. To process this JSON a tool called `jq` comes in handy. Installation and documentation of `jq` is located at https://stedolan.github.io/jq/manual/. 
+
+### Authentication ###
+
+In an automation scenario (where no user is physically present) authentication is done as follows:
+
+```bash
+sfcc-ci client:auth $API_KEY $API_SECRET
+```
+
+Logging out (and removing any traces of secrets from the machine):
+
+```bash
+sfcc-ci auth:logout
+```
+
+### Pushing Code ###
+
+Pushing code to any SFCC instance and activate it:
+
+```bash
+sfcc-ci code:deploy path/to/code_version.zip -i your-instance.demandware.net
+sfcc-ci code:activate code_version -i your-instance.demandware.net
+```
+
+### Data Import ###
+
+Running an instance import (aka site import) on any SFCC instance:
+
+```bash
+sfcc-ci instance:upload path/to/data.zip -i your-instance.demandware.net
+sfcc-ci instance:import data.zip -i your-instance.demandware.net -s
+```
+
+Running the instance import without waiting for the import to finish you omit the `--sync,-s` flag:
+
+```bash
+sfcc-ci instance:import data.zip -i your-instance.demandware.net
+```
+
+# Using the JavaScript API #
 
 There is a JavaScript API available, which you can use to program against and integrate the commands into your own project.
 

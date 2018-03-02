@@ -26,6 +26,8 @@ pipelines:
             - npm run lint
             - npm run test:unit:coverage
             - npm run test:functional:cli full $TEST_SFCC_CLIENT_ID $TEST_SFCC_CLIENT_SECRET $TEST_SFCC_INSTANCE
-            # dist and upload latest binaries in downloads section
+            # dist and upload latest binaries into downloads section
             - npm run dist
-            - curl -X POST --user "${BB_AUTH_STRING}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"dist/*"
+            - curl -X POST --user "${BB_AUTH_STRING}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"dist/sfcc-ci-linux"
+            - curl -X POST --user "${BB_AUTH_STRING}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"dist/sfcc-ci-macos"
+            - curl -X POST --user "${BB_AUTH_STRING}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"dist/sfcc-ci-win.exe"

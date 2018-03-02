@@ -133,7 +133,7 @@ Note: WebDAV client permission to `cartridges` is available in Commerce Cloud Di
 
 If you plan to integrate with the JavaScript API or if you want to download the sources and use the CLI through Node you need Node.js and npm to be installed. No other dependencies.
 
-If do not want to use the JavaScript API, but just the CLI you don't need Node.js and npm necessarily. See [Installation Instructions].
+If do not want to use the JavaScript API, but just the CLI you don't need Node.js and npm necessarily. See [Installation Instructions] (#markdown-header-installation-instructions).
 
 ### Installation Instructions ###
 

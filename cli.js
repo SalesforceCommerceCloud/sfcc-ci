@@ -2,7 +2,10 @@
 var program = require('commander');
 
 program
-    .version(require('./package.json').version, '-V, --version');
+    .version(require('./package.json').version, '-V, --version')
+    .option('-D, --debug', 'enable verbose output', function() {
+        process.env.DEBUG = true;
+    });
 
 program
     .command('auth:logout')
@@ -386,6 +389,10 @@ program
     });
 
 program.on('--help', function() {
+    console.log('');
+    console.log('  Environment:');
+    console.log('');
+    console.log('    $DEBUG  enable verbose output');
     console.log('');
     console.log('  Detailed Help:');
     console.log('');

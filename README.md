@@ -142,7 +142,22 @@ If do not want to use the JavaScript API, but just the CLI you don't need Node.j
 * `cd` into the directory and run `npm install`
 * Check if installation was successful by running `sfcc-ci --help`. In case you encouter any issues with running `sfcc-ci`, you may run `npm link` to create a symbolic link
 
-If you are using the CLI but don't want to mess around with Node.js and npm you can simply download the latest binaries for your OS at [Downloads](https://bitbucket.org/demandware/sfcc-ci/downloads/)
+If you are using the CLI but don't want to mess around with Node.js and npm you can simply download the latest binaries for your OS at [Downloads](https://bitbucket.org/demandware/sfcc-ci/downloads/).
+
+1. MacOS
+ 1. Download the latest release with the command:
+  `curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-macos`
+ 2. Move the binary in to your PATH.
+  `sudo mv ./sfcc-ci-macos /usr/local/bin/sfcc-ci`
+2. Linux
+ 1. Download the latest release with the command:
+  `curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-linux`
+ 2. Move the binary in to your PATH.
+  `sudo mv ./sfcc-ci-linux /usr/local/bin/sfcc-ci`
+3. Windows
+ 1. Download the latest release v1.9.0 from [here](https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-win.exe). If you have curl installed, use this command:
+  `curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-win.exe`
+ 2. Add the binary in to your PATH.
 
 You are now ready to use the tool by running the main command `sfcc-ci`.
 

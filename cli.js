@@ -217,6 +217,120 @@ program
     });
 
 program
+    .command('sandbox:start <sandbox_id>')
+    .description('Start a sandbox')
+    .action(function(sandbox_id, options) {
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split('-');
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        require('./lib/sandbox').cli.start(spec, false);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The sandbox to start must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:start my-sandbox-id');
+        console.log();
+    });
+
+program
+    .command('sandbox:stop <sandbox_id>')
+    .description('Stop a sandbox')
+    .action(function(sandbox_id, options) {
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split('-');
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        require('./lib/sandbox').cli.stop(spec, false);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The sandbox to stop must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:stop my-sandbox-id');
+        console.log();
+    });
+
+program
+    .command('sandbox:restart <sandbox_id>')
+    .description('Restart a sandbox')
+    .action(function(sandbox_id, options) {
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split('-');
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        require('./lib/sandbox').cli.restart(spec, false);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The sandbox to restart must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:restart my-sandbox-id');
+        console.log();
+    });
+
+program
+    .command('sandbox:reset <sandbox_id>')
+    .description('Reset a sandbox')
+    .action(function(sandbox_id, options) {
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split('-');
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        require('./lib/sandbox').cli.reset(spec, false);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  WARNING: This is a destructive operation and you will loose any data stored on the sandbox.');
+        console.log();
+        console.log('  The sandbox to reset must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:reset my-sandbox-id');
+        console.log();
+    });
+
+program
     .command('sandbox:remove <sandbox_id>')
     .description('Triggers the removal of an existing sandbox')
     .action(function(sandbox_id, options) {

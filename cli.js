@@ -124,7 +124,7 @@ program
 
 program
     .command('sandbox:list')
-    .description('List all sandboxes currently created')
+    .description('List all available sandboxes')
     .option('-j, --json','Formats the output in json')
     .action(function(options) {
         var asJson = ( options.json ? options.json : false );
@@ -143,7 +143,7 @@ program
     .option('-j, --json','Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .option('-d, --default', 'Sets the created sandbox as default instance.')
-    .description('Triggers the creation of a new sandbox')
+    .description('Create a new sandbox')
     .action(function(realm, alias, options) {
         var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
@@ -181,7 +181,7 @@ program
 
 program
     .command('sandbox:get <sandbox_id>')
-    .description('Retrieves details of a sandbox')
+    .description('Get detailed information about a sandbox')
     .option('-j, --json','Formats the output in json')
     .option('-h, --host','Return the host name of the sandbox')
     .option('-o, --open','Opens a browser with the Business Manager on the sandbox')
@@ -200,6 +200,8 @@ program
         require('./lib/sandbox').cli.get(spec, asJson, hostOnly, openBrowser);
     }).on('--help', function() {
         console.log('');
+        console.log('  Details:');
+        console.log();
         console.log('  The sandbox to lookup must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes.');
         console.log();
@@ -230,6 +232,8 @@ program
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
+        console.log();
+        console.log('  WARNING: This is a destructive operation and you will loose any data stored on the sandbox.');
         console.log();
         console.log('  The sandbox to remove must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes. You must have permission to remove a sandbox. The command');

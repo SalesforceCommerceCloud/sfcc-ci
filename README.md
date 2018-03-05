@@ -147,31 +147,31 @@ If you are using the CLI but don't want to mess around with Node.js and npm you 
 ### MacOS ###
 
 1. Download the binary with the command:
-```bash
-curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-macos
-```
+  ```bash
+  curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-macos
+  ```
 2. Move the binary in to your PATH.
-```bash
-sudo mv ./sfcc-ci-macos /usr/local/bin/sfcc-ci
-```
+  ```bash
+  sudo mv ./sfcc-ci-macos /usr/local/bin/sfcc-ci
+  ```
 
 ### Linux ###
 
 1. Download the binary with the command:
-```bash
-curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-linux
-```
+  ```bash
+  curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-linux
+  ```
 2. Move the binary in to your PATH.
-```bash
-sudo mv ./sfcc-ci-linux /usr/local/bin/sfcc-ci
-```
+  ```bash
+  sudo mv ./sfcc-ci-linux /usr/local/bin/sfcc-ci
+  ```
 
 ### Windows ###
 
 1. Download the binary from [here](https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-win.exe). If you have curl installed, use this command:
-```bash
-curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-win.exe
-```
+  ```bash
+  curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-win.exe
+  ```
 2. Add the binary in to your PATH.
 
 You are now ready to use the tool by running the main command `sfcc-ci`.

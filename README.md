@@ -34,7 +34,7 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 
 ### Prerequisites ###
 
-Ensure you have a valid Open Commerce API client ID set up. You'll need the client ID as well as the client secret. If you don't have a Open Commerce API client ID yet, you can create one using the [Account Manager](https://account.demandware.com).
+Ensure you have a valid Open Commerce API client ID (API key) set up. You'll need the client ID as well as the client secret. If you don't have a Open Commerce API client ID yet, you can create one using the [Account Manager](https://account.demandware.com).
 
 ### Configuration ###
 
@@ -131,7 +131,9 @@ Note: WebDAV client permission to `cartridges` is available in Commerce Cloud Di
 
 ### Dependencies ###
 
-You need Node.js and npm to be installed. No other dependencies.
+If you plan to integrate with the JavaScript API or if you want to download the sources and use the CLI through Node you need Node.js and npm to be installed. No other dependencies.
+
+If do not want to use the JavaScript API, but just the CLI you don't need Node.js and npm necessarily. See "Installation Instructions" for details.
 
 ### Installation Instructions ###
 
@@ -140,7 +142,9 @@ You need Node.js and npm to be installed. No other dependencies.
 * `cd` into the directory and run `npm install`
 * Check if installation was successful by running `sfcc-ci --help`. In case you encouter any issues with running `sfcc-ci`, you may run `npm link` to create a symbolic link
 
-You are now ready to use the tool by running the main command `sfcc-ci`. 
+If you are using the CLI but don't want to mess around with Node.js and npm you can simply download the latest binaries for your OS at [Downloads](https://bitbucket.org/demandware/sfcc-ci/downloads/)
+
+You are now ready to use the tool by running the main command `sfcc-ci`.
 
 # Using the Command Line Interface #
 
@@ -153,7 +157,8 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Options:
 
-    -h, --help  output usage information
+    -V, --version  output the version number
+    -h, --help     output usage information
 
   Commands:
 
@@ -241,7 +246,7 @@ You can force `sfcc-ci` to write debug messages to the console using the env var
 export DEBUG=*
 ```
 
-If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
+If you only want a single CLI command to write debug messages use the the `-D,--debug` flag with any command, e.g. `sfcc-ci <sub:command> --debug`.
 
 ## CLI Examples ##
 

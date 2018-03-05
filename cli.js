@@ -2,6 +2,12 @@
 var program = require('commander');
 
 program
+    .version(require('./package.json').version, '-V, --version')
+    .option('-D, --debug', 'enable verbose output', function() {
+        process.env.DEBUG = true;
+    });
+
+program
     .command('auth:login <client> [secret]')
     .option('-a, --authserver [authserver]','The authorization server used to authenticate')
     .description('Authenticate a present user for interactive use')

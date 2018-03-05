@@ -157,7 +157,8 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Options:
 
-    -h, --help  output usage information
+    -V, --version  output the version number
+    -h, --help     output usage information
 
   Commands:
 
@@ -204,7 +205,7 @@ You can force `sfcc-ci` to write debug messages to the console using the env var
 export DEBUG=*
 ```
 
-If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
+If you only want a single CLI command to write debug messages use the the `-D,--debug` flag with any command, e.g. `sfcc-ci <sub:command> --debug`.
 
 ## CLI Examples ##
 

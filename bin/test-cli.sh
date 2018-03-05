@@ -49,6 +49,15 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci´ without command and --version option:"
+node ./cli.js --version
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 echo "Testing command ´sfcc-ci´ and unknown command (expected to fail):"
 node ./cli.js unknown
 if [ $? -eq 1 ]; then
@@ -392,7 +401,7 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci code:activate´´ with invalid version (expected to fail):"
+echo "Testing command ´sfcc-ci code:activate´ with invalid version (expected to fail):"
 node ./cli.js code:activate does_not_exist
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"

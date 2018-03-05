@@ -15,7 +15,7 @@ For discussions please start a topic on the [Community Suite discussion board](h
 * Maintainer: @tobiaslohr
 * [Commerce Cloud Community Slack](https://sfcc-community.slack.com)
 
-## What is this repository for? ##
+# What is this repository for? #
 
 The focus of the tool is to streamline and easy the communication with Commerce Cloud instances as part of the CI/CD processes. It focuses on the deployment part supporting quality checks such as test execution, not on the quality checks itself.
 
@@ -30,13 +30,13 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 * Automatic renewal of Oauth2 token
 * Command line client and JavaScript API
 
-## How do I get set up? ##
+# How do I get set up? #
 
-### Prerequisites ###
+## Prerequisites ##
 
 Ensure you have a valid Open Commerce API client ID (API key) set up. You'll need the client ID as well as the client secret. If you don't have a Open Commerce API client ID yet, you can create one using the [Account Manager](https://account.demandware.com).
 
-### Configuration ###
+## Configuration ##
 
 In order to perform certain commands the tool provides, you need to give permission to do that on your Commerce Cloud instance(s). You can do that by modifying the Open Commerce API Settings as well as the WebDAV Client Permissions.
 
@@ -129,13 +129,13 @@ Note, if you already have WebDAV Client Permissions configured, e.g. for other c
 ```
 Note: WebDAV client permission to `cartridges` is available in Commerce Cloud Digital versions greater than **17.8**.
 
-### Dependencies ###
+## Dependencies ##
 
 If you plan to integrate with the JavaScript API or if you want to download the sources and use the CLI through Node you need Node.js and npm to be installed. No other dependencies.
 
 If do not want to use the JavaScript API, but just the CLI you don't need Node.js and npm necessarily. See "Installation Instructions" for details.
 
-### Installation Instructions ###
+## Installation Instructions ##
 
 * Make sure Node.js and npm are installed.
 * Clone or download this tool.
@@ -144,7 +144,7 @@ If do not want to use the JavaScript API, but just the CLI you don't need Node.j
 
 If you are using the CLI but don't want to mess around with Node.js and npm you can simply download the latest binaries for your OS at [Downloads](https://bitbucket.org/demandware/sfcc-ci/downloads/).
 
-#### MacOS ####
+### MacOS ###
 
 1. Download the binary with the command:
 ```bash
@@ -155,7 +155,7 @@ curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-macos
 sudo mv ./sfcc-ci-macos /usr/local/bin/sfcc-ci
 ```
 
-#### Linux ####
+### Linux ###
 
 1. Download the binary with the command:
 ```bash
@@ -166,7 +166,7 @@ curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-linux
 sudo mv ./sfcc-ci-linux /usr/local/bin/sfcc-ci
 ```
 
-#### Windows ####
+### Windows ###
 
 1. Download the binary from [here](https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-win.exe). If you have curl installed, use this command:
 ```bash

@@ -2,6 +2,9 @@
 var program = require('commander');
 
 program
+    .version(require('./package.json').version, '-V, --version');
+
+program
     .command('auth:logout')
     .description('End the current sessions and clears the authentication')
     .action(function() {

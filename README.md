@@ -157,7 +157,8 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Options:
 
-    -h, --help  output usage information
+    -V, --version  output the version number
+    -h, --help     output usage information
 
   Commands:
 

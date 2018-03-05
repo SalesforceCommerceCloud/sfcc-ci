@@ -562,6 +562,13 @@ program
 
 program.on('--help', function() {
     console.log('');
+    console.log('  Environment:');
+    console.log('');
+    console.log('    $SFCC_LOGIN_URL         set login url used for authentication');
+    console.log('    $SFCC_OAUTH_LOCAL_PORT  set Oauth local port for authentication flow');
+    console.log('    $SFCC_SANDBOX_API_HOST  set sandbox API host');
+    console.log('    $DEBUG                  enable verbose output');
+    console.log('');
     console.log('  Detailed Help:');
     console.log('');
     console.log('    Use sfcc-ci <sub:command> --help to get detailed help and example usage of sub:commands');

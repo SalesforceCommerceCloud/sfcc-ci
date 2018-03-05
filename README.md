@@ -146,7 +146,7 @@ If you are using the CLI but don't want to mess around with Node.js and npm you 
 
 #### MacOS ####
 
-1. Download the latest release with the command:
+1. Download the binary with the command:
 ```bash
 curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-macos
 ```
@@ -157,7 +157,7 @@ sudo mv ./sfcc-ci-macos /usr/local/bin/sfcc-ci
 
 #### Linux ####
 
-1. Download the latest release with the command:
+1. Download the binary with the command:
 ```bash
 curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-linux
 ```
@@ -168,7 +168,7 @@ sudo mv ./sfcc-ci-linux /usr/local/bin/sfcc-ci
 
 #### Windows ####
 
-1. Download the latest release v1.9.0 from [here](https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-win.exe). If you have curl installed, use this command:
+1. Download the binary from [here](https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-win.exe). If you have curl installed, use this command:
 ```bash
 curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-win.exe
 ```

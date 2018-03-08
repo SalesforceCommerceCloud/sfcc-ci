@@ -5,6 +5,7 @@ program
     .version(require('./package.json').version, '-V, --version')
     .option('-D, --debug', 'enable verbose output', function() {
         process.env.DEBUG = true;
+        process.env.NODE_DEBUG = 'request';
     });
 
 program

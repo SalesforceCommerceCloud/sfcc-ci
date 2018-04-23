@@ -34,7 +34,11 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 
 ## Prerequisites ##
 
-Ensure you have a valid Open Commerce API client ID (API key) set up. You'll need the client ID as well as the client secret. If you don't have a Open Commerce API client ID yet, you can create one using the [Account Manager](https://account.demandware.com).
+Ensure you have a valid Open Commerce API client ID (API key) set up. If you don't have a Open Commerce API client ID yet, you can create one using the [Account Manager](https://account.demandware.com).
+
+For automation usage you'll need the client ID as well as the client secret for authentication.
+
+If you want to manage On-Demand Sandboxes the client ID requires "Default Scopes" `roles tenantFilter profile` as well as "Redirect URIs" `http://localhost:8080` to be added to the client configuration in Account Manager.
 
 ## Configuration ##
 

@@ -194,15 +194,19 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Commands:
 
-    auth:login <client> [secret]                                    Authenticate a present user for interactive use
+    auth:login [options] <client> [secret]                          Authenticate a present user for interactive use
     auth:logout                                                     End the current sessions and clears the authentication
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                               Return the current authentication token
     sandbox:realms [options]                                        List realms eligible to manage sandboxes for
-    sandbox:list [options]                                          List all sandboxes currently created
-    sandbox:create [options] <realm> [alias]                        Triggers the creation of a new sandbox
-    sandbox:get [options] <sandbox_id>                              Retrieves details of a sandbox
+    sandbox:list [options]                                          List all available sandboxes
+    sandbox:create [options] <realm> [alias]                        Create a new sandbox
+    sandbox:get [options] <sandbox_id>                              Get detailed information about a sandbox
+    sandbox:start <sandbox_id>                                      Start a sandbox
+    sandbox:stop <sandbox_id>                                       Stop a sandbox
+    sandbox:restart <sandbox_id>                                    Restart a sandbox
+    sandbox:reset <sandbox_id>                                      Reset a sandbox
     sandbox:remove <sandbox_id>                                     Triggers the removal of an existing sandbox
     instance:add [options] <instance> [alias]                       Adds a new Commerce Cloud instance to the list of configured instances
     instance:set <alias_or_host>                                    Sets a Commerce Cloud instance as the default instance

@@ -114,18 +114,25 @@ program
     });
 
 program
-    .command('sandbox:realms')
+    .command('sandbox:realms [realm]')
     .description('List realms eligible to manage sandboxes for')
     .option('-j, --json','Formats the output in json')
-    .action(function(options) {
+    .action(function(realm, options) {
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.realms(asJson);
+        require('./lib/sandbox').cli.realms(realm, asJson);
     }).on('--help', function() {
         console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Pass the optional [realm] parameter to get details of a single realm such as quotas and usage');
+        console.log('  information of sandboxes.');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:realms');
         console.log('    $ sfcc-ci sandbox:realms --json');
+        console.log('    $ sfcc-ci sandbox:realms zzzz');
+        console.log('    $ sfcc-ci sandbox:realms zzzz --json');
         console.log();
     });
 

@@ -189,8 +189,9 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Options:
 
-    -V, --version  output the version number
-    -h, --help     output usage information
+    -V, --version                                                   output the version number
+    -D, --debug                                                     enable verbose output
+    -h, --help                                                      output usage information
 
   Commands:
 
@@ -199,7 +200,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                               Return the current authentication token
-    sandbox:realms [options]                                        List realms eligible to manage sandboxes for
+    sandbox:realms [options] [realm]                                List realms eligible to manage sandboxes for
     sandbox:list [options]                                          List all available sandboxes
     sandbox:create [options] <realm> [alias]                        Create a new sandbox
     sandbox:get [options] <sandbox_id>                              Get detailed information about a sandbox
@@ -221,6 +222,13 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
     job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
+
+  Environment:
+
+    $SFCC_LOGIN_URL         set login url used for authentication
+    $SFCC_OAUTH_LOCAL_PORT  set Oauth local port for authentication flow
+    $SFCC_SANDBOX_API_HOST  set sandbox API host
+    $DEBUG                  enable verbose output
 
   Detailed Help:
 

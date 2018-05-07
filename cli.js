@@ -198,7 +198,7 @@ program
     .description('Get detailed information about a sandbox')
     .option('-j, --json','Formats the output in json')
     .option('-h, --host','Return the host name of the sandbox')
-    .option('-o, --open','Opens a browser with the Business Manager on the sandbox')
+    .option('-O, --open','Opens a browser with the Business Manager on the sandbox')
     .action(function(sandbox_id, options) {
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };

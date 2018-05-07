@@ -226,7 +226,7 @@ program
         console.log('    $ sfcc-ci sandbox:get my-sandbox-id');
         console.log('    $ sfcc-ci sandbox:get my-sandbox-id -j');
         console.log('    $ sfcc-ci sandbox:get my-sandbox-id -h');
-        console.log('    $ sfcc-ci sandbox:get my-sandbox-id -o');
+        console.log('    $ sfcc-ci sandbox:get my-sandbox-id -O');
         console.log();
     });
 

@@ -1,6 +1,10 @@
-# Salesforce Commerce Cloud CI #
+# Salesforce Commerce Cloud CLI #
 
-The Salesforce Commerce Cloud CI is a command line interface (CLI) for interacting with Commerce Cloud instances from the command line / shell of various operating systems in order to facilitate Continuous Integration practices using Commerce Cloud. It provides a JavaScript API which can be used to integrate with higher level build tools.
+The Salesforce Commerce Cloud CLI is a command line interface (CLI) for Salesforce Commerce Cloud. It can be used to facilitate deployment and continuous integration practices using Salesforce Commerce Cloud instances.
+
+The CLI can be used from any machine either locally or from build tools, like Jenkins, Travis CI, Bitbucket Pipelines etc.
+
+Along with the CLI there is a JavaScript API which can be used to integrate with higher level applications on Node.js.
 
 # License #
 

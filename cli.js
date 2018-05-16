@@ -425,17 +425,21 @@ program
     .command('instance:list')
     .option('-j, --json', 'Formats the output in json')
     .option('-v, --verbose', 'Outputs additional details of the current configuration')
+    .option('-S, --sortby <sortby>', 'Sort by specifying any field')
     .description('List instance and client details currently configured')
     .action(function(options) {
         var verbose = ( options.verbose ? options.verbose : false );
         var asJson = ( options.json ? options.json : false );
-        require('./lib/instance').list(verbose, asJson);
+        var sortby = ( options.sortby ? options.sortby : null );
+        require('./lib/instance').list(verbose, asJson, sortby);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci instance:list');
         console.log('    $ sfcc-ci instance:list -v');
+        console.log('    $ sfcc-ci instance:list -j');
+        console.log('    $ sfcc-ci instance:list --sortby=alias');
         console.log();
     });
 
@@ -562,11 +566,13 @@ program
     .option('-i, --instance <instance>','Instance to get list of custom code versions from. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
     .option('-j, --json', 'Formats the output in json')
+    .option('-S, --sortby <sortby>', 'Sort by specifying any field')
     .description('List all custom code versions deployed on the Commerce Cloud instance')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
         var asJson = ( options.json ? options.json : false );
-        require('./lib/code').list(instance, asJson);
+        var sortby = ( options.sortby ? options.sortby : null );
+        require('./lib/code').list(instance, asJson, sortby);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -575,6 +581,7 @@ program
         console.log('    $ sfcc-ci code:list -i my-instance-alias');
         console.log('    $ sfcc-ci code:list -i my-instance.demandware.net');
         console.log('    $ sfcc-ci code:list -j');
+        console.log('    $ sfcc-ci code:list --sortby=id');
         console.log();
     });
 

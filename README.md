@@ -235,6 +235,10 @@ export DEBUG=*
 
 If you only want a single CLI command to write debug messages use the the `-D,--debug` flag with any command, e.g. `sfcc-ci <sub:command> --debug`.
 
+## Sorting list ##
+
+To output objects to a sorted list, add the `-S,--sortby` option to one of the supported commands. Sort objects by specifying any field.
+
 ## CLI Examples ##
 
 The examples below assume you have defined a set of environment variables:

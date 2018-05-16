@@ -117,9 +117,11 @@ program
     .command('sandbox:realms [realm]')
     .description('List realms eligible to manage sandboxes for')
     .option('-j, --json','Formats the output in json')
+    .option('-S, --sortby <sortby>', 'Sort by specifying any field')
     .action(function(realm, options) {
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.realms(realm, asJson);
+        var sortby = ( options.sortby ? options.sortby : null );
+        require('./lib/sandbox').cli.realms(realm, asJson, sortby);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -140,9 +142,11 @@ program
     .command('sandbox:list')
     .description('List all available sandboxes')
     .option('-j, --json','Formats the output in json')
+    .option('-S, --sortby <sortby>', 'Sort by specifying any field')
     .action(function(options) {
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.list(asJson);
+        var sortby = ( options.sortby ? options.sortby : null );
+        require('./lib/sandbox').cli.list(asJson, sortby);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');

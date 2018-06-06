@@ -9,6 +9,27 @@ program
     });
 
 program
+    .command('auth:login <client>')
+    .option('-a, --authserver [authserver]','The authorization server used to authenticate')
+    .description('Authenticate a present user for interactive use')
+    .action(function(client, options) {
+        require('./lib/auth').login(client, null, options.authserver);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Authenticate a user (resource owner) for interactive use. The user must be present and must');
+        console.log('  provide his login credentials as part of the authentication flow. The authentication requires');
+        console.log('  an API key (client).');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci auth:login app-client-id');
+        console.log('    $ sfcc-ci auth:login app-client-id -a account.demandware.com');
+        console.log();
+    });
+
+program
     .command('auth:logout')
     .description('End the current sessions and clears the authentication')
     .action(function() {
@@ -22,27 +43,33 @@ program
     });
 
 program
-    .command('client:auth [client] [secret]')
+    .command('client:auth [client] [secret] [user] [user_password]')
+    .option('-a, --authserver [authserver]','The authorization server used to authenticate')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
         'once the token expires.')
-    .description('Authenticate an Commerce Cloud Open Commerce API client')
-    .action(function(client, secret, options) {
+    .description('Authenticate an API client with an optional user for automation use')
+    .action(function(client, secret, user, user_password, options) {
         var renew = ( options.renew ? options.renew : false );
-        require('./lib/auth').auth(client, secret, renew);
+        require('./lib/auth').auth(client, secret, user, user_password, renew, options.authserver);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
         console.log();
         console.log('  Authenticate an API client for automation use, where presense of the resource owner is not');
-        console.log('  required.');
+        console.log('  required. Optionally, user (resource owner) credentials can be provided to grant access to');
+        console.log('  user specific resources.');
         console.log();
         console.log('  The client and the client secret are optional. If not provided, client and secret are read');
-        console.log('  from a dw.json file located in the current working directory.');
+        console.log('  from a dw.json file located in the current working directory. When reading credentials from');
+        console.log('  a dw.json file, the user credentials are ignored.');
         console.log();
         console.log('  Examples:');
         console.log();
+        console.log('    $ sfcc-ci client:auth my_client_id my_client_secret user_name user_password');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -r');
+        console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -a account.demandware.com');
+        console.log('    $ sfcc-ci client:auth');
         console.log();
     });
 
@@ -400,7 +427,9 @@ program.on('--help', function() {
     console.log('');
     console.log('  Environment:');
     console.log('');
-    console.log('    $DEBUG  enable verbose output');
+    console.log('    $SFCC_LOGIN_URL         set login url used for authentication');
+    console.log('    $SFCC_OAUTH_LOCAL_PORT  set Oauth local port for authentication flow');
+    console.log('    $DEBUG                  enable verbose output');
     console.log('');
     console.log('  Detailed Help:');
     console.log('');

@@ -34,7 +34,9 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 
 ## Prerequisites ##
 
-Ensure you have a valid Open Commerce API client ID (API key) set up. You'll need the client ID as well as the client secret. If you don't have a Open Commerce API client ID yet, you can create one using the [Account Manager](https://account.demandware.com).
+Ensure you have a valid Open Commerce API client ID (API key) set up. If you don't have a Open Commerce API client ID yet, you can create one using the [Account Manager](https://account.demandware.com).
+
+For automation usage you'll need the client ID as well as the client secret for authentication. If you plan to use the interactive mode, you have to configure your API client to use redirect url `http://localhost:8080`.
 
 ## Configuration ##
 
@@ -185,28 +187,36 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Options:
 
-    -V, --version  output the version number
-    -h, --help     output usage information
+    -V, --version                                                   output the version number
+    -D, --debug                                                     enable verbose output
+    -h, --help                                                      output usage information
 
   Commands:
 
-    auth:logout                                       End the current sessions and clears the authentication
-    client:auth [options] [client] [secret]           Authenticate an Commerce Cloud Open Commerce API client
-    client:auth:renew                                 Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
-    client:auth:token                                 Return the current authentication token
-    instance:add [options] <instance> [alias]         Adds a new Commerce Cloud instance to the list of configured instances
-    instance:set <alias_or_host>                      Sets a Commerce Cloud instance as the default instance
-    instance:clear                                    Clears all configured Commerce Cloud instances
-    instance:list [options]                           List instance and client details currently configured
-    instance:upload [options] <archive>               Uploads an instance import file onto a Commerce Cloud instance
-    instance:import [options] <archive>               Perform a instance import (aka site import) on a Commerce Cloud instance
-    instance:state:save [options]                     Perform a save of the state of a Commerce Cloud instance
-    instance:state:reset [options]                    Perform a reset of a previously saved state of a Commerce Cloud instance
-    code:list [options]                               List all custom code versions deployed on the Commerce Cloud instance
-    code:deploy [options] <archive>                   Deploys a custom code archive onto a Commerce Cloud instance
-    code:activate [options] <version>                 Activate the custom code version on a Commerce Cloud instance
-    job:run [options] <job_id> [job_parameters...]    Starts a job execution on a Commerce Cloud instance
-    job:status [options] <job_id> <job_execution_id>  Get the status of a job execution on a Commerce Cloud instance
+    auth:login [options] <client> [secret]                          Authenticate a present user for interactive use
+    auth:logout                                                     End the current sessions and clears the authentication
+    client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
+    client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
+    client:auth:token                                               Return the current authentication token
+    instance:add [options] <instance> [alias]                       Adds a new Commerce Cloud instance to the list of configured instances
+    instance:set <alias_or_host>                                    Sets a Commerce Cloud instance as the default instance
+    instance:clear                                                  Clears all configured Commerce Cloud instances
+    instance:list [options]                                         List instance and client details currently configured
+    instance:upload [options] <archive>                             Uploads an instance import file onto a Commerce Cloud instance
+    instance:import [options] <archive>                             Perform a instance import (aka site import) on a Commerce Cloud instance
+    instance:state:save [options]                                   Perform a save of the state of a Commerce Cloud instance
+    instance:state:reset [options]                                  Perform a reset of a previously saved state of a Commerce Cloud instance
+    code:list [options]                                             List all custom code versions deployed on the Commerce Cloud instance
+    code:deploy [options] <archive>                                 Deploys a custom code archive onto a Commerce Cloud instance
+    code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
+    job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
+    job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
+
+  Environment:
+
+    $SFCC_LOGIN_URL         set login url used for authentication
+    $SFCC_OAUTH_LOCAL_PORT  set Oauth local port for authentication flow
+    $DEBUG                  enable verbose output
 
   Detailed Help:
 
@@ -217,17 +227,41 @@ Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a s
 
 ## Configuration ##
 
-The CLI keeps it�s own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
+The CLI keeps it's own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
 
 ## Environment Variables ##
 
 `sfcc-ci` respects the following environment variables which you can use to control, how the CLI works:
 
+* `SFCC_LOGIN_URL` The login url used for authentication.
+* `SFCC_OAUTH_LOCAL_PORT` Oauth local port for authentication flow.
 * `DEBUG` Debugging mode.
+
+If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
+
+## Authentication ##
+
+`sfcc-ci` uses a default authorization server. You can overwrite this authorization server and use an alternative login url using the env var `SFCC_LOGIN_URL`:
+
+```bash
+export SFCC_LOGIN_URL=<alternative-authorization-server>
+```
+
+Removing the env var (`unset SFCC_LOGIN_URL`) will make the CLI use the default authorization server again.
+
+## Oauth Local Port ##
+
+`sfcc-ci` uses a default Oauth local port for authentication flow via command `sfcc-ci auth:login`. You can overwrite this port and use an alternative port number (e.g. if the default port is used on your machine and you cannot use is) using the env var `SFCC_OAUTH_LOCAL_PORT`:
+
+```bash
+export SFCC_OAUTH_LOCAL_PORT=<alternative-port>
+```
+
+Removing the env var (`unset SFCC_OAUTH_LOCAL_PORT`) will make the CLI use the default port again.
 
 ## Debugging ##
 
-You can force `sfcc-ci` to write debug messages to the console using the env var `DEBUG`. You can do this globally by setting the env var, so that any following CLI command will write debug messages:
+You can force `sfcc-ci` to write debug messages to the console using the env var `DEBUG`. You can do this for globally by setting the env var, so that any following CLI command will write debug messages:
 
 ```bash
 export DEBUG=*
@@ -245,22 +279,34 @@ The examples below assume you have defined a set of environment variables:
 
 * a Client ID (API Key)
 * a Client Secret (API Secret)
+* a User Name (a user in Account Manager)
+* a User Password
 
 You can do this as follows:
 
 ```bash
 export API_KEY=<my-api-key>
 export API_SECRET=<my-api-secret>
+export API_USER=<my-user>
+export API_USER_PW=<my-user-pw>
 ```
 
 Note: Some CLI commands provide structured output of the operation result as JSON. To process this JSON a tool called `jq` comes in handy. Installation and documentation of `jq` is located at https://stedolan.github.io/jq/manual/. 
 
 ### Authentication ###
 
+In an interactive mode you usually authenticate as follows:
+
+```bash
+sfcc-ci auth:login $API_KEY
+```
+
+Note, that you have to configure your API client to use redirect url `http://localhost:8080`.
+
 In an automation scenario (where no user is physically present) authentication is done as follows:
 
 ```bash
-sfcc-ci client:auth $API_KEY $API_SECRET
+sfcc-ci client:auth $API_KEY $API_SECRET $API_USER $API_USER_PW
 ```
 
 Logging out (and removing any traces of secrets from the machine):
@@ -274,8 +320,8 @@ sfcc-ci auth:logout
 Pushing code to any SFCC instance and activate it:
 
 ```bash
-sfcc-ci code:deploy path/to/code_version.zip -i your-instance.demandware.net
-sfcc-ci code:activate code_version -i your-instance.demandware.net
+sfcc-ci code:deploy <path/to/code_version.zip> -i your-instance.demandware.net
+sfcc-ci code:activate <code_version> -i your-instance.demandware.net
 ```
 
 ### Data Import ###
@@ -283,14 +329,14 @@ sfcc-ci code:activate code_version -i your-instance.demandware.net
 Running an instance import (aka site import) on any SFCC instance:
 
 ```bash
-sfcc-ci instance:upload path/to/data.zip -i your-instance.demandware.net
-sfcc-ci instance:import data.zip -i your-instance.demandware.net -s
+sfcc-ci instance:upload <path/to/data.zip> -i your-instance.demandware.net
+sfcc-ci instance:import <data.zip> -i your-instance.demandware.net -s
 ```
 
 Running the instance import without waiting for the import to finish you omit the `--sync,-s` flag:
 
 ```bash
-sfcc-ci instance:import data.zip -i your-instance.demandware.net
+sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
 ```
 
 # Using the JavaScript API #

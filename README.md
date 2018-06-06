@@ -40,7 +40,7 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 
 Ensure you have a valid Open Commerce API client ID (API key) set up. If you don't have a Open Commerce API client ID yet, you can create one using the [Account Manager](https://account.demandware.com).
 
-For automation usage you'll need the client ID as well as the client secret for authentication.
+For automation usage you'll need the client ID as well as the client secret for authentication. If you plan to use the interactive mode, you have to configure your API client to use redirect url `http://localhost:8080`.
 
 If you want to manage On-Demand Sandboxes the client ID requires "Default Scopes" `roles tenantFilter profile` as well as "Redirect URIs" `http://localhost:8080` to be added to the client configuration in Account Manager.
 
@@ -268,7 +268,7 @@ Removing the env var (`unset SFCC_LOGIN_URL`) will make the CLI use the default 
 
 ## Oauth Local Port ##
 
-`sfcc-ci` uses a default Oauth local port for authentication flow. You can overwrite this port and use an alternative port number (e.g. if the default port is used on your machine and you cannot use is) using the env var `SFCC_OAUTH_LOCAL_PORT`:
+`sfcc-ci` uses a default Oauth local port for authentication flow via command `sfcc-ci auth:login`. You can overwrite this port and use an alternative port number (e.g. if the default port is used on your machine and you cannot use is) using the env var `SFCC_OAUTH_LOCAL_PORT`:
 
 ```bash
 export SFCC_OAUTH_LOCAL_PORT=<alternative-port>
@@ -328,6 +328,8 @@ In an interactive mode you usually authenticate as follows:
 sfcc-ci auth:login $API_KEY
 ```
 
+Note, that you have to configure your API client to use redirect url `http://localhost:8080`.
+
 In an automation scenario (where no user is physically present) authentication is done as follows:
 
 ```bash
@@ -373,6 +375,7 @@ SANDBOX=`sfcc-ci sandbox:create <a-realm> -s -j`
 SANDBOX_HOST=`$SANDBOX | jq '.instance.host' -r`
 sfcc-ci code:deploy <path/to/code.zip> -i $SANDBOX_HOST
 sfcc-ci instance:upload <path/to/data.zip> -i $SANDBOX_HOST -s
+sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
 ```
 
 # Using the JavaScript API #

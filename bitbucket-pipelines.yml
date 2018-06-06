@@ -12,7 +12,7 @@ pipelines:
           # run tests
           - npm run lint
           - npm run test:unit:coverage
-          - npm run test:functional:cli minimal $TEST_SFCC_CLIENT_ID $TEST_SFCC_CLIENT_SECRET $TEST_SFCC_INSTANCE
+          - npm run test:functional:cli minimal $TEST_SFCC_CLIENT_ID $TEST_SFCC_CLIENT_SECRET $TEST_SFCC_INSTANCE $TEST_AM_USER $TEST_AM_USER_PW
   custom:
     regression:
       - step:

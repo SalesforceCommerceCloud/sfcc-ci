@@ -68,13 +68,9 @@ program
         console.log('  required. Optionally, user (resource owner) credentials can be provided to grant access to');
         console.log('  user specific resources.');
         console.log();
-        console.log('  The user and the user password are optional. If not provided, the authentication is done');
-        console.log('  using the Oauth2 client credentials grant. If user and user password are provided, the');
-        console.log('  authentication is done using the Oauth2 resource owner password credentials grant.');
-        console.log();
         console.log('  The client and the client secret are optional. If not provided, client and secret are read');
         console.log('  from a dw.json file located in the current working directory. When reading credentials from');
-        console.log('  a dw.json file, the Oauth2 client credentials grant is used and user credentials are ignored.');
+        console.log('  a dw.json file, the user credentials are ignored.');
         console.log();
         console.log('  Examples:');
         console.log();

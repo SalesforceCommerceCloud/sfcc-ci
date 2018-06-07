@@ -211,6 +211,8 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
     job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
+    user:list [options]                                             List users eligible to manage
+    user:create [options] <org>                                     Create a new user
 
   Environment:
 

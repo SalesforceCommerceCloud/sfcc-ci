@@ -453,18 +453,16 @@ program
 program
     .command('user:list')
     .description('List users eligible to manage')
-    .option('-p, --page <page>','Page index for user list')
-    .option('-m, --max <max>','Max page size for user list')
+    .option('-c, --count <count>','Max count of list items (default is 25)')
     .option('-l, --login <login>','Login of a user to get details for')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sort-by <sortby>', 'Sort by specifying any field')
     .action(function(options) {
-        var page = ( options.page ? options.page : 0 );
-        var max = ( options.max ? options.max : 10 );
+        var count = ( options.count ? options.count : null );
         var login = options.login;
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortBy ? options.sortBy : null );
-        require('./lib/user').cli.list(page, max, login, asJson, sortby);
+        require('./lib/user').cli.list(count, login, asJson, sortby);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -478,6 +476,7 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci user:list')
+        console.log('    $ sfcc-ci user:list -c 100')
         console.log('    $ sfcc-ci user:list --sort-by "lastName"')
         console.log('    $ sfcc-ci user:list -j')
         console.log('    $ sfcc-ci user:list my-login');

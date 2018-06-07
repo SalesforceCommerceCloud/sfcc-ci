@@ -88,6 +88,12 @@ Use the following snippet as your client's permission set, replace `my_client_id
           "methods":["get"],
           "read_attributes":"(**)",
           "write_attributes":"(**)"
+        },
+        {
+          "resource_id":"/roles/*/users",
+          "methods":["get"],
+          "read_attributes":"(**)",
+          "write_attributes":"(**)"
         }
       ]
     }

@@ -454,15 +454,31 @@ program
     .command('user:list')
     .description('List users eligible to manage')
     .option('-c, --count <count>','Max count of list items (default is 25)')
+    .option('-i, --instance <instance>','Instance to search users for. Can be an instance alias.')
+    .option('-r, --role <role>','Role to search users for')
     .option('-l, --login <login>','Login of a user to get details for')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sort-by <sortby>', 'Sort by specifying any field')
     .action(function(options) {
         var count = ( options.count ? options.count : null );
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
+        var role = options.role;
         var login = options.login;
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortBy ? options.sortBy : null );
-        require('./lib/user').cli.list(count, login, asJson, sortby);
+        if ( instance && role ) {
+            // get users on the instance with role
+            require('./lib/user').cli.search(instance, role, count, asJson, sortby);
+        } else if ( instance && !role ) {
+            // get users on instance
+            require('./lib/log').error('Role is missing. Please pass a role using -r,--role');
+        } else if ( !instance && role ) {
+            // search on the instance with role
+            require('./lib/log').error('Instance is missing. Please pass an instance using -i,--instance');
+        } else {
+            // get users from AM
+            require('./lib/user').cli.list(count, login, asJson, sortby);
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -479,6 +495,7 @@ program
         console.log('    $ sfcc-ci user:list -c 100')
         console.log('    $ sfcc-ci user:list --sort-by "lastName"')
         console.log('    $ sfcc-ci user:list -j')
+        console.log('    $ sfcc-ci user:list --instance my-instance --role "Administrator"');
         console.log('    $ sfcc-ci user:list my-login');
         console.log('    $ sfcc-ci user:list my-login -j');
         console.log();

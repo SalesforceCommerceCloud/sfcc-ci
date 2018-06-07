@@ -55,7 +55,7 @@ program
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  Authenticate an API client for automation use, where presense of the resource owner is not');
+        console.log('  Authenticate an API client for automation use, where presence of the resource owner is not');
         console.log('  required. Optionally, user (resource owner) credentials can be provided to grant access to');
         console.log('  user specific resources.');
         console.log();
@@ -455,6 +455,43 @@ program
         console.log('    $ sfcc-ci user:list -j')
         console.log('    $ sfcc-ci user:list my-login');
         console.log('    $ sfcc-ci user:list my-login -j');
+        console.log();
+    });
+
+program
+    .command('user:create <org>')
+    .description('Create a new user')
+    .option('-u, --user <user>', 'User details as json')
+    .option('-m, --user.mail <mail>','Login of the user')
+    .option('-f, --user.firstName <firstName>','First name of the user')
+    .option('-l, --user.lastName <lastName>','Last name of the user')
+    .option('-j, --json', 'Formats the output in json')
+    .action(function(org, options) {
+        var asJson = ( options.json ? options.json : false );
+        var user = ( options.user ? JSON.parse(options.user) : null );
+        require('./lib/user').cli.create(org, user, options['user.mail'], options['user.firstName'],
+            options['user.lastName'], asJson);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Create a new user in the org. The user will be created in the Account Manager');
+        console.log('  for the passed org. The login (an login) must be unique. After a successful');
+        console.log('  creation the user will receive a confirmation e-mail with a link to activate his');
+        console.log('  user account.');
+        console.log('');
+        console.log('  You can either pass the details of the user in json (option --user) or as individual');
+        console.log('  Options (--user.mail, --user.firstName, --user.lastName). If you supply both, individual');
+        console.log('  options have precedence and will overwrite properties supplied in json.');
+        console.log('');
+        console.log('  Default roles (if not passed in property --user) are "xchange-user" and "doc-user".');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci user:create my-org --user.mail "jdoe@email.org" --user.firstName "John" ' +
+            '--user.lastName "Doe"')
+        console.log('    $ sfcc-ci user:create my-org --user \'{"mail":"jdoe@email.org"' +
+            '"firstName":"John", "lastName":"Doe", "roles": ["xchange-user", "doc-user"]}\'')
         console.log();
     });
 

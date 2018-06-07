@@ -424,6 +424,33 @@ program
     });
 
 program
+    .command('role:list')
+    .description('List roles')
+    .option('-i, --instance <instance>','Instance to return roles for. Can be an instance alias. ' +
+        'If not specified the currently configured instance will be used.')
+    .option('-r, --role <role>','Role to get details for')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-s, --sort-by <sortby>', 'Sort by specifying any field')
+    .action(function(options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        var role = ( options.role ? options.role : null );
+        var asJson = ( options.json ? options.json : false );
+        var sortby = ( options.sortBy ? options.sortBy : null );
+        require('./lib/role').cli.list(instance, role, asJson, sortby);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci role:list')
+        console.log('    $ sfcc-ci role:list --sort-by "id"')
+        console.log('    $ sfcc-ci role:list -j')
+        console.log('    $ sfcc-ci role:list --instance my-instance.demandware.net');
+        console.log('    $ sfcc-ci user:list --instance my-instance-alias --json');
+        console.log('    $ sfcc-ci role:list --role "Administrator"')
+        console.log();
+    });
+
+program
     .command('user:list')
     .description('List users eligible to manage')
     .option('-p, --page <page>','Page index for user list')

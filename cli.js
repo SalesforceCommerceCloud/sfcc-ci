@@ -88,19 +88,6 @@ program
     });
 
 program
-    .command('client:auth:token')
-    .description('Return the current authentication token')
-    .action(function() {
-        console.log(require('./lib/auth').getToken());
-    }).on('--help', function() {
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci client:auth:token');
-        console.log();
-    });
-
-program
     .command('instance:add <instance> [alias]')
     .option('-d, --default', 'Set the new instance as default')
     .description('Adds a new Commerce Cloud instance to the list of configured instances')

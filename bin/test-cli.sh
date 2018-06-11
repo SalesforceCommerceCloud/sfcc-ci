@@ -101,19 +101,6 @@ else
 fi
 
 ###############################################################################
-###### Testing ´sfcc-ci client:auth:token´
-###############################################################################
-
-echo "Testing command ´sfcc-ci client:auth:token´:"
-TEST_RESULT=`node ./cli.js client:auth:token`
-if [ $? -eq 0 ] && [ ! -z "$TEST_RESULT" ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-###############################################################################
 ###### Testing ´sfcc-ci client:renew´
 ###############################################################################
 

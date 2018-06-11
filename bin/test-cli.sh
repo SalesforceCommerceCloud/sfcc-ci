@@ -16,6 +16,8 @@ TEST_SCOPE=$1
 TEST_CLIENT_ID=$2
 TEST_CLIENT_SECRET=$3
 TEST_HOST=$4
+TEST_USER=$5
+TEST_USER_PW=$6
 
 # scope of tests, either 'minimal' or 'full'
 if [ $TEST_SCOPE = "minimal" ]; then
@@ -72,7 +74,25 @@ fi
 ###############################################################################
 
 echo "Testing command ´sfcc-ci client:auth´ without option:"
-node ./cli.js client:auth $TEST_CLIENT_ID $TEST_CLIENT_SECRET
+node ./cli.js client:auth "$TEST_CLIENT_ID" "$TEST_CLIENT_SECRET"
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:auth´ with valid client, but invalid user credentials (expected to fail):"
+node ./cli.js client:auth "$TEST_CLIENT_ID" "$TEST_CLIENT_SECRET" "foo" "bar"
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:auth´ with valid client and user credentials:"
+node ./cli.js client:auth "$TEST_CLIENT_ID" "$TEST_CLIENT_SECRET" "$TEST_USER" "$TEST_USER_PW"
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

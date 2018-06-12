@@ -87,13 +87,13 @@ describe('Tests for lib/auth.js', function() {
 
     describe('auth function', () => {
         const clientKey = 'ABCD-1234-EFGH',
-              clientSecret = 'FooBar!!',
-              clientKey2 = '7777-8888-9999',
-              clientSecret2 = 'BizBazBuzzz',
-              user = 'test-user@test.com',
-              password = 'abc123',
-              AMURI1 = 'account-pod5.demandware.net',
-              AMURI2 = 'account-pod99.demandware.edu';
+            clientSecret = 'FooBar!!',
+            clientKey2 = '7777-8888-9999',
+            clientSecret2 = 'BizBazBuzzz',
+            user = 'test-user@test.com',
+            password = 'abc123',
+            AMURI1 = 'account-pod5.demandware.net',
+            AMURI2 = 'account-pod99.demandware.edu';
 
         describe('building request to obtain token', function() {
             beforeEach(() => {

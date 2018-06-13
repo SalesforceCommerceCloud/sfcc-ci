@@ -85,7 +85,7 @@ describe('Tests for lib/auth.js', function() {
         });
     });
 
-    describe('auth function', () => {
+    describe('auth function', function() {
         const clientKey = 'ABCD-1234-EFGH',
             clientSecret = 'FooBar!!',
             clientKey2 = '7777-8888-9999',
@@ -96,7 +96,7 @@ describe('Tests for lib/auth.js', function() {
             AMURI2 = 'account-pod99.demandware.edu';
 
         describe('building request to obtain token', function() {
-            beforeEach(() => {
+            beforeEach(function() {
                 requestStub.post.reset();
             });
 

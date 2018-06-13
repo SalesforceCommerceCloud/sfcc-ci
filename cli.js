@@ -64,7 +64,7 @@ program
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  Authenticate an API client for automation use, where presense of the resource owner is not');
+        console.log('  Authenticate an API client for automation use, where presence of the resource owner is not');
         console.log('  required. Optionally, user (resource owner) credentials can be provided to grant access to');
         console.log('  user specific resources.');
         console.log();

@@ -199,7 +199,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Commands:
 
-    auth:login [options] <client> [secret]                          Authenticate a present user for interactive use
+    auth:login [options] <client>                                   Authenticate a present user for interactive use
     auth:logout                                                     End the current sessions and clears the authentication
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.

@@ -154,15 +154,17 @@ program
 
 program
     .command('sandbox:create <realm> [alias]')
+    .option('-t, --ttl <hours>','Number of hours the sandbox will live')
     .option('-j, --json','Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .option('-d, --default', 'Sets the created sandbox as default instance.')
     .description('Create a new sandbox')
     .action(function(realm, alias, options) {
+        var ttl = ( options.ttl ? options.ttl : null );
         var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
         var setAsDefault = ( options.default ? options.default : false );
-        require('./lib/sandbox').cli.create(realm, alias, asJson, sync, setAsDefault);
+        require('./lib/sandbox').cli.create(realm, alias, ttl, asJson, sync, setAsDefault);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -180,6 +182,10 @@ program
         console.log('  alias.');
         console.log();
         console.log('  If executed with --default flag, the created sandbox will be set as new default instance.');
+        console.log();
+        console.log('  The TTL (time to live) in hours of the sandbox can be modified via the --ttl flag. The value');
+        console.log('  must adhere to the maximum TTL quotas) If absent the realms default sandbox TTL is used.');
+        console.log('  If the sandbox age reaches its TTL, it will be deleted automatically.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -190,6 +196,7 @@ program
         console.log('    $ sfcc-ci sandbox:create my-realm an-alias -s');
         console.log('    $ sfcc-ci sandbox:create my-realm an-alias -s -d');
         console.log('    $ sfcc-ci sandbox:create my-realm -s -j');
+        console.log('    $ sfcc-ci sandbox:create my-realm --ttl 6');
         console.log();
     });
 

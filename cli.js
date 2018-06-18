@@ -423,6 +423,53 @@ program
         console.log();
     });
 
+program
+    .command('package:install <site>')
+    .option('-i, --instance <instance>','Instance to run the install on. Can be an instance alias. ' +
+        'If not specified the currently configured instance will be used.')
+    .option('-p, --package <package descriptor>','Path to a package descriptor file.' +
+        'If not specified a cc-app.json file in the current directory will be assumed.')
+    .option('-c, --codeversion <code version>','A code version in your instance.' +
+        'If not specified the currently active code version will be assumed.')
+    .description('Installs an app onto an instance')
+    .action(function(site, options) {
+        if (!site) {
+            console.log('Error: please specify a site');
+            return;
+        }
+        const instance = require('./lib/instance').getInstance(options.instance);
+        const install = require('./lib/install');
+        let codeVersion;
+        require('./lib/code').getVersion(instance, options.codeversion)
+            .then(version => {
+                codeVersion = version;
+                return install.getPackage(options.package);
+            })
+            .then(package => {
+                if (package) {
+                    return install.install(instance, package, site, codeVersion);
+                } else {
+                    console.log('Error: No package descriptor found!');
+                }
+            })
+            .catch(function(e) {
+                console.log('Error running package:install ' + e);
+            });
+
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci package:install MySite');
+        console.log('    $ sfcc-ci package:install MySite -i my-instance-alias');
+        console.log('    $ sfcc-ci package:install MySite -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci package:install MySite -p /path/to/cc-app.json');
+        console.log('    $ sfcc-ci package:install MySite -c version2');
+        console.log('    $ sfcc-ci package:install MySite -i my-instance-alias -p /path/to/cc-app.json');
+        console.log('    $ sfcc-ci package:install MySite -i my-instance-alias -p /path/to/cc-app.json -c version2');
+        console.log();
+    });
+
 program.on('--help', function() {
     console.log('');
     console.log('  Environment:');

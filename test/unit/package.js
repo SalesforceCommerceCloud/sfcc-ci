@@ -123,10 +123,12 @@ demandware.cartridges.int_test.id=int_test`,
             "path": "./cartridges/int_test"
         }
     ],
-    "businessobjects": [
-        "./metadata/metadata.xml"
-    ]
-
+    "businessobjects": {
+        "global": [
+            "./metadata/metadata.xml"
+        ],
+        "site": []
+    }
 }`,
                 },
             });
@@ -392,20 +394,48 @@ demandware.cartridges.int_test.id=int_test`,
             expect(() => packageModule.testing.getBusinessObjectFilePath({ elements: []})).to.throw();
         });
 
-        it('returns path for metadata', () => {
+        it('throws an error if site given for global business object', () => {
+            expect(() => {
+                packageModule.testing.getBusinessObjectFilePath({
+                    elements: [{
+                        name: 'metadata'
+                    }],
+                }, 'SiteXYZ');
+            }).to.throw();
+        });
+
+        it('throws an error if site not given for site business object', () => {
+            expect(() => {
+                packageModule.testing.getBusinessObjectFilePath({
+                    elements: [{
+                        name: 'library'
+                    }],
+                });
+            }).to.throw();
+        });
+
+        it('returns path for global metadata', () => {
             expect(packageModule.testing.getBusinessObjectFilePath({
                 elements: [{
                     name: 'metadata'
                 }],
-            }, 'SiteXYZ')).to.include('metadata');
+            })).to.include('metadata');
         });
 
-        it('returns path for services', () => {
+        it('returns path for global services', () => {
             expect(packageModule.testing.getBusinessObjectFilePath({
                 elements: [{
                     name: 'services'
                 }],
-            }, 'SiteXYZ')).to.equal('services.xml');
+            })).to.equal('services.xml');
+        });
+
+        it('returns path for global preferences', () => {
+            expect(packageModule.testing.getBusinessObjectFilePath({
+                elements: [{
+                    name: 'preferences'
+                }],
+            })).to.equal('preferences.xml');
         });
 
         it('returns path for site payment settings', () => {
@@ -416,12 +446,20 @@ demandware.cartridges.int_test.id=int_test`,
             }, 'SiteXYZ')).to.equal('sites/SiteXYZ/payment-methods.xml');
         });
 
+        it('returns path for site preferences', () => {
+            expect(packageModule.testing.getBusinessObjectFilePath({
+                elements: [{
+                    name: 'preferences'
+                }],
+            }, 'SiteXYZ')).to.equal('sites/SiteXYZ/preferences.xml');
+        });
+
         it('returns path for site content library', () => {
             expect(packageModule.testing.getBusinessObjectFilePath({
                 elements: [{
                     name: 'library'
                 }],
-            }, 'SiteXYZ')).to.equal('sites/SiteXYZ/library.xml');
+            }, 'SiteXYZ')).to.equal('sites/SiteXYZ/library/library.xml');
         });
     });
 

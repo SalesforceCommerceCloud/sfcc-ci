@@ -424,17 +424,17 @@ program
     });
 
 program
-    .command('package:install <site>')
+    .command('package:install <sites...>')
     .option('-i, --instance <instance>','Instance to run the install on. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
     .option('-p, --package <package descriptor>','Path to a package descriptor file.' +
         'If not specified a cc-package.json file in the current directory will be assumed.')
     .option('-c, --codeversion <code version>','A code version in your instance.' +
         'If not specified the currently active code version will be assumed.')
-    .description('Installs a package onto an instance')
-    .action(function(site, options) {
-        if (!site) {
-            console.log('Error: please specify a site');
+    .description('Installs a package onto one or more sites of an instance')
+    .action(function(sites, options) {
+        if (!sites) {
+            console.log('Error: please specify at least one site');
             return;
         }
         const instance = require('./lib/instance').getInstance(options.instance);
@@ -447,7 +447,7 @@ program
             })
             .then(package => {
                 if (package) {
-                    return packageModule.install(instance, package, site, codeVersion);
+                    return packageModule.install(instance, package, sites, codeVersion);
                 } else {
                     console.log('Error: No package descriptor found!');
                 }
@@ -461,6 +461,7 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci package:install MySite');
+        console.log('    $ sfcc-ci package:install SiteA SiteB');
         console.log('    $ sfcc-ci package:install MySite -i my-instance-alias');
         console.log('    $ sfcc-ci package:install MySite -i my-instance.demandware.net');
         console.log('    $ sfcc-ci package:install MySite -p /path/to/cc-package.json');

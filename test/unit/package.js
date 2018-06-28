@@ -16,6 +16,10 @@ const auth = require('../../lib/auth'),
     job = require('../../lib/job'),
     webdav = require('../../lib/webdav');
 
+const packageBoth = require('./package_files/cc-package-both.json'),
+    packageGlobal = require('./package_files/cc-package-global.json'),
+    packageSite = require('./package_files/cc-package-site.json'),
+    packageNone = require('./package_files/cc-package-none.json');
 
 describe('Tests for lib/package.js', function() {
 
@@ -110,26 +114,23 @@ demandware.cartridges.int_test.id=int_test`,
     </type-extension>
 </metadata>
 `,
+                        'site-prefs.xml':
+`<?xml version="1.0" encoding="UTF-8"?>
+<preferences xmlns="http://www.demandware.com/xml/impex/preferences/2007-03-31">
+    <custom-preferences>
+        <all-instances/>
+        <development>
+            <preference preference-id="PrefThisIsATest">yes it is</preference>
+        </development>
+    </custom-preferences>
+</preferences>
+`,
+
                     },
-                    'cc-package.json':
-`{
-    "name": "test_app",
-    "version": "1.0",
-    "description": "fake app for unit tests",
-    "cartridges": [
-        {
-            "name": "int_test",
-            "businessmanager" : false,
-            "path": "./cartridges/int_test"
-        }
-    ],
-    "businessobjects": {
-        "global": [
-            "./metadata/metadata.xml"
-        ],
-        "site": []
-    }
-}`,
+                    'cc-package-both.json': JSON.stringify(packageBoth),
+                    'cc-package-global.json': JSON.stringify(packageGlobal),
+                    'cc-package-site.json': JSON.stringify(packageSite),
+                    'cc-package-none.json': JSON.stringify(packageNone),
                 },
             });
 
@@ -191,10 +192,10 @@ demandware.cartridges.int_test.id=int_test`,
             clock.uninstall();
         });
 
-        it('installs an app', done => {
-            packageModule.getPackage('./test_app/cc-package.json')
+        it('installs an app with global and site metadata', done => {
+            packageModule.getPackage('./test_app/cc-package-both.json')
                 .then(packageDef => {
-                    packageModule.install('localhost', packageDef, 'MySite', '1')
+                    packageModule.install('localhost', packageDef, ['MySite'], '1')
                         .then(() => {
                             // verify that external dependencies were called as expected
                             expect(deployCodePromiseStub.args[0][0]).to.equal('localhost');
@@ -224,9 +225,237 @@ demandware.cartridges.int_test.id=int_test`,
                                 'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
                             expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
 
+                            // no errors and no files left over
                             expect(errorStub.callCount).to.equal(0);
+                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
 
-                            // verify that local temp files were cleaned up
+                            done();
+                        });
+                });
+        });
+
+        it('installs an app with global and site metadata on multiple sites', done => {
+            packageModule.getPackage('./test_app/cc-package-both.json')
+                .then(packageDef => {
+                    packageModule.install('localhost', packageDef, ['SiteA', 'SiteB'], '1')
+                        .then(() => {
+                            // code only deployed once
+                            expect(deployCodePromiseStub.callCount).to.equal(1);
+
+                            // site import run twice
+                            expect(postFileStub.callCount).to.equal(2);
+                            expect(runJobStub.callCount).to.equal(2);
+                            expect(statusStub.callCount).to.equal(2);
+                            expect(deleteFileStub.callCount).to.equal(2);
+
+                            // correct site-specific path used for OCAPI calls
+                            expect(putStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/SiteA/addcartridge/int_test');
+                            expect(putStub.args[1][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
+
+                            // no errors and no files left over
+                            expect(errorStub.callCount).to.equal(0);
+                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
+
+                            done();
+                        });
+                });
+        });
+
+        it('installs an app with only global metadata', done => {
+            packageModule.getPackage('./test_app/cc-package-global.json')
+                .then(packageDef => {
+                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+                        .then(() => {
+                            // verify that external dependencies were called as expected
+                            expect(deployCodePromiseStub.args[0][0]).to.equal('localhost');
+                            expect(deployCodePromiseStub.args[0][1]).to.match(/cartridge_.*\.zip/);
+                            expect(deployCodePromiseStub.args[0][2]).to.equal(authToken);
+
+                            expect(postFileStub.args[0][0]).to.equal('localhost');
+                            expect(postFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
+                            expect(postFileStub.args[0][3]).to.equal(authToken);
+
+                            expect(runJobStub.args[0][0]).to.equal('localhost');
+                            expect(runJobStub.args[0][1]).to.equal('sfcc-site-archive-import');
+                            expect(runJobStub.args[0][2].file_name).to.match(/cc_install_.*\.zip/);
+                            expect(runJobStub.args[0][3]).to.equal(authToken);
+
+                            expect(statusStub.args[0][0]).to.equal('localhost');
+                            expect(statusStub.args[0][1]).to.equal('sfcc-site-archive-import');
+                            expect(statusStub.args[0][2]).to.equal(jobId);
+                            expect(statusStub.args[0][3]).to.equal(authToken);
+
+                            expect(deleteFileStub.args[0][0]).to.equal('localhost');
+                            expect(deleteFileStub.args[0][1]).to.equal('/impex/src/instance');
+                            expect(deleteFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
+                            expect(deleteFileStub.args[0][3]).to.equal(authToken);
+
+                            expect(putStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
+                            expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
+
+                            // no errors and no files left over
+                            expect(errorStub.callCount).to.equal(0);
+                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
+
+                            done();
+                        });
+                });
+        });
+
+        it('installs an app with only global metadata on multiple sites', done => {
+            packageModule.getPackage('./test_app/cc-package-global.json')
+                .then(packageDef => {
+                    packageModule.install('localhost', packageDef, ['SiteA', 'SiteB'], '1')
+                        .then(() => {
+                            // code only deployed once
+                            expect(deployCodePromiseStub.callCount).to.equal(1);
+
+                            // site import only run once (global metadata)
+                            expect(postFileStub.callCount).to.equal(1);
+                            expect(runJobStub.callCount).to.equal(1);
+                            expect(statusStub.callCount).to.equal(1);
+                            expect(deleteFileStub.callCount).to.equal(1);
+
+                            // correct site-specific path used for OCAPI calls
+                            expect(putStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/SiteA/addcartridge/int_test');
+                            expect(putStub.args[1][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
+
+                            // no errors and no files left over
+                            expect(errorStub.callCount).to.equal(0);
+                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
+
+                            done();
+                        });
+                });
+        });
+
+        it('installs an app with only site metadata', done => {
+            packageModule.getPackage('./test_app/cc-package-site.json')
+                .then(packageDef => {
+                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+                        .then(() => {
+                            // verify that external dependencies were called as expected
+                            expect(deployCodePromiseStub.args[0][0]).to.equal('localhost');
+                            expect(deployCodePromiseStub.args[0][1]).to.match(/cartridge_.*\.zip/);
+                            expect(deployCodePromiseStub.args[0][2]).to.equal(authToken);
+
+                            expect(postFileStub.args[0][0]).to.equal('localhost');
+                            expect(postFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
+                            expect(postFileStub.args[0][3]).to.equal(authToken);
+
+                            expect(runJobStub.args[0][0]).to.equal('localhost');
+                            expect(runJobStub.args[0][1]).to.equal('sfcc-site-archive-import');
+                            expect(runJobStub.args[0][2].file_name).to.match(/cc_install_.*\.zip/);
+                            expect(runJobStub.args[0][3]).to.equal(authToken);
+
+                            expect(statusStub.args[0][0]).to.equal('localhost');
+                            expect(statusStub.args[0][1]).to.equal('sfcc-site-archive-import');
+                            expect(statusStub.args[0][2]).to.equal(jobId);
+                            expect(statusStub.args[0][3]).to.equal(authToken);
+
+                            expect(deleteFileStub.args[0][0]).to.equal('localhost');
+                            expect(deleteFileStub.args[0][1]).to.equal('/impex/src/instance');
+                            expect(deleteFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
+                            expect(deleteFileStub.args[0][3]).to.equal(authToken);
+
+                            expect(putStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
+                            expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
+
+                            // no errors and no files left over
+                            expect(errorStub.callCount).to.equal(0);
+                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
+
+                            done();
+                        });
+                });
+        });
+
+        it('installs an app with only site metadata on multiple sites', done => {
+            packageModule.getPackage('./test_app/cc-package-site.json')
+                .then(packageDef => {
+                    packageModule.install('localhost', packageDef, ['SiteA', 'SiteB'], '1')
+                        .then(() => {
+                            // code only deployed once
+                            expect(deployCodePromiseStub.callCount).to.equal(1);
+
+                            // site import run twice
+                            expect(postFileStub.callCount).to.equal(2);
+                            expect(runJobStub.callCount).to.equal(2);
+                            expect(statusStub.callCount).to.equal(2);
+                            expect(deleteFileStub.callCount).to.equal(2);
+
+                            // correct site-specific path used for OCAPI calls
+                            expect(putStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/SiteA/addcartridge/int_test');
+                            expect(putStub.args[1][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
+
+                            // no errors and no files left over
+                            expect(errorStub.callCount).to.equal(0);
+                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
+
+                            done();
+                        });
+                });
+        });
+
+        it('installs an app with no metadata', done => {
+            packageModule.getPackage('./test_app/cc-package-none.json')
+                .then(packageDef => {
+                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+                        .then(() => {
+                            // verify that external dependencies were called as expected
+                            expect(deployCodePromiseStub.args[0][0]).to.equal('localhost');
+                            expect(deployCodePromiseStub.args[0][1]).to.match(/cartridge_.*\.zip/);
+                            expect(deployCodePromiseStub.args[0][2]).to.equal(authToken);
+
+                            // site import not run
+                            expect(postFileStub.callCount).to.equal(0);
+                            expect(runJobStub.callCount).to.equal(0);
+                            expect(statusStub.callCount).to.equal(0);
+                            expect(deleteFileStub.callCount).to.equal(0);
+
+                            expect(putStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
+                            expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
+
+                            // no errors and no files left over
+                            expect(errorStub.callCount).to.equal(0);
+                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
+
+                            done();
+                        });
+                });
+        });
+
+        it('installs an app with no metadata on multiple sites', done => {
+            packageModule.getPackage('./test_app/cc-package-none.json')
+                .then(packageDef => {
+                    packageModule.install('localhost', packageDef, ['SiteA', 'SiteB'], '1')
+                        .then(() => {
+                            // code only deployed once
+                            expect(deployCodePromiseStub.callCount).to.equal(1);
+
+                            // site import not run
+                            expect(postFileStub.callCount).to.equal(0);
+                            expect(runJobStub.callCount).to.equal(0);
+                            expect(statusStub.callCount).to.equal(0);
+                            expect(deleteFileStub.callCount).to.equal(0);
+
+                            // correct site-specific path used for OCAPI calls
+                            expect(putStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/SiteA/addcartridge/int_test');
+                            expect(putStub.args[1][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
+
+                            // no errors and no files left over
+                            expect(errorStub.callCount).to.equal(0);
                             expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
 
                             done();
@@ -236,9 +465,9 @@ demandware.cartridges.int_test.id=int_test`,
 
         it('handles an error deploying code', done => {
             deployCodePromiseStub.rejects(new Error('Uh oh'));
-            packageModule.getPackage('./test_app/cc-package.json')
+            packageModule.getPackage('./test_app/cc-package-both.json')
                 .then(packageDef => {
-                    packageModule.install('localhost', packageDef, 'MySite', '1')
+                    packageModule.install('localhost', packageDef, ['MySite'], '1')
                         .catch(err => {
                             expect(postFileStub.callCount).to.equal(0);
                             expect(runJobStub.callCount).to.equal(0);
@@ -263,9 +492,9 @@ demandware.cartridges.int_test.id=int_test`,
                     callback(new Error('eeek!'));
                 }
             );
-            packageModule.getPackage('./test_app/cc-package.json')
+            packageModule.getPackage('./test_app/cc-package-both.json')
                 .then(packageDef => {
-                    packageModule.install('localhost', packageDef, 'MySite', '1')
+                    packageModule.install('localhost', packageDef, ['MySite'], '1')
                         .catch(err => {
                             expect(runJobStub.callCount).to.equal(0);
                             expect(statusStub.callCount).to.equal(0);
@@ -284,9 +513,9 @@ demandware.cartridges.int_test.id=int_test`,
 
         it('errors if site import job returns non-200-level status code', done => {
             runJobResult.statusCode = 400;
-            packageModule.getPackage('./test_app/cc-package.json')
+            packageModule.getPackage('./test_app/cc-package-both.json')
                 .then(packageDef => {
-                    packageModule.install('localhost', packageDef, 'MySite', '1')
+                    packageModule.install('localhost', packageDef, ['MySite'], '1')
                         .catch(err => {
                             expect(statusStub.callCount).to.equal(0);
                             expect(deleteFileStub.callCount).to.equal(0);
@@ -305,9 +534,9 @@ demandware.cartridges.int_test.id=int_test`,
 
         it('errors if site import job status returns unexpected status', done => {
             statusResult.status = 'FAILED';
-            packageModule.getPackage('./test_app/cc-package.json')
+            packageModule.getPackage('./test_app/cc-package-both.json')
                 .then(packageDef => {
-                    packageModule.install('localhost', packageDef, 'MySite', '1')
+                    packageModule.install('localhost', packageDef, ['MySite'], '1')
                         .catch(err => {
                             expect(deleteFileStub.callCount).to.equal(0);
                             expect(putStub.callCount).to.equal(0);
@@ -342,9 +571,9 @@ demandware.cartridges.int_test.id=int_test`,
                 }
             );
 
-            packageModule.getPackage('./test_app/cc-package.json')
+            packageModule.getPackage('./test_app/cc-package-both.json')
                 .then(packageDef => {
-                    packageModule.install('localhost', packageDef, 'MySite', '1')
+                    packageModule.install('localhost', packageDef, ['MySite'], '1')
                         .then(() => {
                             expect(statusStub.callCount).to.equal(3);
 
@@ -370,9 +599,9 @@ demandware.cartridges.int_test.id=int_test`,
                 }
             );
 
-            packageModule.getPackage('./test_app/cc-package.json')
+            packageModule.getPackage('./test_app/cc-package-both.json')
                 .then(packageDef => {
-                    packageModule.install('localhost', packageDef, 'MySite', '1')
+                    packageModule.install('localhost', packageDef, ['MySite'], '1')
                         .then(() => {
                             expect(statusStub.callCount).to.equal(2);
 
@@ -464,4 +693,3 @@ demandware.cartridges.int_test.id=int_test`,
     });
 
 });
-

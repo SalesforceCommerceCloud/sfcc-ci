@@ -690,6 +690,14 @@ demandware.cartridges.int_test.id=int_test`,
                 }],
             }, 'SiteXYZ')).to.equal('sites/SiteXYZ/library/library.xml');
         });
+
+        it('returns path for site custom objects', () => {
+            expect(packageModule.testing.getBusinessObjectFilePath({
+                elements: [{
+                    name: 'custom-objects'
+                }],
+            }, 'SiteXYZ')).to.match(/sites\/SiteXYZ\/custom\-objects\/custom\-objects_[0-9]{6}\.xml/);
+        });
     });
 
 });

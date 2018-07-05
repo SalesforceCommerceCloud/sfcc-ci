@@ -7,6 +7,11 @@
             "name": "int_test",
             "businessmanager" : false,
             "path": "./cartridges/int_test"
+        },
+        {
+            "name": "int_test_bm",
+            "businessmanager" : true,
+            "path": "./cartridges/int_test_bm"
         }
     ],
     "businessobjects": {

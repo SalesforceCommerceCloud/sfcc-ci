@@ -94,8 +94,13 @@ describe('Tests for lib/package.js', function() {
                                 'test.js': 'var x = 1;',
                             },
                             'int_test.properties':
-`demandware.cartridges.plugin_productcompare.multipleLanguageStorefront=true
+`demandware.cartridges.int_test.multipleLanguageStorefront=true
 demandware.cartridges.int_test.id=int_test`,
+                        },
+                        'int_test_bm': {
+                            'int_test_bm.properties':
+`demandware.cartridges.int_test_bm.multipleLanguageStorefront=true
+demandware.cartridges.int_test_bm.id=int_test_bm`,
                         },
                     },
                     'metadata': {
@@ -175,10 +180,12 @@ demandware.cartridges.int_test.id=int_test`,
 
             // mock out system clock but have time proceed
             clock = lolex.install({ shouldAdvanceTime: true, advanceTimeDelta: 50 });
-
         });
 
         afterEach(() => {
+            // local temp files should always have been cleaned up
+            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
+
             mockFs.restore();
             putStub.restore();
             getTokenStub.restore();
@@ -192,7 +199,7 @@ demandware.cartridges.int_test.id=int_test`,
             clock.uninstall();
         });
 
-        it('installs an app with global and site metadata', done => {
+        it('installs an app with global and site metadata and a bm-specific cartridge', done => {
             packageModule.getPackage('./test_app/cc-package-both.json')
                 .then(packageDef => {
                     packageModule.install('localhost', packageDef, ['MySite'], '1')
@@ -221,26 +228,27 @@ demandware.cartridges.int_test.id=int_test`,
                             expect(deleteFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
                             expect(deleteFileStub.args[0][3]).to.equal(authToken);
 
+                            expect(putStub.args.length).to.equal(2);
                             expect(putStub.args[0][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
                             expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
+                            expect(putStub.args[1][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v1/sites/Sites-Site/addcartridge/int_test_bm');
 
-                            // no errors and no files left over
+                            // no errors
                             expect(errorStub.callCount).to.equal(0);
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
         });
 
-        it('installs an app with global and site metadata on multiple sites', done => {
+        it('installs an app with global and site metadata and a bm-specific cartridge on multiple sites', done => {
             packageModule.getPackage('./test_app/cc-package-both.json')
                 .then(packageDef => {
                     packageModule.install('localhost', packageDef, ['SiteA', 'SiteB'], '1')
                         .then(() => {
-                            // code only deployed once
-                            expect(deployCodePromiseStub.callCount).to.equal(1);
+                            // code deployed once per cartridge
+                            expect(deployCodePromiseStub.callCount).to.equal(2);
 
                             // site import run twice
                             expect(postFileStub.callCount).to.equal(2);
@@ -254,10 +262,8 @@ demandware.cartridges.int_test.id=int_test`,
                             expect(putStub.args[1][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
 
-                            // no errors and no files left over
+                            // no errors
                             expect(errorStub.callCount).to.equal(0);
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
@@ -296,10 +302,8 @@ demandware.cartridges.int_test.id=int_test`,
                                 'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
                             expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
 
-                            // no errors and no files left over
+                            // no errors
                             expect(errorStub.callCount).to.equal(0);
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
@@ -325,10 +329,8 @@ demandware.cartridges.int_test.id=int_test`,
                             expect(putStub.args[1][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
 
-                            // no errors and no files left over
+                            // no errors
                             expect(errorStub.callCount).to.equal(0);
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
@@ -367,10 +369,8 @@ demandware.cartridges.int_test.id=int_test`,
                                 'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
                             expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
 
-                            // no errors and no files left over
+                            // no errors
                             expect(errorStub.callCount).to.equal(0);
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
@@ -396,10 +396,8 @@ demandware.cartridges.int_test.id=int_test`,
                             expect(putStub.args[1][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
 
-                            // no errors and no files left over
+                            // no errors
                             expect(errorStub.callCount).to.equal(0);
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
@@ -425,10 +423,8 @@ demandware.cartridges.int_test.id=int_test`,
                                 'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
                             expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
 
-                            // no errors and no files left over
+                            // no errors
                             expect(errorStub.callCount).to.equal(0);
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
@@ -454,10 +450,8 @@ demandware.cartridges.int_test.id=int_test`,
                             expect(putStub.args[1][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
 
-                            // no errors and no files left over
+                            // no errors
                             expect(errorStub.callCount).to.equal(0);
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
@@ -475,11 +469,8 @@ demandware.cartridges.int_test.id=int_test`,
                             expect(deleteFileStub.callCount).to.equal(0);
                             expect(putStub.callCount).to.equal(0);
 
+                            // one error reported
                             expect(errorStub.args[0][1].message).to.equal('Uh oh');
-
-                            // verify that local temp files were cleaned up
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
@@ -501,11 +492,8 @@ demandware.cartridges.int_test.id=int_test`,
                             expect(deleteFileStub.callCount).to.equal(0);
                             expect(putStub.callCount).to.equal(0);
 
+                            // one error reported
                             expect(errorStub.args[0][1].message).to.equal('eeek!');
-
-                            // verify that local temp files were cleaned up
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
@@ -521,12 +509,9 @@ demandware.cartridges.int_test.id=int_test`,
                             expect(deleteFileStub.callCount).to.equal(0);
                             expect(putStub.callCount).to.equal(0);
 
+                            // one error reported
                             expect(errorStub.args[0][1].message).to.equal(
                                 'Site Import job unexpected response code: 400');
-
-                            // verify that local temp files were cleaned up
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
@@ -541,11 +526,8 @@ demandware.cartridges.int_test.id=int_test`,
                             expect(deleteFileStub.callCount).to.equal(0);
                             expect(putStub.callCount).to.equal(0);
 
+                            // one error reported
                             expect(errorStub.args[0][1].message).to.equal('Unexpected job status: FAILED');
-
-                            // verify that local temp files were cleaned up
-                            expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
-
                             done();
                         });
                 });
@@ -696,7 +678,7 @@ demandware.cartridges.int_test.id=int_test`,
                 elements: [{
                     name: 'custom-objects'
                 }],
-            }, 'SiteXYZ')).to.match(/sites\/SiteXYZ\/custom\-objects\/custom\-objects_[0-9]{6}\.xml/);
+            }, 'SiteXYZ')).to.match(/sites\/SiteXYZ\/custom\-objects\/custom\-objects_[0-9]{0,6}\.xml/);
         });
     });
 

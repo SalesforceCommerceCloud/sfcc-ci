@@ -73,7 +73,7 @@ describe('Tests for lib/package.js', function() {
         const authToken = 'abcdefg1234567',
             jobId = 12345;
 
-        let putStub,
+        let postStub,
             getTokenStub,
             deployCodePromiseStub,
             postFileStub,
@@ -82,6 +82,7 @@ describe('Tests for lib/package.js', function() {
             statusResult,
             statusStub,
             errorStub,
+            warnStub,
             getJobRetryTimeStub,
             clock;
 
@@ -139,8 +140,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                 },
             });
 
-            putStub = sinon.stub(request, 'put').callsFake(
-                (options, callback) => callback()
+            postStub = sinon.stub(request, 'post').callsFake(
+                (options, callback) => callback(null, {})
             );
 
             getTokenStub = sinon.stub(auth, 'getToken').returns(authToken);
@@ -175,11 +176,14 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             );
 
             errorStub = sinon.stub(console, 'error');
+            warnStub = sinon.stub(console, 'warn');
 
             getJobRetryTimeStub = sinon.stub(packageModule, 'getJobRetryTimeStub').returns(10);
 
-            // mock out system clock but have time proceed
-            clock = lolex.install({ shouldAdvanceTime: true, advanceTimeDelta: 50 });
+            // use lolex to mock out setTimeout and advance system clock 50ms for every 10ms of real time
+            // (this is to speed up package.js JOB_STATUS_RETRY_PERIOD)
+            clock = lolex.install({ toFake: ['setTimeout'] });
+            setInterval(() => clock.tick(50), 10);
         });
 
         afterEach(() => {
@@ -187,7 +191,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             expect(fse.readdirSync(os.tmpdir()).length).to.equal(0);
 
             mockFs.restore();
-            putStub.restore();
+            postStub.restore();
             getTokenStub.restore();
             deployCodePromiseStub.restore();
             postFileStub.restore();
@@ -195,6 +199,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             statusStub.restore();
             deleteFileStub.restore();
             errorStub.restore();
+            warnStub.restore();
             getJobRetryTimeStub.restore();
             clock.uninstall();
         });
@@ -228,12 +233,16 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
                             expect(deleteFileStub.args[0][3]).to.equal(authToken);
 
-                            expect(putStub.args.length).to.equal(2);
-                            expect(putStub.args[0][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
-                            expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
-                            expect(putStub.args[1][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/Sites-Site/addcartridge/int_test_bm');
+                            expect(postStub.args.length).to.equal(2);
+                            expect(postStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/MySite/cartridges');
+                            expect(postStub.args[0][0].body.name).to.equal('int_test');
+                            expect(postStub.args[0][0].body.position).to.equal('first');
+                            expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
+                            expect(postStub.args[1][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/Sites-Site/cartridges');
+                            expect(postStub.args[1][0].body.name).to.equal('int_test_bm');
+                            expect(postStub.args[1][0].body.position).to.equal('first');
 
                             // no errors
                             expect(errorStub.callCount).to.equal(0);
@@ -257,10 +266,14 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.callCount).to.equal(2);
 
                             // correct site-specific path used for OCAPI calls
-                            expect(putStub.args[0][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/SiteA/addcartridge/int_test');
-                            expect(putStub.args[1][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
+                            expect(postStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/SiteA/cartridges');
+                            expect(postStub.args[0][0].body.name).to.equal('int_test');
+                            expect(postStub.args[0][0].body.position).to.equal('first');
+                            expect(postStub.args[1][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/SiteB/cartridges');
+                            expect(postStub.args[1][0].body.name).to.equal('int_test');
+                            expect(postStub.args[1][0].body.position).to.equal('first');
 
                             // no errors
                             expect(errorStub.callCount).to.equal(0);
@@ -298,9 +311,11 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
                             expect(deleteFileStub.args[0][3]).to.equal(authToken);
 
-                            expect(putStub.args[0][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
-                            expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
+                            expect(postStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/MySite/cartridges');
+                            expect(postStub.args[0][0].body.name).to.equal('int_test');
+                            expect(postStub.args[0][0].body.position).to.equal('first');
+                            expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
 
                             // no errors
                             expect(errorStub.callCount).to.equal(0);
@@ -324,10 +339,14 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.callCount).to.equal(1);
 
                             // correct site-specific path used for OCAPI calls
-                            expect(putStub.args[0][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/SiteA/addcartridge/int_test');
-                            expect(putStub.args[1][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
+                            expect(postStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/SiteA/cartridges');
+                            expect(postStub.args[0][0].body.name).to.equal('int_test');
+                            expect(postStub.args[0][0].body.position).to.equal('first');
+                            expect(postStub.args[1][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/SiteB/cartridges');
+                            expect(postStub.args[1][0].body.name).to.equal('int_test');
+                            expect(postStub.args[1][0].body.position).to.equal('first');
 
                             // no errors
                             expect(errorStub.callCount).to.equal(0);
@@ -365,9 +384,11 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
                             expect(deleteFileStub.args[0][3]).to.equal(authToken);
 
-                            expect(putStub.args[0][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
-                            expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
+                            expect(postStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/MySite/cartridges');
+                            expect(postStub.args[0][0].body.name).to.equal('int_test');
+                            expect(postStub.args[0][0].body.position).to.equal('first');
+                            expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
 
                             // no errors
                             expect(errorStub.callCount).to.equal(0);
@@ -391,10 +412,14 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.callCount).to.equal(2);
 
                             // correct site-specific path used for OCAPI calls
-                            expect(putStub.args[0][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/SiteA/addcartridge/int_test');
-                            expect(putStub.args[1][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
+                            expect(postStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/SiteA/cartridges');
+                            expect(postStub.args[0][0].body.name).to.equal('int_test');
+                            expect(postStub.args[0][0].body.position).to.equal('first');
+                            expect(postStub.args[1][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/SiteB/cartridges');
+                            expect(postStub.args[1][0].body.name).to.equal('int_test');
+                            expect(postStub.args[1][0].body.position).to.equal('first');
 
                             // no errors
                             expect(errorStub.callCount).to.equal(0);
@@ -419,9 +444,11 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(statusStub.callCount).to.equal(0);
                             expect(deleteFileStub.callCount).to.equal(0);
 
-                            expect(putStub.args[0][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/MySite/addcartridge/int_test');
-                            expect(putStub.args[0][0].auth.bearer).to.equal(authToken);
+                            expect(postStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/MySite/cartridges');
+                            expect(postStub.args[0][0].body.name).to.equal('int_test');
+                            expect(postStub.args[0][0].body.position).to.equal('first');
+                            expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
 
                             // no errors
                             expect(errorStub.callCount).to.equal(0);
@@ -445,10 +472,14 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.callCount).to.equal(0);
 
                             // correct site-specific path used for OCAPI calls
-                            expect(putStub.args[0][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/SiteA/addcartridge/int_test');
-                            expect(putStub.args[1][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v1/sites/SiteB/addcartridge/int_test');
+                            expect(postStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/SiteA/cartridges');
+                            expect(postStub.args[0][0].body.name).to.equal('int_test');
+                            expect(postStub.args[0][0].body.position).to.equal('first');
+                            expect(postStub.args[1][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/SiteB/cartridges');
+                            expect(postStub.args[1][0].body.name).to.equal('int_test');
+                            expect(postStub.args[1][0].body.position).to.equal('first');
 
                             // no errors
                             expect(errorStub.callCount).to.equal(0);
@@ -467,7 +498,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(runJobStub.callCount).to.equal(0);
                             expect(statusStub.callCount).to.equal(0);
                             expect(deleteFileStub.callCount).to.equal(0);
-                            expect(putStub.callCount).to.equal(0);
+                            expect(postStub.callCount).to.equal(0);
 
                             // one error reported
                             expect(errorStub.args[0][1].message).to.equal('Uh oh');
@@ -490,7 +521,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(runJobStub.callCount).to.equal(0);
                             expect(statusStub.callCount).to.equal(0);
                             expect(deleteFileStub.callCount).to.equal(0);
-                            expect(putStub.callCount).to.equal(0);
+                            expect(postStub.callCount).to.equal(0);
 
                             // one error reported
                             expect(errorStub.args[0][1].message).to.equal('eeek!');
@@ -507,7 +538,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                         .catch(err => {
                             expect(statusStub.callCount).to.equal(0);
                             expect(deleteFileStub.callCount).to.equal(0);
-                            expect(putStub.callCount).to.equal(0);
+                            expect(postStub.callCount).to.equal(0);
 
                             // one error reported
                             expect(errorStub.args[0][1].message).to.equal(
@@ -524,10 +555,61 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                     packageModule.install('localhost', packageDef, ['MySite'], '1')
                         .catch(err => {
                             expect(deleteFileStub.callCount).to.equal(0);
-                            expect(putStub.callCount).to.equal(0);
+                            expect(postStub.callCount).to.equal(0);
 
                             // one error reported
                             expect(errorStub.args[0][1].message).to.equal('Unexpected job status: FAILED');
+                            done();
+                        });
+                });
+        });
+
+        it('warns but does not error if cartridge already in cartridge path', done => {
+            postStub.callsFake((options, callback) => callback(null, {
+                body: {
+                    fault: {
+                        type: 'CartridgeAlreadyExistException'
+                    }
+                }
+            }));
+
+            packageModule.getPackage('./test_app/cc-package-site.json')
+                .then(packageDef => {
+                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+                        .then(() => {
+                            // verify that external dependencies were called as expected
+                            expect(deployCodePromiseStub.args[0][0]).to.equal('localhost');
+                            expect(deployCodePromiseStub.args[0][1]).to.match(/cartridge_.*\.zip/);
+                            expect(deployCodePromiseStub.args[0][2]).to.equal(authToken);
+
+                            expect(postFileStub.args[0][0]).to.equal('localhost');
+                            expect(postFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
+                            expect(postFileStub.args[0][3]).to.equal(authToken);
+
+                            expect(runJobStub.args[0][0]).to.equal('localhost');
+                            expect(runJobStub.args[0][1]).to.equal('sfcc-site-archive-import');
+                            expect(runJobStub.args[0][2].file_name).to.match(/cc_install_.*\.zip/);
+                            expect(runJobStub.args[0][3]).to.equal(authToken);
+
+                            expect(statusStub.args[0][0]).to.equal('localhost');
+                            expect(statusStub.args[0][1]).to.equal('sfcc-site-archive-import');
+                            expect(statusStub.args[0][2]).to.equal(jobId);
+                            expect(statusStub.args[0][3]).to.equal(authToken);
+
+                            expect(deleteFileStub.args[0][0]).to.equal('localhost');
+                            expect(deleteFileStub.args[0][1]).to.equal('/impex/src/instance');
+                            expect(deleteFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
+                            expect(deleteFileStub.args[0][3]).to.equal(authToken);
+
+                            expect(postStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/MySite/cartridges');
+                            expect(postStub.args[0][0].body.name).to.equal('int_test');
+                            expect(postStub.args[0][0].body.position).to.equal('first');
+                            expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
+
+                            // warning but no errors
+                            expect(errorStub.callCount).to.equal(0);
+                            expect(warnStub.callCount).to.equal(1);
                             done();
                         });
                 });

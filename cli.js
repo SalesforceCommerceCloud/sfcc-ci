@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 var program = require('commander');
 
+const console = require('./lib/log');
+
 program
     .version(require('./package.json').version, '-V, --version')
     .option('-D, --debug', 'enable verbose output', function() {
@@ -492,6 +494,6 @@ if (!program.args.length) {
 } else if ( typeof(program.args[program.args.length-1]) !== 'object') {
     // the last argument represents the command,
     // if this is not a known Command, exit with error
-    require('./lib/log').error('Unknown command `%s`. Use `sfcc-ci --help` for help.', program.args[0]);
+    console.error('Unknown command `%s`. Use `sfcc-ci --help` for help.', program.args[0]);
     process.exitCode = 1;
 }

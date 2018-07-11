@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preferences xmlns="http://www.demandware.com/xml/impex/preferences/2007-03-31">
+    <custom-preferences>
+        <all-instances/>
+        <development>
+            <preference preference-id="testPreference">Specific Value</preference>
+        </development>
+    </custom-preferences>
+</preferences>

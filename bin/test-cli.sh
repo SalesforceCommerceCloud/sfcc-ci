@@ -29,6 +29,7 @@ else
 	exit 1
 fi
 
+
 ###############################################################################
 ###### Testing ´sfcc-ci´
 ###############################################################################
@@ -428,6 +429,27 @@ if [ $? -eq 1 ]; then
 else
 	echo -e "\t> FAILED"
 	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci package:install´
+###############################################################################
+echo "Testing command ´sfcc-ci package:install´ without a site (expected to fail):"
+node ./cli.js package:install
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+    echo -e "\t> FAILED"
+    exit 1
+fi
+
+echo "Testing command ´sfcc-ci package:install´ for SiteGenesis"
+node ./cli.js package:install SiteGenesis -p ./test/cli/package/cc-package.json
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+    echo -e "\t> FAILED"
+    exit 1
 fi
 
 ###############################################################################

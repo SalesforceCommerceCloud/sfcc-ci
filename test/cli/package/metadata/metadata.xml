@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <type-extension type-id="SitePreferences">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="testPreference">
+                <display-name xml:lang="x-default">Test Preference Name</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="TestGroup">
+                <display-name xml:lang="x-default">Test Group</display-name>
+                <attribute attribute-id="testPreference"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+</metadata>

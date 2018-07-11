@@ -1,0 +1,20 @@
+{
+    "name": "LINK_cli_test",
+    "version": "1.0",
+    "description": "package JSON file used in functional tests",
+    "cartridges": [
+        {
+            "name": "int_test",
+            "businessmanager" : false,
+            "path": "./cartridges/int_test"
+        }
+    ],
+    "businessobjects": {
+        "global": [
+            "./metadata/metadata.xml"
+        ],
+        "site": [
+            "./metadata/site-prefs.xml"
+        ]
+    }
+}

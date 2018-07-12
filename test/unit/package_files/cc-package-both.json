@@ -21,5 +21,12 @@
         "site": [
             "./metadata/site-prefs.xml"
         ]
+    },
+    "ocapi": {
+        "global": [
+        ],
+        "site": [
+            "./metadata/ocapi-data.json"
+        ]
     }
 }

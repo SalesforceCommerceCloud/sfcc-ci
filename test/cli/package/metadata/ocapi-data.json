@@ -1,0 +1,19 @@
+{
+  "_v":"17.6",
+  "clients":
+  [
+    {
+
+      "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "resources":
+      [
+        {
+          "resource_id":"/jobs/*/executions",
+          "methods":["post"],
+          "read_attributes":"(**)",
+          "write_attributes":"(**)"
+        }
+      ]
+    }
+  ]
+}

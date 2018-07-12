@@ -455,7 +455,7 @@ program
                 }
             })
             .catch(function(e) {
-                console.log('Error running package:install ' + e);
+                console.error('Error running package:install ' + e);
             });
 
     }).on('--help', function() {

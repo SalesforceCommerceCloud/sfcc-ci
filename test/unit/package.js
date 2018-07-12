@@ -74,6 +74,7 @@ describe('Tests for lib/package.js', function() {
             jobId = 12345;
 
         let postStub,
+            patchStub,
             getTokenStub,
             deployCodePromiseStub,
             postFileStub,
@@ -131,7 +132,27 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
     </custom-preferences>
 </preferences>
 `,
+                        'ocapi-data.json':
+`{
+  "_v":"17.6",
+  "clients":
+  [
+    {
 
+      "client_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "resources":
+      [
+        {
+          "resource_id":"/jobs/*/executions",
+          "methods":["post"],
+          "read_attributes":"(**)",
+          "write_attributes":"(**)"
+        }
+      ]
+    }
+  ]
+}
+`,
                     },
                     'cc-package-both.json': JSON.stringify(packageBoth),
                     'cc-package-global.json': JSON.stringify(packageGlobal),
@@ -141,6 +162,10 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             });
 
             postStub = sinon.stub(request, 'post').callsFake(
+                (options, callback) => callback(null, {})
+            );
+
+            patchStub = sinon.stub(request, 'patch').callsFake(
                 (options, callback) => callback(null, {})
             );
 
@@ -192,6 +217,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
             mockFs.restore();
             postStub.restore();
+            patchStub.restore();
             getTokenStub.restore();
             deployCodePromiseStub.restore();
             postFileStub.restore();
@@ -204,7 +230,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             clock.uninstall();
         });
 
-        it('installs an app with global and site metadata and a bm-specific cartridge', done => {
+        it('installs an app with global and site metadata and a bm-specific cartridge and OCAPI permissions', done => {
             packageModule.getPackage('./test_app/cc-package-both.json')
                 .then(packageDef => {
                     packageModule.install('localhost', packageDef, ['MySite'], '1')
@@ -233,6 +259,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
                             expect(deleteFileStub.args[0][3]).to.equal(authToken);
 
+                            // verify cartridge path OCAPI call
                             expect(postStub.args.length).to.equal(2);
                             expect(postStub.args[0][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v18_8/sites/MySite/cartridges');
@@ -244,8 +271,13 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(postStub.args[1][0].body.name).to.equal('int_test_bm');
                             expect(postStub.args[1][0].body.position).to.equal('first');
 
-                            // no errors
-                            expect(errorStub.callCount).to.equal(0);
+                            // verify OCAPI permissions OCAPI call
+                            expect(patchStub.args[0][0].uri).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/MySite/OCAPI_PERMISSIONS');
+                            expect(patchStub.args[0][0].body.PERM_OBJ.clients[0].client_id).to.equal(
+                                'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+                            expect(patchStub.args[0][0].auth.bearer).to.equal(authToken);
+
                             done();
                         });
                 });
@@ -275,8 +307,6 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(postStub.args[1][0].body.name).to.equal('int_test');
                             expect(postStub.args[1][0].body.position).to.equal('first');
 
-                            // no errors
-                            expect(errorStub.callCount).to.equal(0);
                             done();
                         });
                 });
@@ -317,8 +347,6 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(postStub.args[0][0].body.position).to.equal('first');
                             expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
 
-                            // no errors
-                            expect(errorStub.callCount).to.equal(0);
                             done();
                         });
                 });
@@ -348,8 +376,6 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(postStub.args[1][0].body.name).to.equal('int_test');
                             expect(postStub.args[1][0].body.position).to.equal('first');
 
-                            // no errors
-                            expect(errorStub.callCount).to.equal(0);
                             done();
                         });
                 });
@@ -390,8 +416,6 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(postStub.args[0][0].body.position).to.equal('first');
                             expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
 
-                            // no errors
-                            expect(errorStub.callCount).to.equal(0);
                             done();
                         });
                 });
@@ -421,8 +445,6 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(postStub.args[1][0].body.name).to.equal('int_test');
                             expect(postStub.args[1][0].body.position).to.equal('first');
 
-                            // no errors
-                            expect(errorStub.callCount).to.equal(0);
                             done();
                         });
                 });
@@ -450,8 +472,6 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(postStub.args[0][0].body.position).to.equal('first');
                             expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
 
-                            // no errors
-                            expect(errorStub.callCount).to.equal(0);
                             done();
                         });
                 });
@@ -481,8 +501,6 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(postStub.args[1][0].body.name).to.equal('int_test');
                             expect(postStub.args[1][0].body.position).to.equal('first');
 
-                            // no errors
-                            expect(errorStub.callCount).to.equal(0);
                             done();
                         });
                 });
@@ -500,8 +518,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.callCount).to.equal(0);
                             expect(postStub.callCount).to.equal(0);
 
-                            // one error reported
-                            expect(errorStub.args[0][1].message).to.equal('Uh oh');
+                            expect(err.message).to.equal('Uh oh');
                             done();
                         });
                 });
@@ -523,8 +540,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.callCount).to.equal(0);
                             expect(postStub.callCount).to.equal(0);
 
-                            // one error reported
-                            expect(errorStub.args[0][1].message).to.equal('eeek!');
+                            // error thrown
+                            expect(err.message).to.equal('eeek!');
                             done();
                         });
                 });
@@ -540,9 +557,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.callCount).to.equal(0);
                             expect(postStub.callCount).to.equal(0);
 
-                            // one error reported
-                            expect(errorStub.args[0][1].message).to.equal(
-                                'Site Import job unexpected response code: 400');
+                            // error thrown
+                            expect(err.message).to.equal('Site Import job unexpected response code: 400');
                             done();
                         });
                 });
@@ -557,8 +573,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.callCount).to.equal(0);
                             expect(postStub.callCount).to.equal(0);
 
-                            // one error reported
-                            expect(errorStub.args[0][1].message).to.equal('Unexpected job status: FAILED');
+                            // error thrown
+                            expect(err.message).to.equal('Unexpected job status: FAILED');
                             done();
                         });
                 });
@@ -763,5 +779,88 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             }, 'SiteXYZ')).to.match(/sites\/SiteXYZ\/custom\-objects\/custom\-objects_[0-9]{0,6}\.xml/);
         });
     });
+
+    describe('tests for readOCAPIPermissions function', () => {
+        let pathExistsStub,
+            readJsonStub,
+            permissionObj,
+            packageDef;
+
+        beforeEach(() => {
+            packageDef = {
+                baseDir: '/blah',
+                ocapi: {
+                    site: [
+                        './site-ocapi-data1.json',
+                        './site-ocapi-data2.json',
+                    ],
+                    global: [
+                        './global-ocapi-data1.json',
+                        './global-ocapi-data2.json',
+                        './global-ocapi-data3.json',
+                    ],
+                },
+            };
+
+            permissionObj = {
+                _v: '17.6',
+            };
+            pathExistsStub = sinon.stub(fse, 'pathExists').resolves(true);
+            readJsonStub = sinon.stub(fse, 'readJson').resolves(permissionObj);
+        });
+
+        afterEach(() => {
+            pathExistsStub.restore();
+            readJsonStub.restore();
+        });
+
+        it('verifies multiple valid ocapi permissions files', done => {
+            packageModule.testing.readOCAPIPermissions(packageDef)
+                .then(() => done());
+        });
+
+        it('verifies a valid site ocapi permissions file', done => {
+            delete packageDef.ocapi.global;
+            packageDef.ocapi.site.length = 1;
+            packageModule.testing.readOCAPIPermissions(packageDef)
+                .then(() => done());
+        });
+
+        it('verifies when there are no ocapi permission files', done => {
+            delete packageDef.ocapi.site;
+            delete packageDef.ocapi.global;
+            packageModule.testing.readOCAPIPermissions(packageDef)
+                .then(() => done());
+        });
+
+        it('rejects when file is not found', done => {
+            pathExistsStub.resolves(false);
+            packageModule.testing.readOCAPIPermissions(packageDef)
+                .catch(err => {
+                    expect(err.message).to.equal('OCAPI Permission file /blah/site-ocapi-data1.json not found');
+                    done();
+                });
+        });
+
+        it('rejects when file has no version attribute', done => {
+            delete permissionObj._v;
+            packageModule.testing.readOCAPIPermissions(packageDef)
+                .catch(err => {
+                    expect(err.message).to.match(/^OCAPI Permission file.*version must be at least/);
+                    done();
+                });
+        });
+
+        it('rejects when file version is too old', done => {
+            permissionObj._v = '15.2';
+            packageModule.testing.readOCAPIPermissions(packageDef)
+                .catch(err => {
+                    expect(err.message).to.match(/^OCAPI Permission file.*version must be at least/);
+                    done();
+                });
+        });
+
+    });
+
 
 });

@@ -426,50 +426,50 @@ program
     });
 
 program
-    .command('package:install <sites...>')
+    .command('app:install <sites...>')
     .option('-i, --instance <instance>','Instance to run the install on. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
-    .option('-p, --package <package descriptor>','Path to a package descriptor file.' +
-        'If not specified a cc-package.json file in the current directory will be assumed.')
+    .option('-a, --app <app definition>','Path to a app definition file.' +
+        'If not specified an app.json file in the current directory will be assumed.')
     .option('-c, --codeversion <code version>','A code version in your instance.' +
         'If not specified the currently active code version will be assumed.')
-    .description('Installs a package onto one or more sites of an instance')
+    .description('Installs an app onto one or more sites of an instance')
     .action(function(sites, options) {
         if (!sites) {
             console.log('Error: please specify at least one site');
             return;
         }
         const instance = require('./lib/instance').getInstance(options.instance);
-        const packageModule = require('./lib/package');
+        const app = require('./lib/app');
         let codeVersion;
         require('./lib/code').getVersion(instance, options.codeversion)
             .then(version => {
                 codeVersion = version;
-                return packageModule.getPackage(options.package);
+                return app.getApp(options.app);
             })
-            .then(package => {
-                if (package) {
-                    return packageModule.install(instance, package, sites, codeVersion);
+            .then(appDef => {
+                if (appDef) {
+                    return app.install(instance, appDef, sites, codeVersion);
                 } else {
-                    console.log('Error: No package descriptor found!');
+                    console.log('Error: No app definition found!');
                 }
             })
             .catch(function(e) {
-                console.error('Error running package:install ' + e);
+                console.error('Error running app:install ' + e);
             });
 
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci package:install MySite');
-        console.log('    $ sfcc-ci package:install SiteA SiteB');
-        console.log('    $ sfcc-ci package:install MySite -i my-instance-alias');
-        console.log('    $ sfcc-ci package:install MySite -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci package:install MySite -p /path/to/cc-package.json');
-        console.log('    $ sfcc-ci package:install MySite -c version2');
-        console.log('    $ sfcc-ci package:install MySite -i my-instance-alias -p /path/to/cc-package.json');
-        console.log('    $ sfcc-ci package:install MySite -i my-instance-alias -p /path/to/cc-package.json -c version2');
+        console.log('    $ sfcc-ci app:install MySite');
+        console.log('    $ sfcc-ci app:install SiteA SiteB');
+        console.log('    $ sfcc-ci app:install MySite -i my-instance-alias');
+        console.log('    $ sfcc-ci app:install MySite -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci app:install MySite -p /path/to/app.json');
+        console.log('    $ sfcc-ci app:install MySite -c version2');
+        console.log('    $ sfcc-ci app:install MySite -i my-instance-alias -p /path/to/app.json');
+        console.log('    $ sfcc-ci app:install MySite -i my-instance-alias -p /path/to/app.json -c version2');
         console.log();
     });
 

@@ -12,26 +12,26 @@ const assert = chai.assert,
 
 const auth = require('../../lib/auth'),
     console = require('../../lib/log'),
-    packageModule = require('../../lib/package'),
+    app = require('../../lib/app'),
     job = require('../../lib/job'),
     webdav = require('../../lib/webdav');
 
-const packageBoth = require('./package_files/cc-package-both.json'),
-    packageGlobal = require('./package_files/cc-package-global.json'),
-    packageSite = require('./package_files/cc-package-site.json'),
-    packageNone = require('./package_files/cc-package-none.json');
+const appBoth = require('./app_files/app-both.json'),
+    appGlobal = require('./app_files/app-global.json'),
+    appSite = require('./app_files/app-site.json'),
+    appNone = require('./app_files/app-none.json');
 
-describe('Tests for lib/package.js', function() {
+describe('Tests for lib/app.js', function() {
 
-    describe('getPackage function', function() {
+    describe('getApp function', function() {
         let pathExistsStub,
             readJsonStub,
-            packageObject;
+            appDef;
 
         beforeEach(() => {
-            packageObject = {};
+            appDef = {};
             pathExistsStub = sinon.stub(fse, 'pathExists').resolves(true);
-            readJsonStub = sinon.stub(fse, 'readJson').resolves(packageObject);
+            readJsonStub = sinon.stub(fse, 'readJson').resolves(appDef);
         });
 
         afterEach(() => {
@@ -40,29 +40,29 @@ describe('Tests for lib/package.js', function() {
 
         });
 
-        it('looks for cc-package.json in cwd if no package file given', () => {
-            packageModule.getPackage();
-            assert(pathExistsStub.calledWith(process.cwd() + '/cc-package.json'));
+        it('looks for app.json in cwd if no app def file given', () => {
+            app.getApp();
+            assert(pathExistsStub.calledWith(process.cwd() + '/app.json'));
         });
 
-        it('returns package JSON if package file exists', () => {
-            return packageModule.getPackage()
+        it('returns app JSON if app def file exists', () => {
+            return app.getApp()
                 .then(jsonResult => {
-                    expect(jsonResult).to.equal(packageObject);
+                    expect(jsonResult).to.equal(appDef);
                 });
         });
 
-        it('returns undefined if package file does not exist', () => {
+        it('returns undefined if app file does not exist', () => {
             pathExistsStub.resolves(false);
 
-            return packageModule.getPackage()
+            return app.getApp()
                 .then(jsonResult => {
                     expect(jsonResult).to.be.undefined;
                 });
         });
 
-        it('adds a baseDir attribute to package object', () => {
-            return packageModule.getPackage()
+        it('adds a baseDir attribute to app def object', () => {
+            return app.getApp()
                 .then(jsonResult => {
                     expect(jsonResult.baseDir).to.exist;
                 });
@@ -154,10 +154,10 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 }
 `,
                     },
-                    'cc-package-both.json': JSON.stringify(packageBoth),
-                    'cc-package-global.json': JSON.stringify(packageGlobal),
-                    'cc-package-site.json': JSON.stringify(packageSite),
-                    'cc-package-none.json': JSON.stringify(packageNone),
+                    'app-both.json': JSON.stringify(appBoth),
+                    'app-global.json': JSON.stringify(appGlobal),
+                    'app-site.json': JSON.stringify(appSite),
+                    'app-none.json': JSON.stringify(appNone),
                 },
             });
 
@@ -203,10 +203,10 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             errorStub = sinon.stub(console, 'error');
             warnStub = sinon.stub(console, 'warn');
 
-            getJobRetryTimeStub = sinon.stub(packageModule, 'getJobRetryTimeStub').returns(10);
+            getJobRetryTimeStub = sinon.stub(app, 'getJobRetryTimeStub').returns(10);
 
             // use lolex to mock out setTimeout and advance system clock 50ms for every 10ms of real time
-            // (this is to speed up package.js JOB_STATUS_RETRY_PERIOD)
+            // (this is to speed up app.js JOB_STATUS_RETRY_PERIOD)
             clock = lolex.install({ toFake: ['setTimeout'] });
             setInterval(() => clock.tick(50), 10);
         });
@@ -231,9 +231,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('installs an app with global and site metadata and a bm-specific cartridge and OCAPI permissions', done => {
-            packageModule.getPackage('./test_app/cc-package-both.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+            app.getApp('./test_app/app-both.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['MySite'], '1')
                         .then(() => {
                             // verify that external dependencies were called as expected
                             expect(deployCodePromiseStub.args[0][0]).to.equal('localhost');
@@ -284,9 +284,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('installs an app with global and site metadata and a bm-specific cartridge on multiple sites', done => {
-            packageModule.getPackage('./test_app/cc-package-both.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['SiteA', 'SiteB'], '1')
+            app.getApp('./test_app/app-both.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['SiteA', 'SiteB'], '1')
                         .then(() => {
                             // code deployed once per cartridge
                             expect(deployCodePromiseStub.callCount).to.equal(2);
@@ -313,9 +313,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('installs an app with only global metadata', done => {
-            packageModule.getPackage('./test_app/cc-package-global.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+            app.getApp('./test_app/app-global.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['MySite'], '1')
                         .then(() => {
                             // verify that external dependencies were called as expected
                             expect(deployCodePromiseStub.args[0][0]).to.equal('localhost');
@@ -353,9 +353,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('installs an app with only global metadata on multiple sites', done => {
-            packageModule.getPackage('./test_app/cc-package-global.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['SiteA', 'SiteB'], '1')
+            app.getApp('./test_app/app-global.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['SiteA', 'SiteB'], '1')
                         .then(() => {
                             // code only deployed once
                             expect(deployCodePromiseStub.callCount).to.equal(1);
@@ -382,9 +382,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('installs an app with only site metadata', done => {
-            packageModule.getPackage('./test_app/cc-package-site.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+            app.getApp('./test_app/app-site.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['MySite'], '1')
                         .then(() => {
                             // verify that external dependencies were called as expected
                             expect(deployCodePromiseStub.args[0][0]).to.equal('localhost');
@@ -422,9 +422,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('installs an app with only site metadata on multiple sites', done => {
-            packageModule.getPackage('./test_app/cc-package-site.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['SiteA', 'SiteB'], '1')
+            app.getApp('./test_app/app-site.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['SiteA', 'SiteB'], '1')
                         .then(() => {
                             // code only deployed once
                             expect(deployCodePromiseStub.callCount).to.equal(1);
@@ -451,9 +451,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('installs an app with no metadata', done => {
-            packageModule.getPackage('./test_app/cc-package-none.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+            app.getApp('./test_app/app-none.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['MySite'], '1')
                         .then(() => {
                             // verify that external dependencies were called as expected
                             expect(deployCodePromiseStub.args[0][0]).to.equal('localhost');
@@ -478,9 +478,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('installs an app with no metadata on multiple sites', done => {
-            packageModule.getPackage('./test_app/cc-package-none.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['SiteA', 'SiteB'], '1')
+            app.getApp('./test_app/app-none.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['SiteA', 'SiteB'], '1')
                         .then(() => {
                             // code only deployed once
                             expect(deployCodePromiseStub.callCount).to.equal(1);
@@ -508,9 +508,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
         it('handles an error deploying code', done => {
             deployCodePromiseStub.rejects(new Error('Uh oh'));
-            packageModule.getPackage('./test_app/cc-package-both.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+            app.getApp('./test_app/app-both.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['MySite'], '1')
                         .catch(err => {
                             expect(postFileStub.callCount).to.equal(0);
                             expect(runJobStub.callCount).to.equal(0);
@@ -531,9 +531,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                     callback(new Error('eeek!'));
                 }
             );
-            packageModule.getPackage('./test_app/cc-package-both.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+            app.getApp('./test_app/app-both.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['MySite'], '1')
                         .catch(err => {
                             expect(runJobStub.callCount).to.equal(0);
                             expect(statusStub.callCount).to.equal(0);
@@ -549,9 +549,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
         it('errors if site import job returns non-200-level status code', done => {
             runJobResult.statusCode = 400;
-            packageModule.getPackage('./test_app/cc-package-both.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+            app.getApp('./test_app/app-both.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['MySite'], '1')
                         .catch(err => {
                             expect(statusStub.callCount).to.equal(0);
                             expect(deleteFileStub.callCount).to.equal(0);
@@ -566,9 +566,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
         it('errors if site import job status returns unexpected status', done => {
             statusResult.status = 'FAILED';
-            packageModule.getPackage('./test_app/cc-package-both.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+            app.getApp('./test_app/app-both.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['MySite'], '1')
                         .catch(err => {
                             expect(deleteFileStub.callCount).to.equal(0);
                             expect(postStub.callCount).to.equal(0);
@@ -589,9 +589,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                 }
             }));
 
-            packageModule.getPackage('./test_app/cc-package-site.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+            app.getApp('./test_app/app-site.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['MySite'], '1')
                         .then(() => {
                             // verify that external dependencies were called as expected
                             expect(deployCodePromiseStub.args[0][0]).to.equal('localhost');
@@ -651,9 +651,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                 }
             );
 
-            packageModule.getPackage('./test_app/cc-package-both.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+            app.getApp('./test_app/app-both.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['MySite'], '1')
                         .then(() => {
                             expect(statusStub.callCount).to.equal(3);
 
@@ -679,9 +679,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                 }
             );
 
-            packageModule.getPackage('./test_app/cc-package-both.json')
-                .then(packageDef => {
-                    packageModule.install('localhost', packageDef, ['MySite'], '1')
+            app.getApp('./test_app/app-both.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['MySite'], '1')
                         .then(() => {
                             expect(statusStub.callCount).to.equal(2);
 
@@ -696,16 +696,16 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
     describe('tests for getBusinessObjectFilePath function', () => {
         it('throws an error if no elements attribute', () => {
-            expect(() => packageModule.testing.getBusinessObjectFilePath()).to.throw();
+            expect(() => app.testing.getBusinessObjectFilePath()).to.throw();
         });
 
         it('throws an error if elements attribute is empty', () => {
-            expect(() => packageModule.testing.getBusinessObjectFilePath({ elements: []})).to.throw();
+            expect(() => app.testing.getBusinessObjectFilePath({ elements: []})).to.throw();
         });
 
         it('throws an error if site given for global business object', () => {
             expect(() => {
-                packageModule.testing.getBusinessObjectFilePath({
+                app.testing.getBusinessObjectFilePath({
                     elements: [{
                         name: 'metadata'
                     }],
@@ -715,7 +715,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
         it('throws an error if site not given for site business object', () => {
             expect(() => {
-                packageModule.testing.getBusinessObjectFilePath({
+                app.testing.getBusinessObjectFilePath({
                     elements: [{
                         name: 'library'
                     }],
@@ -724,7 +724,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for global metadata', () => {
-            expect(packageModule.testing.getBusinessObjectFilePath({
+            expect(app.testing.getBusinessObjectFilePath({
                 elements: [{
                     name: 'metadata'
                 }],
@@ -732,7 +732,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for global services', () => {
-            expect(packageModule.testing.getBusinessObjectFilePath({
+            expect(app.testing.getBusinessObjectFilePath({
                 elements: [{
                     name: 'services'
                 }],
@@ -740,7 +740,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for global preferences', () => {
-            expect(packageModule.testing.getBusinessObjectFilePath({
+            expect(app.testing.getBusinessObjectFilePath({
                 elements: [{
                     name: 'preferences'
                 }],
@@ -748,7 +748,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for site payment settings', () => {
-            expect(packageModule.testing.getBusinessObjectFilePath({
+            expect(app.testing.getBusinessObjectFilePath({
                 elements: [{
                     name: 'payment-settings'
                 }],
@@ -756,7 +756,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for site preferences', () => {
-            expect(packageModule.testing.getBusinessObjectFilePath({
+            expect(app.testing.getBusinessObjectFilePath({
                 elements: [{
                     name: 'preferences'
                 }],
@@ -764,7 +764,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for site content library', () => {
-            expect(packageModule.testing.getBusinessObjectFilePath({
+            expect(app.testing.getBusinessObjectFilePath({
                 elements: [{
                     name: 'library'
                 }],
@@ -772,7 +772,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for site custom objects', () => {
-            expect(packageModule.testing.getBusinessObjectFilePath({
+            expect(app.testing.getBusinessObjectFilePath({
                 elements: [{
                     name: 'custom-objects'
                 }],
@@ -784,10 +784,10 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         let pathExistsStub,
             readJsonStub,
             permissionObj,
-            packageDef;
+            appDef;
 
         beforeEach(() => {
-            packageDef = {
+            appDef = {
                 baseDir: '/blah',
                 ocapi: {
                     site: [
@@ -815,27 +815,27 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('verifies multiple valid ocapi permissions files', done => {
-            packageModule.testing.readOCAPIPermissions(packageDef)
+            app.testing.readOCAPIPermissions(appDef)
                 .then(() => done());
         });
 
         it('verifies a valid site ocapi permissions file', done => {
-            delete packageDef.ocapi.global;
-            packageDef.ocapi.site.length = 1;
-            packageModule.testing.readOCAPIPermissions(packageDef)
+            delete appDef.ocapi.global;
+            appDef.ocapi.site.length = 1;
+            app.testing.readOCAPIPermissions(appDef)
                 .then(() => done());
         });
 
         it('verifies when there are no ocapi permission files', done => {
-            delete packageDef.ocapi.site;
-            delete packageDef.ocapi.global;
-            packageModule.testing.readOCAPIPermissions(packageDef)
+            delete appDef.ocapi.site;
+            delete appDef.ocapi.global;
+            app.testing.readOCAPIPermissions(appDef)
                 .then(() => done());
         });
 
         it('rejects when file is not found', done => {
             pathExistsStub.resolves(false);
-            packageModule.testing.readOCAPIPermissions(packageDef)
+            app.testing.readOCAPIPermissions(appDef)
                 .catch(err => {
                     expect(err.message).to.equal('OCAPI Permission file /blah/site-ocapi-data1.json not found');
                     done();
@@ -844,7 +844,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
         it('rejects when file has no version attribute', done => {
             delete permissionObj._v;
-            packageModule.testing.readOCAPIPermissions(packageDef)
+            app.testing.readOCAPIPermissions(appDef)
                 .catch(err => {
                     expect(err.message).to.match(/^OCAPI Permission file.*version must be at least/);
                     done();
@@ -853,7 +853,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
         it('rejects when file version is too old', done => {
             permissionObj._v = '15.2';
-            packageModule.testing.readOCAPIPermissions(packageDef)
+            app.testing.readOCAPIPermissions(appDef)
                 .catch(err => {
                     expect(err.message).to.match(/^OCAPI Permission file.*version must be at least/);
                     done();

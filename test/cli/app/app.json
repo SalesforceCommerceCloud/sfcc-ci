@@ -1,7 +1,7 @@
 {
     "name": "LINK_cli_test",
     "version": "1.0",
-    "description": "package JSON file used in functional tests",
+    "description": "app JSON file used in functional tests",
     "cartridges": [
         {
             "name": "int_test",

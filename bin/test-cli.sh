@@ -432,10 +432,10 @@ else
 fi
 
 ###############################################################################
-###### Testing ´sfcc-ci package:install´
+###### Testing ´sfcc-ci app:install´
 ###############################################################################
-echo "Testing command ´sfcc-ci package:install´ without a site (expected to fail):"
-node ./cli.js package:install
+echo "Testing command ´sfcc-ci app:install´ without a site (expected to fail):"
+node ./cli.js app:install
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -443,8 +443,8 @@ else
     exit 1
 fi
 
-echo "Testing command ´sfcc-ci package:install´ for SiteGenesis"
-node ./cli.js package:install SiteGenesis -p ./test/cli/package/cc-package.json
+echo "Testing command ´sfcc-ci app:install´ for SiteGenesis"
+node ./cli.js app:install SiteGenesis -p ./test/cli/app/app.json
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

@@ -273,8 +273,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
                             // verify OCAPI permissions OCAPI call
                             expect(patchStub.args[0][0].uri).to.equal(
-                                'https://localhost/s/-/dw/data/v18_8/sites/MySite/OCAPI_PERMISSIONS');
-                            expect(patchStub.args[0][0].body.PERM_OBJ.clients[0].client_id).to.equal(
+                                'https://localhost/s/-/dw/data/v18_8/sites/MySite/ocapiconfig/data');
+                            expect(patchStub.args[0][0].body.clients[0].client_id).to.equal(
                                 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
                             expect(patchStub.args[0][0].auth.bearer).to.equal(authToken);
 
@@ -804,6 +804,9 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
             permissionObj = {
                 _v: '17.6',
+                clients: [{
+                    client_id: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                }],
             };
             pathExistsStub = sinon.stub(fse, 'pathExists').resolves(true);
             readJsonStub = sinon.stub(fse, 'readJson').resolves(permissionObj);
@@ -814,19 +817,19 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             readJsonStub.restore();
         });
 
-        it('verifies multiple valid ocapi permissions files', done => {
+        it('reads multiple valid ocapi permissions files', done => {
             app.testing.readOCAPIPermissions(appDef)
                 .then(() => done());
         });
 
-        it('verifies a valid site ocapi permissions file', done => {
+        it('reads a valid site ocapi permissions file', done => {
             delete appDef.ocapi.global;
             appDef.ocapi.site.length = 1;
             app.testing.readOCAPIPermissions(appDef)
                 .then(() => done());
         });
 
-        it('verifies when there are no ocapi permission files', done => {
+        it('reads when there are no ocapi permission files', done => {
             delete appDef.ocapi.site;
             delete appDef.ocapi.global;
             app.testing.readOCAPIPermissions(appDef)
@@ -856,6 +859,24 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             app.testing.readOCAPIPermissions(appDef)
                 .catch(err => {
                     expect(err.message).to.match(/^OCAPI Permission file.*version must be at least/);
+                    done();
+                });
+        });
+
+        it('rejects when file has no clients defined', done => {
+            permissionObj.clients = [];
+            app.testing.readOCAPIPermissions(appDef)
+                .catch(err => {
+                    expect(err.message).to.match(/^OCAPI Permission file.*must have exactly one client defined/);
+                    done();
+                });
+        });
+
+        it('rejects when file has more than one clients defined', done => {
+            permissionObj.clients = [{}, {}, {}];
+            app.testing.readOCAPIPermissions(appDef)
+                .catch(err => {
+                    expect(err.message).to.match(/^OCAPI Permission file.*must have exactly one client defined/);
                     done();
                 });
         });

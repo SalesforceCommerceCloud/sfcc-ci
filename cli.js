@@ -429,10 +429,12 @@ program
     .command('app:install <sites...>')
     .option('-i, --instance <instance>','Instance to run the install on. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
-    .option('-a, --app <app definition>','Path to a app definition file.' +
+    .option('-d, --app <app definition>','Path to a app definition file.' +
         'If not specified an app.json file in the current directory will be assumed.')
     .option('-c, --codeversion <code version>','A code version in your instance.' +
         'If not specified the currently active code version will be assumed.')
+    .option('-k, --clientid <client id>','An OCAPI client id' +
+        'Used when adding new OCAPI permissions. If not specified, version in OCAPI JSON file will be used.')
     .description('Installs an app onto one or more sites of an instance')
     .action(function(sites, options) {
         if (!sites) {
@@ -449,7 +451,7 @@ program
             })
             .then(appDef => {
                 if (appDef) {
-                    return app.install(instance, appDef, sites, codeVersion);
+                    return app.install(instance, appDef, sites, codeVersion, options.clientid);
                 } else {
                     console.log('Error: No app definition found!');
                 }
@@ -466,7 +468,7 @@ program
         console.log('    $ sfcc-ci app:install SiteA SiteB');
         console.log('    $ sfcc-ci app:install MySite -i my-instance-alias');
         console.log('    $ sfcc-ci app:install MySite -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci app:install MySite -p /path/to/app.json');
+        console.log('    $ sfcc-ci app:install MySite -d /path/to/app.json');
         console.log('    $ sfcc-ci app:install MySite -c version2');
         console.log('    $ sfcc-ci app:install MySite -i my-instance-alias -p /path/to/app.json');
         console.log('    $ sfcc-ci app:install MySite -i my-instance-alias -p /path/to/app.json -c version2');

@@ -883,5 +883,146 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
     });
 
+    describe('tests for addOCAPIPermissions function', () => {
+        let instance,
+            sites,
+            permissions,
+            permissionObj,
+            clientId,
+            patchStub,
+            errorStub,
+            warnStub;
 
+        beforeEach(() => {
+            instance = 'localhost';
+            sites = ['SiteA'];
+            permissions = {
+                global: [],
+                site: [],
+            };
+            permissionObj = {
+                _v: '17.6',
+                clients: [{
+                    client_id: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+                }],
+            };
+            clientId = undefined;
+            patchStub = sinon.stub(request, 'patch').callsFake(
+                (options, callback) => callback(null, {})
+            );
+            errorStub = sinon.stub(console, 'error');
+            warnStub = sinon.stub(console, 'warn');
+        });
+
+        afterEach(() => {
+            patchStub.restore();
+            errorStub.restore();
+            warnStub.restore();
+        })
+
+        it('resolves when there are no permissions to add', done => {
+            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+                .then(() => done());
+        });
+
+        it('adds data permissions for a site', done => {
+            permissions.site.push(permissionObj);
+            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+                .then(() => {
+                    expect(patchStub.args[0][0].uri).to.equal(
+                        'https://localhost/s/-/dw/data/v18_8/sites/SiteA/ocapiconfig/data');
+                    expect(patchStub.args[0][0].body).to.equal(permissionObj);
+                    done();
+            });
+        });
+
+        it('adds data permissions for two sites', done => {
+            sites.push('SiteB');
+            permissions.site.push(permissionObj);
+            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+                .then(() => {
+                    expect(patchStub.args[0][0].uri).to.equal(
+                        'https://localhost/s/-/dw/data/v18_8/sites/SiteA/ocapiconfig/data');
+                    expect(patchStub.args[0][0].body).to.equal(permissionObj);
+                    expect(patchStub.args[1][0].uri).to.equal(
+                        'https://localhost/s/-/dw/data/v18_8/sites/SiteB/ocapiconfig/data');
+                    expect(patchStub.args[1][0].body).to.equal(permissionObj);
+                    done();
+            });
+        });
+
+        it('adds global data permissions', done => {
+            permissions.global.push(permissionObj);
+            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+                .then(() => {
+                    expect(patchStub.args[0][0].uri).to.equal(
+                        'https://localhost/s/-/dw/data/v18_8/ocapiconfig/data');
+                    expect(patchStub.args[0][0].body).to.equal(permissionObj);
+                    done();
+            });
+        });
+
+        it('adds two sets of global data permissions', done => {
+            permissions.global.push(permissionObj);
+            permissions.global.push(permissionObj);
+            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+                .then(() => {
+                    expect(patchStub.args[0][0].uri).to.equal(
+                        'https://localhost/s/-/dw/data/v18_8/ocapiconfig/data');
+                    expect(patchStub.args[0][0].body).to.equal(permissionObj);
+                    expect(patchStub.args[1][0].uri).to.equal(
+                        'https://localhost/s/-/dw/data/v18_8/ocapiconfig/data');
+                    expect(patchStub.args[1][0].body).to.equal(permissionObj);
+                    done();
+            });
+        });
+
+        it('rejects if there is an error', done => {
+            permissions.site.push(permissionObj);
+            patchStub.callsFake(
+                (options, callback) => callback('bad thing!', null)
+            );
+            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+                .catch(err => {
+                    expect(errorStub.callCount).to.equal(1);
+                    done();
+            });
+        });
+
+        it('warns and resolves for DuplicateClientIdException', done => {
+            permissions.site.push(permissionObj);
+            patchStub.callsFake(
+                (options, callback) => callback(null, {
+                    body: {
+                        fault: {
+                            type: 'DuplicateClientIdException',
+                        }
+                    }
+                })
+            );
+            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+                .then(() => {
+                    expect(warnStub.callCount).to.equal(1);
+                    done();
+            });
+        });
+
+        it('rejects for a fault response', done => {
+            permissions.site.push(permissionObj);
+            patchStub.callsFake(
+                (options, callback) => callback(null, {
+                    body: {
+                        fault: {
+                            type: 'SomeFatalException',
+                        }
+                    }
+                })
+            );
+            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+                .catch(() => {
+                    expect(errorStub.callCount).to.equal(1);
+                    done();
+            });
+        });
+    });
 });

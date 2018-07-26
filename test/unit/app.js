@@ -83,7 +83,7 @@ describe('Tests for lib/app.js', function() {
             statusResult,
             statusStub,
             errorStub,
-            warnStub,
+            infoStub,
             getJobRetryTimeStub,
             clock;
 
@@ -201,7 +201,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             );
 
             errorStub = sinon.stub(console, 'error');
-            warnStub = sinon.stub(console, 'warn');
+            infoStub = sinon.stub(console, 'info');
 
             getJobRetryTimeStub = sinon.stub(app, 'getJobRetryTimeStub').returns(10);
 
@@ -225,7 +225,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             statusStub.restore();
             deleteFileStub.restore();
             errorStub.restore();
-            warnStub.restore();
+            infoStub.restore();
             getJobRetryTimeStub.restore();
             clock.uninstall();
         });
@@ -580,7 +580,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                 });
         });
 
-        it('warns but does not error if cartridge already in cartridge path', done => {
+        it('logs message but does not error if cartridge already in cartridge path', done => {
             postStub.callsFake((options, callback) => callback(null, {
                 body: {
                     fault: {
@@ -623,9 +623,11 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(postStub.args[0][0].body.position).to.equal('first');
                             expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
 
-                            // warning but no errors
+                            // log message but no errors
                             expect(errorStub.callCount).to.equal(0);
-                            expect(warnStub.callCount).to.equal(1);
+                            // 3 because other two are install begin & complete messages
+                            expect(infoStub.callCount).to.equal(3);
+                            expect(infoStub.args[1][0]).to.match(/was already in cartridge path/);
                             done();
                         });
                 });
@@ -695,17 +697,19 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
     });
 
     describe('tests for getBusinessObjectFilePath function', () => {
+        const installer = new app.Installer('localhost', {}, [], '1');
+
         it('throws an error if no elements attribute', () => {
-            expect(() => app.testing.getBusinessObjectFilePath()).to.throw();
+            expect(() => installer.getBusinessObjectFilePath()).to.throw();
         });
 
         it('throws an error if elements attribute is empty', () => {
-            expect(() => app.testing.getBusinessObjectFilePath({ elements: []})).to.throw();
+            expect(() => installer.getBusinessObjectFilePath({ elements: []})).to.throw();
         });
 
         it('throws an error if site given for global business object', () => {
             expect(() => {
-                app.testing.getBusinessObjectFilePath({
+                installer.getBusinessObjectFilePath({
                     elements: [{
                         name: 'metadata'
                     }],
@@ -715,7 +719,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
         it('throws an error if site not given for site business object', () => {
             expect(() => {
-                app.testing.getBusinessObjectFilePath({
+                installer.getBusinessObjectFilePath({
                     elements: [{
                         name: 'library'
                     }],
@@ -724,7 +728,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for global metadata', () => {
-            expect(app.testing.getBusinessObjectFilePath({
+            expect(installer.getBusinessObjectFilePath({
                 elements: [{
                     name: 'metadata'
                 }],
@@ -732,7 +736,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for global services', () => {
-            expect(app.testing.getBusinessObjectFilePath({
+            expect(installer.getBusinessObjectFilePath({
                 elements: [{
                     name: 'services'
                 }],
@@ -740,7 +744,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for global preferences', () => {
-            expect(app.testing.getBusinessObjectFilePath({
+            expect(installer.getBusinessObjectFilePath({
                 elements: [{
                     name: 'preferences'
                 }],
@@ -748,7 +752,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for site payment settings', () => {
-            expect(app.testing.getBusinessObjectFilePath({
+            expect(installer.getBusinessObjectFilePath({
                 elements: [{
                     name: 'payment-settings'
                 }],
@@ -756,7 +760,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for site preferences', () => {
-            expect(app.testing.getBusinessObjectFilePath({
+            expect(installer.getBusinessObjectFilePath({
                 elements: [{
                     name: 'preferences'
                 }],
@@ -764,7 +768,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for site content library', () => {
-            expect(app.testing.getBusinessObjectFilePath({
+            expect(installer.getBusinessObjectFilePath({
                 elements: [{
                     name: 'library'
                 }],
@@ -772,7 +776,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('returns path for site custom objects', () => {
-            expect(app.testing.getBusinessObjectFilePath({
+            expect(installer.getBusinessObjectFilePath({
                 elements: [{
                     name: 'custom-objects'
                 }],
@@ -780,11 +784,12 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
     });
 
-    describe('tests for readOCAPIPermissions function', () => {
+    describe('tests for installer readOCAPIPermissions function', () => {
         let pathExistsStub,
             readJsonStub,
             permissionObj,
-            appDef;
+            appDef,
+            installer;
 
         beforeEach(() => {
             appDef = {
@@ -801,6 +806,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                     ],
                 },
             };
+            installer = new app.Installer('localhost', appDef, [], '1');
 
             permissionObj = {
                 _v: '17.6',
@@ -818,27 +824,27 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
         });
 
         it('reads multiple valid ocapi permissions files', done => {
-            app.testing.readOCAPIPermissions(appDef)
+            installer.readOCAPIPermissions(appDef)
                 .then(() => done());
         });
 
         it('reads a valid site ocapi permissions file', done => {
             delete appDef.ocapi.global;
             appDef.ocapi.site.length = 1;
-            app.testing.readOCAPIPermissions(appDef)
+            installer.readOCAPIPermissions(appDef)
                 .then(() => done());
         });
 
         it('reads when there are no ocapi permission files', done => {
             delete appDef.ocapi.site;
             delete appDef.ocapi.global;
-            app.testing.readOCAPIPermissions(appDef)
+            installer.readOCAPIPermissions(appDef)
                 .then(() => done());
         });
 
         it('rejects when file is not found', done => {
             pathExistsStub.resolves(false);
-            app.testing.readOCAPIPermissions(appDef)
+            installer.readOCAPIPermissions(appDef)
                 .catch(err => {
                     expect(err.message).to.equal('OCAPI Permission file /blah/site-ocapi-data1.json not found');
                     done();
@@ -847,7 +853,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
         it('rejects when file has no version attribute', done => {
             delete permissionObj._v;
-            app.testing.readOCAPIPermissions(appDef)
+            installer.readOCAPIPermissions(appDef)
                 .catch(err => {
                     expect(err.message).to.match(/^OCAPI Permission file.*version must be at least/);
                     done();
@@ -856,7 +862,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
         it('rejects when file version is too old', done => {
             permissionObj._v = '15.2';
-            app.testing.readOCAPIPermissions(appDef)
+            installer.readOCAPIPermissions(appDef)
                 .catch(err => {
                     expect(err.message).to.match(/^OCAPI Permission file.*version must be at least/);
                     done();
@@ -865,7 +871,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
         it('rejects when file has no clients defined', done => {
             permissionObj.clients = [];
-            app.testing.readOCAPIPermissions(appDef)
+            installer.readOCAPIPermissions(appDef)
                 .catch(err => {
                     expect(err.message).to.match(/^OCAPI Permission file.*must have exactly one client defined/);
                     done();
@@ -874,7 +880,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
         it('rejects when file has more than one clients defined', done => {
             permissionObj.clients = [{}, {}, {}];
-            app.testing.readOCAPIPermissions(appDef)
+            installer.readOCAPIPermissions(appDef)
                 .catch(err => {
                     expect(err.message).to.match(/^OCAPI Permission file.*must have exactly one client defined/);
                     done();
@@ -883,7 +889,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
     });
 
-    describe('tests for addOCAPIPermissions function', () => {
+    describe('tests for installer addOCAPIPermissions function', () => {
         let instance,
             sites,
             permissions,
@@ -891,7 +897,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             clientId,
             patchStub,
             errorStub,
-            warnStub;
+            infoStub,
+            installer;
 
         beforeEach(() => {
             instance = 'localhost';
@@ -911,35 +918,36 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                 (options, callback) => callback(null, {})
             );
             errorStub = sinon.stub(console, 'error');
-            warnStub = sinon.stub(console, 'warn');
+            infoStub = sinon.stub(console, 'info');
+            installer = new app.Installer('localhost', {}, sites, '1');
         });
 
         afterEach(() => {
             patchStub.restore();
             errorStub.restore();
-            warnStub.restore();
+            infoStub.restore();
         })
 
         it('resolves when there are no permissions to add', done => {
-            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+            installer.addOCAPIPermissions(permissions)
                 .then(() => done());
         });
 
         it('adds data permissions for a site', done => {
             permissions.site.push(permissionObj);
-            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+            installer.addOCAPIPermissions(permissions)
                 .then(() => {
                     expect(patchStub.args[0][0].uri).to.equal(
                         'https://localhost/s/-/dw/data/v18_8/sites/SiteA/ocapiconfig/data');
                     expect(patchStub.args[0][0].body).to.equal(permissionObj);
                     done();
-            });
+                });
         });
 
         it('adds data permissions for two sites', done => {
             sites.push('SiteB');
             permissions.site.push(permissionObj);
-            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+            installer.addOCAPIPermissions(permissions)
                 .then(() => {
                     expect(patchStub.args[0][0].uri).to.equal(
                         'https://localhost/s/-/dw/data/v18_8/sites/SiteA/ocapiconfig/data');
@@ -948,24 +956,24 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                         'https://localhost/s/-/dw/data/v18_8/sites/SiteB/ocapiconfig/data');
                     expect(patchStub.args[1][0].body).to.equal(permissionObj);
                     done();
-            });
+                });
         });
 
         it('adds global data permissions', done => {
             permissions.global.push(permissionObj);
-            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+            installer.addOCAPIPermissions(permissions)
                 .then(() => {
                     expect(patchStub.args[0][0].uri).to.equal(
                         'https://localhost/s/-/dw/data/v18_8/ocapiconfig/data');
                     expect(patchStub.args[0][0].body).to.equal(permissionObj);
                     done();
-            });
+                });
         });
 
         it('adds two sets of global data permissions', done => {
             permissions.global.push(permissionObj);
             permissions.global.push(permissionObj);
-            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+            installer.addOCAPIPermissions(permissions)
                 .then(() => {
                     expect(patchStub.args[0][0].uri).to.equal(
                         'https://localhost/s/-/dw/data/v18_8/ocapiconfig/data');
@@ -974,7 +982,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                         'https://localhost/s/-/dw/data/v18_8/ocapiconfig/data');
                     expect(patchStub.args[1][0].body).to.equal(permissionObj);
                     done();
-            });
+                });
         });
 
         it('rejects if there is an error', done => {
@@ -982,14 +990,14 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             patchStub.callsFake(
                 (options, callback) => callback('bad thing!', null)
             );
-            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+            installer.addOCAPIPermissions(permissions)
                 .catch(err => {
                     expect(errorStub.callCount).to.equal(1);
                     done();
-            });
+                });
         });
 
-        it('warns and resolves for DuplicateClientIdException', done => {
+        it('logs message and resolves for DuplicateClientIdException', done => {
             permissions.site.push(permissionObj);
             patchStub.callsFake(
                 (options, callback) => callback(null, {
@@ -1000,11 +1008,12 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                     }
                 })
             );
-            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+            installer.addOCAPIPermissions(permissions)
                 .then(() => {
-                    expect(warnStub.callCount).to.equal(1);
+                    expect(infoStub.callCount).to.equal(1);
+                    expect(infoStub.args[0][0]).to.match(/already has OCAPI data config/);
                     done();
-            });
+                });
         });
 
         it('rejects for a fault response', done => {
@@ -1018,11 +1027,11 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                     }
                 })
             );
-            app.testing.addOCAPIPermissions(instance, sites, permissions, clientId)
+            installer.addOCAPIPermissions(permissions)
                 .catch(() => {
                     expect(errorStub.callCount).to.equal(1);
                     done();
-            });
+                });
         });
     });
 });

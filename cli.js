@@ -435,6 +435,7 @@ program
         'If not specified the currently active code version will be assumed.')
     .option('-k, --clientid <client id>','An OCAPI client id' +
         'Used when adding new OCAPI permissions. If not specified, version in OCAPI JSON file will be used.')
+    .option('-v, --verbose', 'Outputs additional details during installation process.')
     .description('Installs an app onto one or more sites of an instance')
     .action(function(sites, options) {
         if (!sites) {
@@ -451,7 +452,7 @@ program
             })
             .then(appDef => {
                 if (appDef) {
-                    return app.install(instance, appDef, sites, codeVersion, options.clientid);
+                    return app.install(instance, appDef, sites, codeVersion, options.clientid, options.verbose);
                 } else {
                     console.log('Error: No app definition found!');
                 }
@@ -469,6 +470,7 @@ program
         console.log('    $ sfcc-ci app:install MySite -i my-instance-alias');
         console.log('    $ sfcc-ci app:install MySite -i my-instance.demandware.net');
         console.log('    $ sfcc-ci app:install MySite -d /path/to/app.json');
+        console.log('    $ sfcc-ci app:install MySite -d /path/to/app.json -k 12345-6789-00000-1111');
         console.log('    $ sfcc-ci app:install MySite -c version2');
         console.log('    $ sfcc-ci app:install MySite -i my-instance-alias -p /path/to/app.json');
         console.log('    $ sfcc-ci app:install MySite -i my-instance-alias -p /path/to/app.json -c version2');

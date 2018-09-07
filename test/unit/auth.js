@@ -97,7 +97,7 @@ describe('Tests for lib/auth.js', function() {
 
         describe('building request to obtain token', function() {
             beforeEach(function() {
-                requestStub.post.reset();
+                requestStub.post.resetHistory();
             });
 
             it('makes a client-credentials request', function() {

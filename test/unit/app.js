@@ -85,7 +85,8 @@ describe('Tests for lib/app.js', function() {
             errorStub,
             infoStub,
             getJobRetryTimeStub,
-            clock;
+            clock,
+            clockInterval;
 
         beforeEach(() => {
             mockFs({
@@ -203,12 +204,10 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             errorStub = sinon.stub(console, 'error');
             infoStub = sinon.stub(console, 'info');
 
-            getJobRetryTimeStub = sinon.stub(app, 'getJobRetryTimeStub').returns(10);
-
             // use lolex to mock out setTimeout and advance system clock 50ms for every 10ms of real time
             // (this is to speed up app.js JOB_STATUS_RETRY_PERIOD)
             clock = lolex.install({ toFake: ['setTimeout'] });
-            setInterval(() => clock.tick(50), 10);
+            clockInterval = setInterval(() => clock.tick(50), 10);
         });
 
         afterEach(() => {
@@ -226,8 +225,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
             deleteFileStub.restore();
             errorStub.restore();
             infoStub.restore();
-            getJobRetryTimeStub.restore();
             clock.uninstall();
+            clearInterval(clockInterval); // newer mocha versions will not exit with open intervals/timeouts
         });
 
         it('installs an app with global and site metadata and a bm-specific cartridge and OCAPI permissions', done => {

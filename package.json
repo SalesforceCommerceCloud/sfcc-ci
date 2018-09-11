@@ -30,7 +30,7 @@
     "open": "0.0.5",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
-    "table": "^4.0.3",
+    "table": "^5.0.2",
     "xml-js": "^1.6.7",
     "zip-folder": "^1.0.0"
   },

@@ -27,7 +27,7 @@
     "conf": "^2.0.0",
     "fs-extra": "^7.0.0",
     "jsonwebtoken": "^8.3.0",
-    "open": "0.0.5",
+    "opn": "^5.3.0",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
     "table": "^5.0.2",

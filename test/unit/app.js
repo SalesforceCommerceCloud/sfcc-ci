@@ -279,7 +279,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
                             // verify metrics were sent
                             const postData = JSON.parse(postStub.args[2][0].body);
-                            expect(postData.access_token).to.equal('abcdefg1234567');
+                            const postAuth = postStub.args[2][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
                             expect(postData.app_name).to.equal('test_app');
                             expect(postData.count_cartidges_installed).to.equal(2);
                             expect(postData.list_cartidges_installed).to.equal('int_test,int_test_bm');
@@ -318,7 +319,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
                             // verify metrics were sent
                             const postData = JSON.parse(postStub.args[3][0].body);
-                            expect(postData.access_token).to.equal('abcdefg1234567');
+                            const postAuth = postStub.args[2][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
                             expect(postData.app_name).to.equal('test_app');
                             expect(postData.count_cartidges_installed).to.equal(2);
                             expect(postData.list_cartidges_installed).to.equal('int_test,int_test_bm');
@@ -368,7 +370,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
                             // verify metrics were sent
                             const postData = JSON.parse(postStub.args[1][0].body);
-                            expect(postData.access_token).to.equal('abcdefg1234567');
+                            const postAuth = postStub.args[1][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
                             expect(postData.app_name).to.equal('test_app');
                             expect(postData.count_cartidges_installed).to.equal(1);
                             expect(postData.list_cartidges_installed).to.equal('int_test');
@@ -407,7 +410,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
                             // verify metrics were sent
                             const postData = JSON.parse(postStub.args[2][0].body);
-                            expect(postData.access_token).to.equal('abcdefg1234567');
+                            const postAuth = postStub.args[2][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
                             expect(postData.app_name).to.equal('test_app');
                             expect(postData.count_cartidges_installed).to.equal(1);
                             expect(postData.list_cartidges_installed).to.equal('int_test');
@@ -457,7 +461,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
                             // verify metrics were sent
                             const postData = JSON.parse(postStub.args[1][0].body);
-                            expect(postData.access_token).to.equal('abcdefg1234567');
+                            const postAuth = postStub.args[1][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
                             expect(postData.app_name).to.equal('test_app');
                             expect(postData.count_cartidges_installed).to.equal(1);
                             expect(postData.list_cartidges_installed).to.equal('int_test');
@@ -496,7 +501,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
                             // verify metrics were sent
                             const postData = JSON.parse(postStub.args[2][0].body);
-                            expect(postData.access_token).to.equal('abcdefg1234567');
+                            const postAuth = postStub.args[2][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
                             expect(postData.app_name).to.equal('test_app');
                             expect(postData.count_cartidges_installed).to.equal(1);
                             expect(postData.list_cartidges_installed).to.equal('int_test');
@@ -533,7 +539,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
                             // verify metrics were sent
                             const postData = JSON.parse(postStub.args[1][0].body);
-                            expect(postData.access_token).to.equal('abcdefg1234567');
+                            const postAuth = postStub.args[1][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
                             expect(postData.app_name).to.equal('test_app');
                             expect(postData.count_cartidges_installed).to.equal(1);
                             expect(postData.list_cartidges_installed).to.equal('int_test');
@@ -572,7 +579,8 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
 
                             // verify metrics were sent
                             const postData = JSON.parse(postStub.args[2][0].body);
-                            expect(postData.access_token).to.equal('abcdefg1234567');
+                            const postAuth = postStub.args[2][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
                             expect(postData.app_name).to.equal('test_app');
                             expect(postData.count_cartidges_installed).to.equal(1);
                             expect(postData.list_cartidges_installed).to.equal('int_test');

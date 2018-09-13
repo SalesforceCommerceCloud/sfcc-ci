@@ -259,7 +259,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.args[0][3]).to.equal(authToken);
 
                             // verify cartridge path OCAPI call
-                            expect(postStub.args.length).to.equal(2);
+                            expect(postStub.args.length).to.equal(3);
                             expect(postStub.args[0][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v18_8/sites/MySite/cartridges');
                             expect(postStub.args[0][0].body.name).to.equal('int_test');
@@ -277,6 +277,16 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                                 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
                             expect(patchStub.args[0][0].auth.bearer).to.equal(authToken);
 
+                            // verify metrics were sent
+                            const postData = JSON.parse(postStub.args[2][0].body);
+                            const postAuth = postStub.args[2][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
+                            expect(postData.app_name).to.equal('test_app');
+                            expect(postData.count_cartidges_installed).to.equal(2);
+                            expect(postData.list_cartidges_installed).to.equal('int_test,int_test_bm');
+                            expect(postData.count_business_objects_installed).to.equal(2);
+                            expect(postData.list_business_objects_installed).to.equal('metadata,preferences');
+
                             done();
                         });
                 });
@@ -291,6 +301,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deployCodePromiseStub.callCount).to.equal(2);
 
                             // site import run twice
+                            expect(postStub.args.length).to.equal(4);
                             expect(postFileStub.callCount).to.equal(2);
                             expect(runJobStub.callCount).to.equal(2);
                             expect(statusStub.callCount).to.equal(2);
@@ -305,6 +316,16 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                                 'https://localhost/s/-/dw/data/v18_8/sites/SiteB/cartridges');
                             expect(postStub.args[1][0].body.name).to.equal('int_test');
                             expect(postStub.args[1][0].body.position).to.equal('first');
+
+                            // verify metrics were sent
+                            const postData = JSON.parse(postStub.args[3][0].body);
+                            const postAuth = postStub.args[2][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
+                            expect(postData.app_name).to.equal('test_app');
+                            expect(postData.count_cartidges_installed).to.equal(2);
+                            expect(postData.list_cartidges_installed).to.equal('int_test,int_test_bm');
+                            expect(postData.count_business_objects_installed).to.equal(2);
+                            expect(postData.list_business_objects_installed).to.equal('metadata,preferences');
 
                             done();
                         });
@@ -340,11 +361,22 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
                             expect(deleteFileStub.args[0][3]).to.equal(authToken);
 
+                            expect(postStub.args.length).to.equal(2);
                             expect(postStub.args[0][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v18_8/sites/MySite/cartridges');
                             expect(postStub.args[0][0].body.name).to.equal('int_test');
                             expect(postStub.args[0][0].body.position).to.equal('first');
                             expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
+
+                            // verify metrics were sent
+                            const postData = JSON.parse(postStub.args[1][0].body);
+                            const postAuth = postStub.args[1][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
+                            expect(postData.app_name).to.equal('test_app');
+                            expect(postData.count_cartidges_installed).to.equal(1);
+                            expect(postData.list_cartidges_installed).to.equal('int_test');
+                            expect(postData.count_business_objects_installed).to.equal(1);
+                            expect(postData.list_business_objects_installed).to.equal('metadata');
 
                             done();
                         });
@@ -366,6 +398,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.callCount).to.equal(1);
 
                             // correct site-specific path used for OCAPI calls
+                            expect(postStub.args.length).to.equal(3);
                             expect(postStub.args[0][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v18_8/sites/SiteA/cartridges');
                             expect(postStub.args[0][0].body.name).to.equal('int_test');
@@ -374,6 +407,16 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                                 'https://localhost/s/-/dw/data/v18_8/sites/SiteB/cartridges');
                             expect(postStub.args[1][0].body.name).to.equal('int_test');
                             expect(postStub.args[1][0].body.position).to.equal('first');
+
+                            // verify metrics were sent
+                            const postData = JSON.parse(postStub.args[2][0].body);
+                            const postAuth = postStub.args[2][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
+                            expect(postData.app_name).to.equal('test_app');
+                            expect(postData.count_cartidges_installed).to.equal(1);
+                            expect(postData.list_cartidges_installed).to.equal('int_test');
+                            expect(postData.count_business_objects_installed).to.equal(1);
+                            expect(postData.list_business_objects_installed).to.equal('metadata');
 
                             done();
                         });
@@ -409,11 +452,22 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.args[0][2]).to.match(/cc_install_.*\.zip/);
                             expect(deleteFileStub.args[0][3]).to.equal(authToken);
 
+                            expect(postStub.args.length).to.equal(2);
                             expect(postStub.args[0][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v18_8/sites/MySite/cartridges');
                             expect(postStub.args[0][0].body.name).to.equal('int_test');
                             expect(postStub.args[0][0].body.position).to.equal('first');
                             expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
+
+                            // verify metrics were sent
+                            const postData = JSON.parse(postStub.args[1][0].body);
+                            const postAuth = postStub.args[1][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
+                            expect(postData.app_name).to.equal('test_app');
+                            expect(postData.count_cartidges_installed).to.equal(1);
+                            expect(postData.list_cartidges_installed).to.equal('int_test');
+                            expect(postData.count_business_objects_installed).to.equal(1);
+                            expect(postData.list_business_objects_installed).to.equal('preferences');
 
                             done();
                         });
@@ -435,6 +489,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.callCount).to.equal(2);
 
                             // correct site-specific path used for OCAPI calls
+                            expect(postStub.args.length).to.equal(3);
                             expect(postStub.args[0][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v18_8/sites/SiteA/cartridges');
                             expect(postStub.args[0][0].body.name).to.equal('int_test');
@@ -443,6 +498,16 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                                 'https://localhost/s/-/dw/data/v18_8/sites/SiteB/cartridges');
                             expect(postStub.args[1][0].body.name).to.equal('int_test');
                             expect(postStub.args[1][0].body.position).to.equal('first');
+
+                            // verify metrics were sent
+                            const postData = JSON.parse(postStub.args[2][0].body);
+                            const postAuth = postStub.args[2][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
+                            expect(postData.app_name).to.equal('test_app');
+                            expect(postData.count_cartidges_installed).to.equal(1);
+                            expect(postData.list_cartidges_installed).to.equal('int_test');
+                            expect(postData.count_business_objects_installed).to.equal(1);
+                            expect(postData.list_business_objects_installed).to.equal('preferences');
 
                             done();
                         });
@@ -465,11 +530,22 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(statusStub.callCount).to.equal(0);
                             expect(deleteFileStub.callCount).to.equal(0);
 
+                            expect(postStub.args.length).to.equal(2);
                             expect(postStub.args[0][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v18_8/sites/MySite/cartridges');
                             expect(postStub.args[0][0].body.name).to.equal('int_test');
                             expect(postStub.args[0][0].body.position).to.equal('first');
                             expect(postStub.args[0][0].auth.bearer).to.equal(authToken);
+
+                            // verify metrics were sent
+                            const postData = JSON.parse(postStub.args[1][0].body);
+                            const postAuth = postStub.args[1][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
+                            expect(postData.app_name).to.equal('test_app');
+                            expect(postData.count_cartidges_installed).to.equal(1);
+                            expect(postData.list_cartidges_installed).to.equal('int_test');
+                            expect(postData.count_business_objects_installed).to.equal(0);
+                            expect(postData.list_business_objects_installed).to.equal('');
 
                             done();
                         });
@@ -491,6 +567,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(deleteFileStub.callCount).to.equal(0);
 
                             // correct site-specific path used for OCAPI calls
+                            expect(postStub.args.length).to.equal(3);
                             expect(postStub.args[0][0].uri).to.equal(
                                 'https://localhost/s/-/dw/data/v18_8/sites/SiteA/cartridges');
                             expect(postStub.args[0][0].body.name).to.equal('int_test');
@@ -500,6 +577,36 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                             expect(postStub.args[1][0].body.name).to.equal('int_test');
                             expect(postStub.args[1][0].body.position).to.equal('first');
 
+                            // verify metrics were sent
+                            const postData = JSON.parse(postStub.args[2][0].body);
+                            const postAuth = postStub.args[2][0].auth;
+                            expect(postAuth.bearer).to.equal('abcdefg1234567');
+                            expect(postData.app_name).to.equal('test_app');
+                            expect(postData.count_cartidges_installed).to.equal(1);
+                            expect(postData.list_cartidges_installed).to.equal('int_test');
+                            expect(postData.count_business_objects_installed).to.equal(0);
+                            expect(postData.list_business_objects_installed).to.equal('');
+
+                            done();
+                        });
+                });
+        });
+
+        it('reuses installer id on multiple installs', done => {
+            let installerId;
+            app.getApp('./test_app/app-none.json')
+                .then(appDef => {
+                    app.install('localhost', appDef, ['SiteA'], '1')
+                        .then(() => {
+                            expect(postStub.args.length).to.equal(2);
+                            const postData = JSON.parse(postStub.args[1][0].body);
+                            installerId = postData.installer_id;
+                        })
+                        .then(() => app.install('localhost', appDef, ['SiteB'], '1'))
+                        .then(() => {
+                            expect(postStub.args.length).to.equal(4);
+                            const postData = JSON.parse(postStub.args[3][0].body);
+                            expect(postData.installer_id).to.equal(installerId);
                             done();
                         });
                 });

@@ -820,7 +820,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                         name: 'metadata'
                     }],
                 }, 'SiteXYZ');
-            }).to.throw();
+            }).to.throw('Unknown site business object type: metadata');
         });
 
         it('throws an error if site not given for site business object', () => {
@@ -830,7 +830,7 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                         name: 'library'
                     }],
                 });
-            }).to.throw();
+            }).to.throw('Unknown  business object type: library');
         });
 
         it('returns path for global metadata', () => {
@@ -887,6 +887,14 @@ demandware.cartridges.int_test_bm.id=int_test_bm`,
                     name: 'custom-objects'
                 }],
             }, 'SiteXYZ')).to.match(/sites\/SiteXYZ\/custom\-objects\/custom\-objects_[0-9]{0,6}\.xml/);
+        });
+
+        it('returns path for site slot configurations', () => {
+            expect(installer.getBusinessObjectFilePath({
+                elements: [{
+                    name: 'slot-configurations'
+                }],
+            }, 'SiteXYZ')).to.equal('sites/SiteXYZ/slots.xml');
         });
     });
 

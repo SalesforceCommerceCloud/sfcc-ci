@@ -153,7 +153,7 @@ program
     });
 
 program
-    .command('sandbox:create <realm> [alias]')
+    .command('sandbox:create [realm] [alias]')
     .option('-t, --ttl <hours>','Number of hours the sandbox will live')
     .option('-j, --json','Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')

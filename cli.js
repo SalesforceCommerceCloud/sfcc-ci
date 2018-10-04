@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 var program = require('commander');
 
+const console = require('./lib/log');
+
 program
     .version(require('./package.json').version, '-V, --version')
     .option('-D, --debug', 'enable verbose output', function() {
@@ -423,6 +425,58 @@ program
         console.log();
     });
 
+program
+    .command('app:install <sites...>')
+    .option('-i, --instance <instance>','Instance to run the install on. Can be an instance alias. ' +
+        'If not specified the currently configured instance will be used.')
+    .option('-d, --app <app definition>','Path to a app definition file.' +
+        'If not specified an app.json file in the current directory will be assumed.')
+    .option('-c, --codeversion <code version>','A code version in your instance.' +
+        'If not specified the currently active code version will be assumed.')
+    .option('-k, --clientid <client id>','An OCAPI client id' +
+        'Used when adding new OCAPI permissions. If not specified, version in OCAPI JSON file will be used.')
+    .option('-v, --verbose', 'Outputs additional details during installation process.')
+    .description('Installs an app onto one or more sites of an instance')
+    .action(function(sites, options) {
+        if (!sites) {
+            console.log('Error: please specify at least one site');
+            return;
+        }
+        const instance = require('./lib/instance').getInstance(options.instance);
+        const app = require('./lib/app');
+        let codeVersion;
+        require('./lib/code').getVersion(instance, options.codeversion)
+            .then(version => {
+                codeVersion = version;
+                return app.getApp(options.app);
+            })
+            .then(appDef => {
+                if (appDef) {
+                    return app.install(instance, appDef, sites, codeVersion, options.clientid, options.verbose);
+                } else {
+                    console.log('Error: No app definition found!');
+                }
+            })
+            .catch(function(e) {
+                console.error('Error running app:install ' + e);
+            });
+
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci app:install MySite');
+        console.log('    $ sfcc-ci app:install SiteA SiteB');
+        console.log('    $ sfcc-ci app:install MySite -i my-instance-alias');
+        console.log('    $ sfcc-ci app:install MySite -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci app:install MySite -d /path/to/app.json');
+        console.log('    $ sfcc-ci app:install MySite -d /path/to/app.json -k 12345-6789-00000-1111');
+        console.log('    $ sfcc-ci app:install MySite -c version2');
+        console.log('    $ sfcc-ci app:install MySite -i my-instance-alias -p /path/to/app.json');
+        console.log('    $ sfcc-ci app:install MySite -i my-instance-alias -p /path/to/app.json -c version2');
+        console.log();
+    });
+
 program.on('--help', function() {
     console.log('');
     console.log('  Environment:');
@@ -444,6 +498,6 @@ if (!program.args.length) {
 } else if ( typeof(program.args[program.args.length-1]) !== 'object') {
     // the last argument represents the command,
     // if this is not a known Command, exit with error
-    require('./lib/log').error('Unknown command `%s`. Use `sfcc-ci --help` for help.', program.args[0]);
+    console.error('Unknown command `%s`. Use `sfcc-ci --help` for help.', program.args[0]);
     process.exitCode = 1;
 }

@@ -1,0 +1,16 @@
+{
+    "name": "test_app",
+    "version": "1.0",
+    "description": "fake app for unit tests",
+    "cartridges": [
+        {
+            "name": "int_test",
+            "businessmanager" : false,
+            "path": "./cartridges/int_test"
+        }
+    ],
+    "businessobjects": {
+        "global": [],
+        "site": []
+    }
+}

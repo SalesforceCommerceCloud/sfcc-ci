@@ -206,13 +206,16 @@ program
         'If not specified the currently configured instance will be used.')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
+    .option('-f, --failfast', 'Forces the command (if ran with --sync mode) to result in an error if the job ' +
+        'on the instance exits with an error.')
     .description('Perform a instance import (aka site import) on a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
         var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
+        var failFast = ( options.failfast ? options.failfast : false );
         if (sync) {
-            require('./lib/instance').importSync(instance, archive, asJson);
+            require('./lib/instance').importSync(instance, archive, asJson, failFast);
         } else {
             require('./lib/instance').import(instance, archive, asJson);
         }
@@ -358,17 +361,20 @@ program
         'specified the currently configured instance will be used.')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
+    .option('-f, --failfast', 'Forces the command (if ran with --sync mode) to result in an error if the job ' +
+        'on the instance exits with an error.')
     .description('Starts a job execution on a Commerce Cloud instance')
     .action(function(job_id, job_parameters, options) {
         var job_params = require('./lib/job').buildParameters(job_parameters);
         var instance = require('./lib/instance').getInstance(options.instance);
         var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
+        var failFast = ( options.failfast ? options.failfast : false );
 
         if (sync) {
             require('./lib/job').runSync(instance, job_id, {
                 parameters : job_params
-            }, asJson);
+            }, asJson, failFast);
         } else {
             require('./lib/job').run(instance, job_id, {
                 parameters : job_params

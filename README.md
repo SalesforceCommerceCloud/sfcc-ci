@@ -14,10 +14,10 @@ Licensed under the current NDA and licensing agreement in place with your organi
 
 Feel free to create issues and enhancement requests or discuss on the existing ones, this will help us understanding in which area the biggest need is. Please refer to documentation below before doing so.
 
-For discussions please start a topic on the [Community Suite discussion board](https://xchange.demandware.com/community/developer/community-suite/content) or join the #ci-automation channel in the [Community Slack Team](https://sfcc-community.slack.com).
+For discussions please start a topic on the [Community Suite discussion board](https://xchange.demandware.com/community/developer/community-suite/content) or join the [Google Hangout Group](https://hangouts.google.com/group/BJgvcyxpkieawZUg2).
 
 * Maintainer: @tobiaslohr
-* [Commerce Cloud Community Slack](https://sfcc-community.slack.com)
+* [Google Hangout Group](https://hangouts.google.com/group/BJgvcyxpkieawZUg2)
 
 # What is this repository for? #
 
@@ -150,13 +150,13 @@ If do not want to use the JavaScript API, but just the CLI you don't need Node.j
 * `cd` into the directory and run `npm install`
 * Check if installation was successful by running `sfcc-ci --help`. In case you encouter any issues with running `sfcc-ci`, you may run `npm link` to create a symbolic link
 
-If you are using the CLI but don't want to mess around with Node.js and npm you can simply download the latest binaries for your OS at [Downloads](https://bitbucket.org/demandware/sfcc-ci/downloads/).
+If you are using the CLI but don't want to mess around with Node.js and npm you can simply download the latest binaries for your OS at [Downloads](https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/).
 
 ### MacOS ###
 
 1. Download the binary with the command:
 
-        curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-macos
+        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-macos
 
 2. Move the binary in to your PATH.
 
@@ -166,7 +166,7 @@ If you are using the CLI but don't want to mess around with Node.js and npm you 
 
 1. Download the binary with the command:
 
-        curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-linux
+        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-linux
 
 2. Move the binary in to your PATH.
 
@@ -174,9 +174,9 @@ If you are using the CLI but don't want to mess around with Node.js and npm you 
 
 ### Windows ###
 
-1. Download the binary from [here](https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-win.exe). If you have curl installed, use this command:
+1. Download the binary from [here](https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-win.exe). If you have curl installed, use this command:
 
-        curl -O https://bitbucket.org/demandware/sfcc-ci/downloads/sfcc-ci-win.exe
+        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-win.exe
 
 2. Add the binary in to your PATH.
 

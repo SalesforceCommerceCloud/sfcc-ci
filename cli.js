@@ -451,6 +451,69 @@ program
     });
 
 program
+    .command('role:grant')
+    .description('Grant a role to a user')
+    .option('-l, --login <login>','Login of user to grant role to')
+    .option('-r, --role <role>','Role to grant')
+    .option('-s, --scope <scope>','Scope of role to grant')
+    .option('-j, --json', 'Formats the output in json')
+    .action(function(options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        var login = ( options.login ? options.login : null );
+        var role = ( options.role ? options.role : null );
+        var scope = ( options.scope ? options.scope : null );
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/user').cli.grant(login, role, scope, asJson);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Grants a role to a user. Use additional --scope to grant the role to a specific');
+        console.log('  scope. This allows to limit the role to specific Commerce Cloud instances. Multiple');
+        console.log('  instances or a range of instances can be specified as scope. Scopes are only supported');
+        console.log('  by limited number of roles.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role')
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope zzzz_dev')
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope zzzz_*')
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope "zzzz_s01,zzzz_s02"')
+        console.log();
+    });
+
+program
+    .command('role:revoke')
+    .description('Revoke a role from a user')
+    .option('-l, --login <login>','Login of user to revoke role from')
+    .option('-r, --role <role>','Role to revoke')
+    .option('-s, --scope <scope>','Scope of role to revoke')
+    .option('-j, --json', 'Formats the output in json')
+    .action(function(options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        var login = ( options.login ? options.login : null );
+        var role = ( options.role ? options.role : null );
+        var scope = ( options.scope ? options.scope : null );
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/user').cli.revoke(login, role, scope, asJson);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Revokes a role from a user. Use additional --scope to reduce the scope of a role.');
+        console.log('  This allows to limit the role to specific Commerce Cloud instances. Multiple');
+        console.log('  instances or a range of instances can be specified.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role')
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope zzzz_dev')
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope zzzz_*')
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope "zzzz_s01,zzzz_s02"')
+        console.log();
+    });
+
+program
     .command('user:list')
     .description('List users eligible to manage')
     .option('-c, --count <count>','Max count of list items (default is 25)')

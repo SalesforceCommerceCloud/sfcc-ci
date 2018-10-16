@@ -430,23 +430,25 @@ program
         'If not specified the currently configured instance will be used.')
     .option('-r, --role <role>','Role to get details for')
     .option('-j, --json', 'Formats the output in json')
-    .option('-s, --sort-by <sortby>', 'Sort by specifying any field')
+    .option('-s, --sortby <sortby>', 'Sort by specifying any field')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
         var role = ( options.role ? options.role : null );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortBy ? options.sortBy : null );
+
+        if ( options.instance ) {
         require('./lib/role').cli.list(instance, role, asJson, sortby);
+        } else {
+            require('./lib/log').error('Instance missing. Pass an instance using -i,--instance.');
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci role:list')
-        console.log('    $ sfcc-ci role:list --sort-by "id"')
-        console.log('    $ sfcc-ci role:list -j')
         console.log('    $ sfcc-ci role:list --instance my-instance.demandware.net');
         console.log('    $ sfcc-ci user:list --instance my-instance-alias --json');
-        console.log('    $ sfcc-ci role:list --role "Administrator"')
+        console.log('    $ sfcc-ci role:list --instance my-instance.demandware.net --role "Administrator"')
         console.log();
     });
 

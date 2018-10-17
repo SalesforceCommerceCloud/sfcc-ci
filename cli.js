@@ -572,39 +572,42 @@ program
     });
 
 program
-    .command('user:create <org>')
+    .command('user:create')
     .description('Create a new user')
+    .option('-o, --org <org>', 'Org to create the user for')
+    .option('-l, --login <login>','Login of the user')
     .option('-u, --user <user>', 'User details as json')
-    .option('-m, --user.mail <mail>','Login of the user')
-    .option('-f, --user.firstName <firstName>','First name of the user')
-    .option('-l, --user.lastName <lastName>','Last name of the user')
     .option('-j, --json', 'Formats the output in json')
-    .action(function(org, options) {
-        var asJson = ( options.json ? options.json : false );
+    .action(function(options) {
+        var org = ( options.org ? options.org : null );
+        var login = ( options.login ? options.login : null );
         var user = ( options.user ? JSON.parse(options.user) : null );
-        require('./lib/user').cli.create(org, user, options['user.mail'], options['user.firstName'],
-            options['user.lastName'], asJson);
+        var asJson = ( options.json ? options.json : false );
+        if ( org && login ) {
+            // create in AM
+            require('./lib/user').cli.create(org, user, login, null, null, asJson);
+        } else {
+            require('./lib/log').error('Ambiguous options. Use -h,--help for help.');
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  Create a new user in the org. The user will be created in the Account Manager');
-        console.log('  for the passed org. The login (an login) must be unique. After a successful');
+        console.log('  Create a new user.');
+        console.log('');
+        console.log('  If an org is passed using -o,--org, the user will be created in the Account Manager');
+        console.log('  for the passed org. The login (an email) must be unique. After a successful');
         console.log('  creation the user will receive a confirmation e-mail with a link to activate his');
-        console.log('  user account.');
+        console.log('  account. Default roles of the user in Account Manager are "xchange-user" and "doc-user".');
         console.log('');
-        console.log('  You can either pass the details of the user in json (option --user) or as individual');
-        console.log('  Options (--user.mail, --user.firstName, --user.lastName). If you supply both, individual');
-        console.log('  options have precedence and will overwrite properties supplied in json.');
+        console.log('  creation the user will receive a confirmation e-mail with a link to activate his');
         console.log('');
-        console.log('  Default roles (if not passed in property --user) are "xchange-user" and "doc-user".');
+        console.log('  You should pass details of the user in json (option -u,--user).');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci user:create my-org --user.mail "jdoe@email.org" --user.firstName "John" ' +
-            '--user.lastName "Doe"')
-        console.log('    $ sfcc-ci user:create my-org --user \'{"mail":"jdoe@email.org"' +
-            '"firstName":"John", "lastName":"Doe", "roles": ["xchange-user", "doc-user"]}\'')
+        console.log('    $ sfcc-ci user:create --org my-org --login jdoe@email.org --user \'{"firstName":' +
+            '"John", "lastName":"Doe", "roles": ["xchange-user"]}\'')
         console.log();
     });
 

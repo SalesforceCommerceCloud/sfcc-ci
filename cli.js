@@ -545,10 +545,17 @@ program
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  Depending on the size of the organization the list of users may be large. Use options');
-        console.log('  --count to limit the number of users.');
+        console.log('  By default users in the Account Manager organization the user is eligible');
+        console.log('  to manage are being returned. Depending on the number of users the list may');
+        console.log('  be large. Use option --count to limit the number of users.');
         console.log();
-        console.log('  Pass the optional [login] parameter to get details of a single user.');
+        console.log('  Use --login to get details of a single user.');
+        console.log();
+        console.log('  If option --instance is used, local users from this Commerce Cloud instance');
+        console.log('  are being returned. Use --query to narrow down the users.');
+        console.log();
+        console.log('  Use options --instance and --login to get details of a local user on the');
+        console.log('  Commerce Cloud instance.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -557,7 +564,8 @@ program
         console.log('    $ sfcc-ci user:list --sortby "lastName"')
         console.log('    $ sfcc-ci user:list -j')
         console.log('    $ sfcc-ci user:list --instance my-instance --login local-user');
-        console.log('    $ sfcc-ci user:list --instance my-instance --login local-user');
+        console.log('    $ sfcc-ci user:list --instance my-instance --query \'{"term_query":' +
+            '{"fields":["external_id"],"operator":"is_null"}}\' --json');
         console.log('    $ sfcc-ci user:list --login my-login');
         console.log('    $ sfcc-ci user:list --login my-login -j');
         console.log();

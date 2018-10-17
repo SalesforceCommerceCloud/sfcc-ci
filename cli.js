@@ -530,13 +530,13 @@ program
         var login = options.login;
         var query = ( options.query ? JSON.parse(options.query) : null );
         var asJson = ( options.json ? options.json : false );
-        var sortby = ( options.sortBy ? options.sortBy : null );
+        var sortby = ( options.sortby ? options.sortby : null );
         if ( instance && login ) {
             // get users on the instance with role
-            require('./lib/user').cli.searchLocal(instance, login, query, count, asJson, sortby);
+            require('./lib/user').cli.searchLocal(instance, login, query, null, count, asJson);
         } else if ( instance && !login ) {
             // get users on instance
-            require('./lib/user').cli.searchLocal(instance, login, query, count, asJson, sortby);
+            require('./lib/user').cli.searchLocal(instance, login, query, sortby, count, asJson);
         } else {
             // get users from AM
             require('./lib/user').cli.list(count, login, asJson, sortby);

@@ -520,26 +520,23 @@ program
     .description('List users eligible to manage')
     .option('-c, --count <count>','Max count of list items (default is 25)')
     .option('-i, --instance <instance>','Instance to search users for. Can be an instance alias.')
-    .option('-r, --role <role>','Role to search users for')
     .option('-l, --login <login>','Login of a user to get details for')
+    .option('-q, --query <query>','Query to search users for')
     .option('-j, --json', 'Formats the output in json')
-    .option('-s, --sort-by <sortby>', 'Sort by specifying any field')
+    .option('-s, --sortby <sortby>', 'Sort by specifying any field')
     .action(function(options) {
         var count = ( options.count ? options.count : null );
         var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
-        var role = options.role;
         var login = options.login;
+        var query = ( options.query ? JSON.parse(options.query) : null );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortBy ? options.sortBy : null );
-        if ( instance && role ) {
+        if ( instance && login ) {
             // get users on the instance with role
-            require('./lib/user').cli.search(instance, role, count, asJson, sortby);
-        } else if ( instance && !role ) {
+            require('./lib/user').cli.search(instance, login, query, count, asJson, sortby);
+        } else if ( instance && !login ) {
             // get users on instance
-            require('./lib/log').error('Role is missing. Please pass a role using -r,--role');
-        } else if ( !instance && role ) {
-            // search on the instance with role
-            require('./lib/log').error('Instance is missing. Please pass an instance using -i,--instance');
+            require('./lib/user').cli.search(instance, login, query, count, asJson, sortby);
         } else {
             // get users from AM
             require('./lib/user').cli.list(count, login, asJson, sortby);
@@ -549,8 +546,7 @@ program
         console.log('  Details:');
         console.log();
         console.log('  Depending on the size of the organization the list of users may be large. Use options');
-        console.log('  --page and --max to navigate through the complete list and control the max number of');
-        console.log('  users per page.');
+        console.log('  --count to limit the number of users.');
         console.log();
         console.log('  Pass the optional [login] parameter to get details of a single user.');
         console.log('');
@@ -558,11 +554,12 @@ program
         console.log();
         console.log('    $ sfcc-ci user:list')
         console.log('    $ sfcc-ci user:list -c 100')
-        console.log('    $ sfcc-ci user:list --sort-by "lastName"')
+        console.log('    $ sfcc-ci user:list --sortby "lastName"')
         console.log('    $ sfcc-ci user:list -j')
-        console.log('    $ sfcc-ci user:list --instance my-instance --role "Administrator"');
-        console.log('    $ sfcc-ci user:list my-login');
-        console.log('    $ sfcc-ci user:list my-login -j');
+        console.log('    $ sfcc-ci user:list --instance my-instance --login local-user');
+        console.log('    $ sfcc-ci user:list --instance my-instance --login local-user');
+        console.log('    $ sfcc-ci user:list --login my-login');
+        console.log('    $ sfcc-ci user:list --login my-login -j');
         console.log();
     });
 

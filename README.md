@@ -94,6 +94,12 @@ Use the following snippet as your client's permission set, replace `my_client_id
           "methods":["get"],
           "read_attributes":"(**)",
           "write_attributes":"(**)"
+        },
+        {
+          "resource_id":"/user_search",
+          "methods":["post"],
+          "read_attributes":"(**)",
+          "write_attributes":"(**)"
         }
       ]
     }
@@ -101,7 +107,7 @@ Use the following snippet as your client's permission set, replace `my_client_id
 Note, if you already have OCAPI Settings configured, e.g. for other clients, add this snippet to the list permission sets for the other clients as follows:
 ```JSON
     {
-      "_v":"18.1",
+      "_v":"18.8",
       "clients":
       [ 
         {

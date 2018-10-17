@@ -533,10 +533,10 @@ program
         var sortby = ( options.sortBy ? options.sortBy : null );
         if ( instance && login ) {
             // get users on the instance with role
-            require('./lib/user').cli.search(instance, login, query, count, asJson, sortby);
+            require('./lib/user').cli.searchLocal(instance, login, query, count, asJson, sortby);
         } else if ( instance && !login ) {
             // get users on instance
-            require('./lib/user').cli.search(instance, login, query, count, asJson, sortby);
+            require('./lib/user').cli.searchLocal(instance, login, query, count, asJson, sortby);
         } else {
             // get users from AM
             require('./lib/user').cli.list(count, login, asJson, sortby);

@@ -578,15 +578,24 @@ program
     .command('user:create')
     .description('Create a new user')
     .option('-o, --org <org>', 'Org to create the user for')
+    .option('-i, --instance <instance>','Instance to create the user on. Can be an instance alias.')
     .option('-l, --login <login>','Login of the user')
     .option('-u, --user <user>', 'User details as json')
     .option('-j, --json', 'Formats the output in json')
     .action(function(options) {
         var org = ( options.org ? options.org : null );
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
         var login = ( options.login ? options.login : null );
         var user = ( options.user ? JSON.parse(options.user) : null );
         var asJson = ( options.json ? options.json : false );
-        if ( org && login ) {
+        if ( ( !org && !instance ) || ( org && instance ) ) {
+            require('./lib/log').error('Ambiguous options. Pass either -o,--org or -i,--instance.');
+        } else if ( !login ) {
+            require('./lib/log').error('Login missing. Please pass a login using -l,--login.');
+        } else if ( instance && login ) {
+            // create locally
+            require('./lib/user').cli.createLocal(instance, login, user, asJson);
+        } else if ( org && login ) {
             // create in AM
             require('./lib/user').cli.create(org, user, login, null, null, asJson);
         } else {
@@ -603,14 +612,17 @@ program
         console.log('  creation the user will receive a confirmation e-mail with a link to activate his');
         console.log('  account. Default roles of the user in Account Manager are "xchange-user" and "doc-user".');
         console.log('');
-        console.log('  creation the user will receive a confirmation e-mail with a link to activate his');
+        console.log('  Use -i,--instance to create a local user is on the Commerce Cloud instance.');
+        console.log('  The login must be unique. By default no roles will be assigned to the user on the instance.');
         console.log('');
         console.log('  You should pass details of the user in json (option -u,--user).');
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci user:create --org my-org --login jdoe@email.org --user \'{"firstName":' +
-            '"John", "lastName":"Doe", "roles": ["xchange-user"]}\'')
+            '"John", "lastName":"Doe", "roles": ["xchange-user"]}\'');
+        console.log('    $ sfcc-ci user:create --instance my-instance --login "my-user" --user \'{"email":' +
+            '"jdoe@email.org", "first_name":"John", "last_name":"Doe", "roles": ["Administrator"]}\'');
         console.log();
     });
 

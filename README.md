@@ -246,6 +246,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     role:revoke [options]                                           Revoke a role from a user
     user:list [options]                                             List users eligible to manage
     user:create [options] <org>                                     Create a new user
+    user:delete [options]                                           Delete a user
 
   Environment:
 

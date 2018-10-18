@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var program = require('commander');
+var { prompt } = require('inquirer');
 
 program
     .version(require('./package.json').version, '-V, --version')
@@ -625,6 +626,65 @@ program
             '"jdoe@email.org", "first_name":"John", "last_name":"Doe", "roles": ["Administrator"]}\'');
         console.log();
     });
+
+program
+    .command('user:delete')
+    .description('Delete a user')
+    .option('-i, --instance <instance>','Instance to delete the user from. Can be an instance alias.')
+    .option('-l, --login <login>','Login of the user to delete')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-p, --noprompt','No prompt to confirm deletion')
+    .action(function(options) {
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
+        var login = options.login;
+        var asJson = ( options.json ? options.json : false );
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+
+        var deleteUser = function(instance, login, asJson) {
+            if ( instance ) {
+                require('./lib/user').cli.deleteLocal(instance, login, asJson);
+            } else {
+                require('./lib/user').cli.delete(login, asJson);
+            }
+        };
+
+        if ( !login ) {
+            require('./lib/log').error('Missing required --login. Use -h,--help for help.');
+        } else if ( noPrompt ) {
+            deleteUser(instance, login, asJson);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : 'Delete user ' + login + '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    deleteUser(instance, login, asJson);
+                }
+            });
+        }
+        /*i*/
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Delete a user.');
+        console.log('');
+        console.log('  If --instance is not passed the user is deleted in Account Manager.');
+        console.log('  This requires permissions in Account Manager to adminstrate the org,');
+        console.log('  the user belongs to. The user is only marked as deleted and cannot');
+        console.log('  log into Account Manager anymore.');
+        console.log('');
+        console.log('  Pass an --instance to delete a local user from a Commerce Cloud instance.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci user:delete --login jdoe@email.org');
+        console.log('    $ sfcc-ci user:delete --instance my-instance.demandware.net --login jdoe@email.org');
+        console.log();
+    });
+
 
 program.on('--help', function() {
     console.log('');

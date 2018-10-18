@@ -78,8 +78,8 @@ Use the following snippet as your client's permission set, replace `my_client_id
           "write_attributes":"(**)"
         },
         {
-          "resource_id":"/roles",
-          "methods":["get"],
+          "resource_id":"/role_search",
+          "methods":["post"],
           "read_attributes":"(**)",
           "write_attributes":"(**)"
         },

@@ -1,6 +1,6 @@
-# Salesforce Commerce Cloud CI #
+# Salesforce Commerce Cloud CLI #
 
-The Salesforce Commerce Cloud CI is a command line interface (CLI) for interacting with Commerce Cloud instances from the command line / shell of various operating systems in order to facilitate Continuous Integration practices using Commerce Cloud. It provides a JavaScript API which can be used to integrate with higher level build tools.
+The Salesforce Commerce Cloud CLI is a command line interface for interacting with Commerce Cloud instances from the command line / shell of various operating systems in order to facilitate Continuous Integration practices using Commerce Cloud. It provides a JavaScript API which can be used to integrate with higher level build tools and other applications.
 
 # License #
 
@@ -23,24 +23,25 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 
 * Uses Open Commerce APIs completely
 * Authentication using Oauth2 only, no Business Manager user needed
-* Supported commands include: save state, code deploy, code activate, site import upload, site import, reset state
+* Interactive and headless authentication
+* Configuration of multiple instances incl. aliasing
 * WebDAV connectivity
-* Configuration of multiple instances
-* Aliasing of instances
-* Automatic renewal of Oauth2 token
-* Command line client and JavaScript API
+* Code deployment and code version management
+* System job execution and monitory (site import, state save and sate reset)
+* Custom job execution and monitoring
+* JavaScript API
 
 # How do I get set up? #
 
 ## Prerequisites ##
 
-Ensure you have a valid Open Commerce API client ID (API key) set up. If you don't have a Open Commerce API client ID yet, you can create one using the [Account Manager](https://account.demandware.com).
+Ensure you have a valid Commerce Cloud API key (client ID) set up. If you don't have a API key, you can create one using the [Account Manager](https://account.demandware.com).
 
-For automation usage you'll need the client ID as well as the client secret for authentication. If you plan to use the interactive mode, you have to configure your API client to use redirect url `http://localhost:8080`.
+For automation (e.g. a build server integration) you'll need the API key as well as the API secret for authentication. If you plan to use the interactive mode, you have to configure your API client to use redirect url `http://localhost:8080`.
 
 ## Configuration ##
 
-In order to perform certain commands the tool provides, you need to give permission to do that on your Commerce Cloud instance(s). You can do that by modifying the Open Commerce API Settings as well as the WebDAV Client Permissions.
+In order to perform CLI commands, you have to permit API calls to the Commerce Cloud instance(s) you wish to integrate with. You do that by modifying the Open Commerce API Settings as well as the WebDAV Client Permissions on the Commerce Cloud instance.
 
 1. Log into the Business Manager
 2. Navigate to Administration > Site Development > Open Commerce API Settings
@@ -80,10 +81,10 @@ Use the following snippet as your client's permission set, replace `my_client_id
       ]
     }
 ```
-Note, if you already have OCAPI Settings configured, e.g. for other clients, add this snippet to the list permission sets for the other clients as follows:
+Note, if you already have Open Commerce API Settings configured, e.g. for other API keys, add this snippet to the list of permission sets for the other clients as follows:
 ```JSON
     {
-      "_v":"18.1",
+      "_v":"18.9",
       "clients":
       [ 
         {
@@ -117,7 +118,7 @@ Use the following snippet as your client's permission set, replace `my_client_id
       ]
     }
 ```
-Note, if you already have WebDAV Client Permissions configured, e.g. for other clients, add this snippet to the list permission sets for the other clients as follows:
+Note, if you already have WebDAV Client Permissions configured, e.g. for other API keys, add this snippet to the list of permission sets for the other clients as follows:
 ```JSON
     {
       "clients":
@@ -129,8 +130,6 @@ Note, if you already have WebDAV Client Permissions configured, e.g. for other c
       ]
     }
 ```
-Note: WebDAV client permission to `cartridges` is available in Commerce Cloud Digital versions greater than **17.8**.
-
 ## Dependencies ##
 
 If you plan to integrate with the JavaScript API or if you want to download the sources and use the CLI through Node you need Node.js and npm to be installed. No other dependencies.
@@ -144,13 +143,13 @@ If do not want to use the JavaScript API, but just the CLI you don't need Node.j
 * `cd` into the directory and run `npm install`
 * Check if installation was successful by running `sfcc-ci --help`. In case you encouter any issues with running `sfcc-ci`, you may run `npm link` to create a symbolic link
 
-If you are using the CLI but don't want to mess around with Node.js and npm you can simply download the latest binaries for your OS at [Downloads](https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/).
+If you are using the CLI but don't want to mess around with Node.js and npm you can simply download the latest binaries for your OS at [Downloads](https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/).
 
 ### MacOS ###
 
 1. Download the binary with the command:
 
-        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-macos
+        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/sfcc-ci-macos
 
 2. Move the binary in to your PATH.
 
@@ -160,7 +159,7 @@ If you are using the CLI but don't want to mess around with Node.js and npm you 
 
 1. Download the binary with the command:
 
-        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-linux
+        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/sfcc-ci-linux
 
 2. Move the binary in to your PATH.
 
@@ -168,9 +167,9 @@ If you are using the CLI but don't want to mess around with Node.js and npm you 
 
 ### Windows ###
 
-1. Download the binary from [here](https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-win.exe). If you have curl installed, use this command:
+1. Download the binary from [here](https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/sfcc-ci-win.exe). If you have curl installed, use this command:
 
-        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-win.exe
+        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/sfcc-ci-win.exe
 
 2. Add the binary in to your PATH.
 
@@ -277,10 +276,10 @@ To output objects to a sorted list, add the `-S,--sortby` option to one of the s
 
 The examples below assume you have defined a set of environment variables:
 
-* a Client ID (API Key)
-* a Client Secret (API Secret)
-* a User Name (a user in Account Manager)
-* a User Password
+* an API Key (the client ID)
+* an API Secret (the client secret)
+* your Account Manager User Name
+* your Account Manager User Password
 
 You can do this as follows:
 

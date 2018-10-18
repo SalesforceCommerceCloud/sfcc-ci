@@ -432,19 +432,28 @@ program
     .option('-r, --role <role>','Role to get details for')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sortby <sortby>', 'Sort by specifying any field')
+    .option('-v, --verbose', 'Outputs additional details of a role')
     .action(function(options) {
         var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
         var count = ( options.count ? options.count : null );
         var role = ( options.role ? options.role : null );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortBy ? options.sortBy : null );
+        var verbose = ( options.verbose ? options.verbose : false );
 
         if ( options.instance ) {
-            require('./lib/role').cli.list(instance, role, null, role, sortby, count, asJson)
+            require('./lib/role').cli.list(instance, role, null, role, sortby, count, asJson, verbose)
         } else {
             require('./lib/log').error('Instance missing. Pass an instance using -i,--instance.');
         }
     }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  List roles defined on a Commerce Cloud instance.');
+        console.log();
+        console.log('  Use --role to get details of a single role. Use --verbose to show permissions the');
+        console.log('  role includes and the users on the instance granted with that role.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -685,7 +694,6 @@ program
                 }
             });
         }
-        /*i*/
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');

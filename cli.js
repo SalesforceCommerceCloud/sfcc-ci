@@ -439,7 +439,7 @@ program
         var sortby = ( options.sortBy ? options.sortBy : null );
 
         if ( options.instance ) {
-        require('./lib/role').cli.list(instance, role, asJson, sortby);
+            require('./lib/role').cli.list(instance, role, asJson, sortby);
         } else {
             require('./lib/log').error('Instance missing. Pass an instance using -i,--instance.');
         }
@@ -456,63 +456,84 @@ program
 program
     .command('role:grant')
     .description('Grant a role to a user')
+    .option('-i, --instance <instance>','Instance to grant a user a role to')
     .option('-l, --login <login>','Login of user to grant role to')
     .option('-r, --role <role>','Role to grant')
     .option('-s, --scope <scope>','Scope of role to grant')
     .option('-j, --json', 'Formats the output in json')
     .action(function(options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
         var login = ( options.login ? options.login : null );
         var role = ( options.role ? options.role : null );
         var scope = ( options.scope ? options.scope : null );
         var asJson = ( options.json ? options.json : false );
-        require('./lib/user').cli.grant(login, role, scope, asJson);
+
+        if ( instance && scope ) {
+            require('./lib/log').error('Ambiguous options. Use -h,--help for help.');
+        } else if ( instance ) {
+            require('./lib/user').cli.grantLocal(instance, login, role, asJson);
+        } else {
+            require('./lib/user').cli.grant(login, role, scope, asJson);
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  Grants a role to a user. Use additional --scope to grant the role to a specific');
-        console.log('  scope. This allows to limit the role to specific Commerce Cloud instances. Multiple');
-        console.log('  instances or a range of instances can be specified as scope. Scopes are only supported');
-        console.log('  by limited number of roles.');
+        console.log('  Grants a role to a user in Account Manager. Use additional --scope to grant the role');
+        console.log('  to a specific scope. This allows to limit the role for a specific Commerce Cloud instance');
+        console.log('  or a group of instances. Scopes are only supported by specific roles in Account Manager.');
+        console.log();
+        console.log('  Use --instance to grant a role to a user on a Commerce Cloud instance.');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci role:grant --login the-user --role the-role')
-        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope zzzz_dev')
-        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope zzzz_*')
-        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope "zzzz_s01,zzzz_s02"')
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role');
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope zzzz_dev');
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope zzzz_*');
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope "zzzz_s01,zzzz_s02"');
+        console.log('    $ sfcc-ci role:grant --instance my-instance.demandware.net --login the-user --role the-role');
         console.log();
     });
 
 program
     .command('role:revoke')
     .description('Revoke a role from a user')
+    .option('-i, --instance <instance>','Instance to revoke a user a role from')
     .option('-l, --login <login>','Login of user to revoke role from')
     .option('-r, --role <role>','Role to revoke')
     .option('-s, --scope <scope>','Scope of role to revoke')
     .option('-j, --json', 'Formats the output in json')
     .action(function(options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
         var login = ( options.login ? options.login : null );
         var role = ( options.role ? options.role : null );
         var scope = ( options.scope ? options.scope : null );
         var asJson = ( options.json ? options.json : false );
-        require('./lib/user').cli.revoke(login, role, scope, asJson);
+
+        if ( instance && scope ) {
+            require('./lib/log').error('Ambiguous options. Use -h,--help for help.');
+        } else if ( instance ) {
+            require('./lib/user').cli.revokeLocal(instance, login, role, asJson);
+        } else {
+            require('./lib/user').cli.revoke(login, role, scope, asJson);
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  Revokes a role from a user. Use additional --scope to reduce the scope of a role.');
-        console.log('  This allows to limit the role to specific Commerce Cloud instances. Multiple');
-        console.log('  instances or a range of instances can be specified.');
+        console.log('  Revokes a role from a user in Account Manager. Use additional --scope to reduce');
+        console.log('  the scope of a role. This allows to limit the role to specific Commerce Cloud');
+        console.log('  instances. Multiple instances or a range of instances can be specified.');
+        console.log('');
+        console.log('  Use --instance to revoke a role from a user on a Commerce Cloud instance.');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role')
-        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope zzzz_dev')
-        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope zzzz_*')
-        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope "zzzz_s01,zzzz_s02"')
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role');
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope zzzz_dev');
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope zzzz_*');
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope "zzzz_s01,zzzz_s02"');
+        console.log('    $ sfcc-ci role:revoke --instance my-instance.demandware.net --login the-user --role the-role');
         console.log();
     });
 

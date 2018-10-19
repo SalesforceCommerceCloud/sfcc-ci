@@ -96,6 +96,12 @@ Use the following snippet as your client's permission set, replace `my_client_id
           "write_attributes":"(**)"
         },
         {
+          "resource_id":"/roles/*/users/*",
+          "methods":["put","delete"],
+          "read_attributes":"(**)",
+          "write_attributes":"(**)"
+        },
+        {
           "resource_id":"/user_search",
           "methods":["post"],
           "read_attributes":"(**)",

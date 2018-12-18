@@ -239,13 +239,13 @@ program
 
 program
     .command('sandbox:update')
-    .option('-s, --sandboxid <id>','sandbox to update')
+    .option('-s, --sandbox <id>','sandbox to update')
     .option('-t, --ttl <hours>','number of hours to add to the sandbox lifetime')
     .description('Update a sandbox')
     .action(function(options) {
-        var sandbox_id = ( options.sandboxid ? options.sandboxid : null );
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
         if (!sandbox_id) {
-            require('./lib/log').error('Missing required argument `--sandboxid`');
+            this.missingArgument('sandbox');
             return;
         }
         // always assume it is a sandbox id
@@ -272,7 +272,7 @@ program
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:update --sandboxid my-sandbox-id --ttl 8');
+        console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --ttl 8');
         console.log();
     });
 

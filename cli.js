@@ -235,6 +235,44 @@ program
         console.log('    $ sfcc-ci sandbox:get my-sandbox-id -j');
         console.log('    $ sfcc-ci sandbox:get my-sandbox-id -h');
         console.log('    $ sfcc-ci sandbox:get my-sandbox-id -O');
+    });
+
+program
+    .command('sandbox:update')
+    .option('-s, --sandboxid <id>','sandbox to update')
+    .option('-t, --ttl <hours>','number of hours to add to the sandbox lifetime')
+    .description('Update a sandbox')
+    .action(function(options) {
+        var sandbox_id = ( options.sandboxid ? options.sandboxid : null );
+        if (!sandbox_id) {
+            require('./lib/log').error('Missing required argument `--sandboxid`');
+            return;
+        }
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        var ttl = ( options.ttl ? options.ttl : null );
+        require('./lib/sandbox').cli.update(spec, ttl, false);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The TTL (time to live) in hours of the sandbox can be prolonged via the --ttl flag. The value');
+        console.log('  must, together with previous prolongiations, adhere to the maximum TTL quotas).');
+        console.log();
+        console.log('  The sandbox to update must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:update --sandboxid my-sandbox-id --ttl 8');
         console.log();
     });
 

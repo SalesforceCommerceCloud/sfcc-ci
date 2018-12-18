@@ -211,7 +211,7 @@ program
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
-        var split = sandbox_id.split('-');
+        var split = sandbox_id.split(/[-_]/);
         if (split.length === 2) {
             spec['realm'] = split[0];
             spec['instance'] = split[1];
@@ -283,7 +283,7 @@ program
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
-        var split = sandbox_id.split('-');
+        var split = sandbox_id.split(/[-_]/);
         if (split.length === 2) {
             spec['realm'] = split[0];
             spec['instance'] = split[1];
@@ -311,7 +311,7 @@ program
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
-        var split = sandbox_id.split('-');
+        var split = sandbox_id.split(/[-_]/);
         if (split.length === 2) {
             spec['realm'] = split[0];
             spec['instance'] = split[1];
@@ -339,7 +339,7 @@ program
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
-        var split = sandbox_id.split('-');
+        var split = sandbox_id.split(/[-_]/);
         if (split.length === 2) {
             spec['realm'] = split[0];
             spec['instance'] = split[1];
@@ -367,7 +367,7 @@ program
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
-        var split = sandbox_id.split('-');
+        var split = sandbox_id.split(/[-_]/);
         if (split.length === 2) {
             spec['realm'] = split[0];
             spec['instance'] = split[1];
@@ -397,7 +397,7 @@ program
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
-        var split = sandbox_id.split('-');
+        var split = sandbox_id.split(/[-_]/);
         if (split.length === 2) {
             spec['realm'] = split[0];
             spec['instance'] = split[1];

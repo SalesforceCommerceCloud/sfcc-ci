@@ -35,145 +35,139 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 
 ## Prerequisites ##
 
+### Configure an API key ###
+
 Ensure you have a valid Commerce Cloud API key (client ID) set up. If you don't have a API key, you can create one using the [Account Manager](https://account.demandware.com).
 
-For automation (e.g. a build server integration) you'll need the API key as well as the API secret for authentication. If you plan to use the interactive mode, you have to configure your API client to use redirect url `http://localhost:8080`.
+For automation (e.g. a build server integration) you'll need the API key as well as the API secret for authentication. If you plan to use the interactive mode, you have to configure your API client to use redirect url `http://localhost:8080`. You do this when you create a new or modify an existing Client ID in Account Manager via the _Redirect URIs_ setting.
 
-## Configuration ##
+### Grant your API key access to your instances ###
 
 In order to perform CLI commands, you have to permit API calls to the Commerce Cloud instance(s) you wish to integrate with. You do that by modifying the Open Commerce API Settings as well as the WebDAV Client Permissions on the Commerce Cloud instance.
 
 1. Log into the Business Manager
-2. Navigate to Administration > Site Development > Open Commerce API Settings
+2. Navigate to _Administration > Site Development > Open Commerce API Settings_
 3. Make sure, that you select _Data API_ and _Global_ from the select boxes
 4. Add the permission set for your client ID to the settings. 
 
-Use the following snippet as your client's permission set, replace `my_client_id` with your client ID:
+Use the following snippet as your client's permission set, replace `my_client_id` with your own client ID. Note, if you already have Open Commerce API Settings configured on your instance, e.g. for other API keys, you have to merge this permission set into the existing list of permission sets for the other clients.
 ```JSON
     {
-      "client_id":"my_client_id",
-      "resources":
+      "_v": "19.1",
+      "clients":
       [
         {
-          "resource_id":"/code_versions",
-          "methods":["get"],
-          "read_attributes":"(**)",
-          "write_attributes":"(**)"
-        },
-        {
-          "resource_id":"/code_versions/*",
-          "methods":["patch"],
-          "read_attributes":"(**)",
-          "write_attributes":"(**)"
-        },
-        {
-          "resource_id":"/jobs/*/executions",
-          "methods":["post"],
-          "read_attributes":"(**)",
-          "write_attributes":"(**)"
-        },
-        {
-          "resource_id":"/jobs/*/executions/*",
-          "methods":["get"],
-          "read_attributes":"(**)",
-          "write_attributes":"(**)"
+          "client_id": "my_client_id",
+          "resources":
+          [
+            {
+              "resource_id": "/code_versions",
+              "methods": ["get"],
+              "read_attributes": "(**)",
+              "write_attributes": "(**)"
+            },
+            {
+              "resource_id": "/code_versions/*",
+              "methods": ["patch"],
+              "read_attributes": "(**)",
+              "write_attributes": "(**)"
+            },
+            {
+              "resource_id": "/jobs/*/executions",
+              "methods": ["post"],
+              "read_attributes": "(**)",
+              "write_attributes": "(**)"
+            },
+            {
+              "resource_id": "/jobs/*/executions/*",
+              "methods": ["get"],
+              "read_attributes": "(**)",
+              "write_attributes": "(**)"
+            }
+          ]
         }
       ]
     }
 ```
-Note, if you already have Open Commerce API Settings configured, e.g. for other API keys, add this snippet to the list of permission sets for the other clients as follows:
-```JSON
-    {
-      "_v":"18.9",
-      "clients":
-      [ 
-        {
-          /* ... */
-        },
-        /* the new permission set goes here */
-      ]
-    }
-```
-5. Navigate to Administration >  Organization >  WebDAV Client Permissions
+
+5. Navigate to _Administration > Organization > WebDAV Client Permissions_
 6. Add the permission set for your client ID to the permission settings.
 
-Use the following snippet as your client's permission set, replace `my_client_id` with your client ID:
+Use the following snippet as your client's permission set, replace `my_client_id` with your client ID. Note, if you already have WebDAV Client Permissions configured, e.g. for other API keys, you have to merge this permission set into the existing list of permission sets for the other clients.
 ```JSON
     {
-      "client_id":"my_client_id",
-      "permissions":
+      "clients":
       [
         {
-          "path": "/impex",
-          "operations": [
-            "read_write"
-          ]
-        },
-        {
-          "path": "/cartridges",
-          "operations": [
-            "read_write"
+          "client_id": "my_client_id",
+          "permissions":
+          [
+            {
+              "path": "/impex",
+              "operations": [
+                "read_write"
+              ]
+            },
+            {
+              "path": "/cartridges",
+              "operations": [
+                "read_write"
+              ]
+            }
           ]
         }
       ]
     }
 ```
-Note, if you already have WebDAV Client Permissions configured, e.g. for other API keys, add this snippet to the list of permission sets for the other clients as follows:
-```JSON
-    {
-      "clients":
-      [ 
-        {
-          /* ... */
-        },
-        /* the new permission set goes here */
-      ]
-    }
-```
+
 ## Dependencies ##
 
 If you plan to integrate with the JavaScript API or if you want to download the sources and use the CLI through Node you need Node.js and npm to be installed. No other dependencies.
 
-If do not want to use the JavaScript API, but just the CLI you don't need Node.js and npm necessarily. See "Installation Instructions" for details.
+If do not want to use the JavaScript API, but just the CLI you don't need Node.js and npm necessarily. See "Installation Instructions" for details below.
 
 ## Installation Instructions ##
 
-* Make sure Node.js and npm are installed.
-* Clone or download this tool.
-* `cd` into the directory and run `npm install`
-* Check if installation was successful by running `sfcc-ci --help`. In case you encouter any issues with running `sfcc-ci`, you may run `npm link` to create a symbolic link
+You can install the CLI using a pre-built binary or from source using Node.js.
 
-If you are using the CLI but don't want to mess around with Node.js and npm you can simply download the latest binaries for your OS at [Downloads](https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/).
+### Install Binary with curl ###
 
-### MacOS ###
+If you are using the CLI but don't want to mess around with Node.js you can simply download the latest binaries for your OS at [Releases](https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/latest). The assets with each release contain binaries for MacOS, Linux and Windows.
 
-1. Download the binary with the command:
+#### MacOS ####
 
-        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/sfcc-ci-macos
+1. Download the binary for MacOS.
 
-2. Move the binary in to your PATH.
+2. Move the binary in to your PATH:
 
         sudo mv ./sfcc-ci-macos /usr/local/bin/sfcc-ci
 
 ### Linux ###
 
-1. Download the binary with the command:
+1. Download the binary for Linux.
 
-        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/sfcc-ci-linux
-
-2. Move the binary in to your PATH.
+2. Move the binary in to your PATH:
 
         sudo mv ./sfcc-ci-linux /usr/local/bin/sfcc-ci
 
 ### Windows ###
 
-1. Download the binary from [here](https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/sfcc-ci-win.exe). If you have curl installed, use this command:
+1. Download the binary for Windows.
 
-        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/sfcc-ci-win.exe
+2. Add the binary in to your PATH:
 
-2. Add the binary in to your PATH.
+        set PATH=%PATH%;C:\path\to\binary
 
 You are now ready to use the tool by running the main command `sfcc-ci`.
+
+### Building from Source using Node.js ###
+
+* Make sure Node.js and npm are installed.
+* Clone or download the sources.
+* * If you choose to clone, it best done through ssh along with an ssh key which you have to create with your Github account. 
+* * If you choose to download the latest sources, you can do so from [Releases](https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/latest), after which you have to unzip the archive.
+* `cd` into the directory and run `npm install`. You may choose to install globally, by running `npm install -g` instead.
+* Check if installation was successful by running `sfcc-ci --help`. In case you encouter any issues with running `sfcc-ci`, you may run `npm link` to create a symbolic link explicitly. The symbolic link enables you to run `sfcc-ci` from any location on your machine.
 
 # Using the Command Line Interface #
 
@@ -230,7 +224,7 @@ The CLI keeps it's own settings. The location of these settings are OS specific.
 
 ## Environment Variables ##
 
-`sfcc-ci` respects the following environment variables which you can use to control, how the CLI works:
+The use of environment variables is optional. `sfcc-ci` respects the following environment variables which you can use to control, how the CLI works:
 
 * `SFCC_LOGIN_URL` The login url used for authentication.
 * `SFCC_OAUTH_LOCAL_PORT` Oauth local port for authentication flow.
@@ -281,7 +275,7 @@ The examples below assume you have defined a set of environment variables:
 * your Account Manager User Name
 * your Account Manager User Password
 
-You can do this as follows:
+On Linux and MacOS you can set environment variables as follows:
 
 ```bash
 export API_KEY=<my-api-key>
@@ -289,6 +283,17 @@ export API_SECRET=<my-api-secret>
 export API_USER=<my-user>
 export API_USER_PW=<my-user-pw>
 ```
+
+On Windows you set them as follows:
+
+```bash
+set API_KEY=<my-api-key>
+set API_SECRET=<my-api-secret>
+set API_USER=<my-user>
+set API_USER_PW=<my-user-pw>
+```
+
+The remainder of the examples below assume you are on Linux or MacOS. If you are on Windows you access environment variables using `%MY_ENV_VAR%` instead of `$MY_ENV_VAR`.
 
 Note: Some CLI commands provide structured output of the operation result as JSON. To process this JSON a tool called `jq` comes in handy. Installation and documentation of `jq` is located at https://stedolan.github.io/jq/manual/. 
 
@@ -299,8 +304,6 @@ In an interactive mode you usually authenticate as follows:
 ```bash
 sfcc-ci auth:login $API_KEY
 ```
-
-Note, that you have to configure your API client to use redirect url `http://localhost:8080`.
 
 In an automation scenario (where no user is physically present) authentication is done as follows:
 

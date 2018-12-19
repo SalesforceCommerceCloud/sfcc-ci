@@ -27,160 +27,151 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 
 * Uses Open Commerce APIs completely
 * Authentication using Oauth2 only, no Business Manager user needed
-* Supported commands include: save state, code deploy, code activate, site import upload, site import, reset state
+* Interactive and headless authentication
+* Configuration of multiple instances incl. aliasing
 * WebDAV connectivity
-* Configuration of multiple instances
-* Aliasing of instances
-* Automatic renewal of Oauth2 token
-* Command line client and JavaScript API
+* Code deployment and code version management
+* System job execution and monitory (site import, state save and sate reset)
+* Custom job execution and monitoring
+* JavaScript API
 
 # How do I get set up? #
 
 ## Prerequisites ##
 
-Ensure you have a valid Open Commerce API client ID (API key) set up. If you don't have a Open Commerce API client ID yet, you can create one using the [Account Manager](https://account.demandware.com).
+### Configure an API key ###
 
-For automation usage you'll need the client ID as well as the client secret for authentication. If you plan to use the interactive mode, you have to configure your API client to use redirect url `http://localhost:8080`.
+Ensure you have a valid Commerce Cloud API key (client ID) set up. If you don't have a API key, you can create one using the [Account Manager](https://account.demandware.com). Management of API keys is done in _Account Manager > API Client_ and requires _Account Administrator_ or _API Administrator_ role.
 
-If you want to manage On-Demand Sandboxes the client ID requires "Default Scopes" `roles tenantFilter profile` as well as "Redirect URIs" `http://localhost:8080` to be added to the client configuration in Account Manager.
+For automation (e.g. a build server integration) you'll need the API key as well as the API secret for authentication. If you want to use authentication in interactive mode, you have to set _Redirect URIs_ to `http://localhost:8080`. If you want to manage sandboxes you have to set _Default Scopes_ to `roles tenantFilter profile`.
 
-## Configuration ##
+### Grant your API key access to your instances ###
 
-In order to perform certain commands the tool provides, you need to give permission to do that on your Commerce Cloud instance(s). You can do that by modifying the Open Commerce API Settings as well as the WebDAV Client Permissions.
+In order to perform CLI commands, you have to permit API calls to the Commerce Cloud instance(s) you wish to integrate with. You do that by modifying the Open Commerce API Settings as well as the WebDAV Client Permissions on the Commerce Cloud instance.
 
 1. Log into the Business Manager
-2. Navigate to Administration > Site Development > Open Commerce API Settings
+2. Navigate to _Administration > Site Development > Open Commerce API Settings_
 3. Make sure, that you select _Data API_ and _Global_ from the select boxes
 4. Add the permission set for your client ID to the settings. 
 
-Use the following snippet as your client's permission set, replace `my_client_id` with your client ID:
+Use the following snippet as your client's permission set, replace `my_client_id` with your own client ID. Note, if you already have Open Commerce API Settings configured on your instance, e.g. for other API keys, you have to merge this permission set into the existing list of permission sets for the other clients.
 ```JSON
     {
-      "client_id":"my_client_id",
-      "resources":
+      "_v": "19.1",
+      "clients":
       [
         {
-          "resource_id":"/code_versions",
-          "methods":["get"],
-          "read_attributes":"(**)",
-          "write_attributes":"(**)"
-        },
-        {
-          "resource_id":"/code_versions/*",
-          "methods":["patch"],
-          "read_attributes":"(**)",
-          "write_attributes":"(**)"
-        },
-        {
-          "resource_id":"/jobs/*/executions",
-          "methods":["post"],
-          "read_attributes":"(**)",
-          "write_attributes":"(**)"
-        },
-        {
-          "resource_id":"/jobs/*/executions/*",
-          "methods":["get"],
-          "read_attributes":"(**)",
-          "write_attributes":"(**)"
+          "client_id": "my_client_id",
+          "resources":
+          [
+            {
+              "resource_id": "/code_versions",
+              "methods": ["get"],
+              "read_attributes": "(**)",
+              "write_attributes": "(**)"
+            },
+            {
+              "resource_id": "/code_versions/*",
+              "methods": ["patch"],
+              "read_attributes": "(**)",
+              "write_attributes": "(**)"
+            },
+            {
+              "resource_id": "/jobs/*/executions",
+              "methods": ["post"],
+              "read_attributes": "(**)",
+              "write_attributes": "(**)"
+            },
+            {
+              "resource_id": "/jobs/*/executions/*",
+              "methods": ["get"],
+              "read_attributes": "(**)",
+              "write_attributes": "(**)"
+            }
+          ]
         }
       ]
     }
 ```
-Note, if you already have OCAPI Settings configured, e.g. for other clients, add this snippet to the list permission sets for the other clients as follows:
-```JSON
-    {
-      "_v":"18.1",
-      "clients":
-      [ 
-        {
-          /* ... */
-        },
-        /* the new permission set goes here */
-      ]
-    }
-```
-5. Navigate to Administration >  Organization >  WebDAV Client Permissions
+
+5. Navigate to _Administration > Organization > WebDAV Client Permissions_
 6. Add the permission set for your client ID to the permission settings.
 
-Use the following snippet as your client's permission set, replace `my_client_id` with your client ID:
+Use the following snippet as your client's permission set, replace `my_client_id` with your client ID. Note, if you already have WebDAV Client Permissions configured, e.g. for other API keys, you have to merge this permission set into the existing list of permission sets for the other clients.
 ```JSON
     {
-      "client_id":"my_client_id",
-      "permissions":
+      "clients":
       [
         {
-          "path": "/impex",
-          "operations": [
-            "read_write"
-          ]
-        },
-        {
-          "path": "/cartridges",
-          "operations": [
-            "read_write"
+          "client_id": "my_client_id",
+          "permissions":
+          [
+            {
+              "path": "/impex",
+              "operations": [
+                "read_write"
+              ]
+            },
+            {
+              "path": "/cartridges",
+              "operations": [
+                "read_write"
+              ]
+            }
           ]
         }
       ]
     }
 ```
-Note, if you already have WebDAV Client Permissions configured, e.g. for other clients, add this snippet to the list permission sets for the other clients as follows:
-```JSON
-    {
-      "clients":
-      [ 
-        {
-          /* ... */
-        },
-        /* the new permission set goes here */
-      ]
-    }
-```
-Note: WebDAV client permission to `cartridges` is available in Commerce Cloud Digital versions greater than **17.8**.
 
 ## Dependencies ##
 
 If you plan to integrate with the JavaScript API or if you want to download the sources and use the CLI through Node you need Node.js and npm to be installed. No other dependencies.
 
-If do not want to use the JavaScript API, but just the CLI you don't need Node.js and npm necessarily. See "Installation Instructions" for details.
+If do not want to use the JavaScript API, but just the CLI you don't need Node.js and npm necessarily. See "Installation Instructions" for details below.
 
 ## Installation Instructions ##
 
-* Make sure Node.js and npm are installed.
-* Clone or download this tool.
-* `cd` into the directory and run `npm install`
-* Check if installation was successful by running `sfcc-ci --help`. In case you encouter any issues with running `sfcc-ci`, you may run `npm link` to create a symbolic link
+You can install the CLI using a pre-built binary or from source using Node.js.
 
-If you are using the CLI but don't want to mess around with Node.js and npm you can simply download the latest binaries for your OS at [Downloads](https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/).
+### Install Binary with curl ###
 
-### MacOS ###
+If you are using the CLI but don't want to mess around with Node.js you can simply download the latest binaries for your OS at [Releases](https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/latest). The assets with each release contain binaries for MacOS, Linux and Windows.
 
-1. Download the binary with the command:
+#### MacOS ####
 
-        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-macos
+1. Download the binary for MacOS.
 
-2. Move the binary in to your PATH.
+2. Move the binary in to your PATH:
 
         sudo mv ./sfcc-ci-macos /usr/local/bin/sfcc-ci
 
 ### Linux ###
 
-1. Download the binary with the command:
+1. Download the binary for Linux.
 
-        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-linux
-
-2. Move the binary in to your PATH.
+2. Move the binary in to your PATH:
 
         sudo mv ./sfcc-ci-linux /usr/local/bin/sfcc-ci
 
 ### Windows ###
 
-1. Download the binary from [here](https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-win.exe). If you have curl installed, use this command:
+1. Download the binary for Windows.
 
-        curl -O https://github.com/SalesforceCommerceCloud/sfcc-ci/downloads/sfcc-ci-win.exe
+2. Add the binary in to your PATH:
 
-2. Add the binary in to your PATH.
+        set PATH=%PATH%;C:\path\to\binary
 
 You are now ready to use the tool by running the main command `sfcc-ci`.
+
+### Building from Source using Node.js ###
+
+* Make sure Node.js and npm are installed.
+* Clone or download the sources.
+* * If you choose to clone, it best done through ssh along with an ssh key which you have to create with your Github account. 
+* * If you choose to download the latest sources, you can do so from [Releases](https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/latest), after which you have to unzip the archive.
+* `cd` into the directory and run `npm install`. You may choose to install globally, by running `npm install -g` instead.
+* Check if installation was successful by running `sfcc-ci --help`. In case you encouter any issues with running `sfcc-ci`, you may run `npm link` to create a symbolic link explicitly. The symbolic link enables you to run `sfcc-ci` from any location on your machine.
 
 # Using the Command Line Interface #
 
@@ -248,7 +239,7 @@ The CLI keeps it's own settings. The location of these settings are OS specific.
 
 ## Environment Variables ##
 
-`sfcc-ci` respects the following environment variables which you can use to control, how the CLI works:
+The use of environment variables is optional. `sfcc-ci` respects the following environment variables which you can use to control, how the CLI works:
 
 * `SFCC_LOGIN_URL` The login url used for authentication.
 * `SFCC_OAUTH_LOCAL_PORT` Oauth local port for authentication flow.
@@ -305,12 +296,12 @@ To output objects to a sorted list, add the `-S,--sortby` option to one of the s
 
 The examples below assume you have defined a set of environment variables:
 
-* a Client ID (API Key)
-* a Client Secret (API Secret)
-* a User Name (a user in Account Manager)
-* a User Password
+* an API Key (the client ID)
+* an API Secret (the client secret)
+* your Account Manager User Name
+* your Account Manager User Password
 
-You can do this as follows:
+On Linux and MacOS you can set environment variables as follows:
 
 ```bash
 export API_KEY=<my-api-key>
@@ -318,6 +309,17 @@ export API_SECRET=<my-api-secret>
 export API_USER=<my-user>
 export API_USER_PW=<my-user-pw>
 ```
+
+On Windows you set them as follows:
+
+```bash
+set API_KEY=<my-api-key>
+set API_SECRET=<my-api-secret>
+set API_USER=<my-user>
+set API_USER_PW=<my-user-pw>
+```
+
+The remainder of the examples below assume you are on Linux or MacOS. If you are on Windows you access environment variables using `%MY_ENV_VAR%` instead of `$MY_ENV_VAR`.
 
 Note: Some CLI commands provide structured output of the operation result as JSON. To process this JSON a tool called `jq` comes in handy. Installation and documentation of `jq` is located at https://stedolan.github.io/jq/manual/. 
 
@@ -328,8 +330,6 @@ In an interactive mode you usually authenticate as follows:
 ```bash
 sfcc-ci auth:login $API_KEY
 ```
-
-Note, that you have to configure your API client to use redirect url `http://localhost:8080`.
 
 In an automation scenario (where no user is physically present) authentication is done as follows:
 

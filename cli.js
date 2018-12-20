@@ -144,6 +144,41 @@ program
     });
 
 program
+    .command('sandbox:realm:update')
+    .description('Update realm settings')
+    .option('-r, --realm <realm>','Realm to update')
+    .option('-m, --max-sandbox-ttl <maxSandboxTTL>','Maximum number of hours a sandbox can live in the realm')
+    .option('-d, --default-sandbox-ttl <defaultSandboxTTL>','Number of hours a sandbox lives in the realm by default')
+    .option('-j, --json','Formats the output in json')
+    .action(function(options) {
+        var realm = ( options.realm ? options.realm : null );
+        if (!realm) {
+            this.missingArgument('realm');
+            return;
+        }
+        var maxSandboxTTL = ( options.maxSandboxTtl ? parseInt(options.maxSandboxTtl) : false );
+        var defaultSandboxTTL = ( options.defaultSandboxTtl ? parseInt(options.defaultSandboxTtl) : false );
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/sandbox').cli.realm.update(realm, maxSandboxTTL, defaultSandboxTTL, asJson);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Update details of a realm.');
+        console.log();
+        console.log('  Use --max-sandbox-ttl to update the maximum number of hours a sandbox can live');
+        console.log('  in the realm (must adhere to the maximum TTL quota). Use --default-sandbox-ttl to');
+        console.log('  update the number of hours a sandbox lives in the realm when no TTL was given upon');
+        console.log('  provisioning (must adhere to the maximum TTL quota).');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:realm:update --realm zzzz --max-sandbox-ttl 72');
+        console.log('    $ sfcc-ci sandbox:realm:update --realm zzzz --default-sandbox-ttl 24');
+        console.log();
+    });
+
+program
     .command('sandbox:list')
     .description('List all available sandboxes')
     .option('-j, --json','Formats the output in json')

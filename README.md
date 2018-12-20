@@ -205,6 +205,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                               Return the current authentication token
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
+    sandbox:realm:update [options]                                  Update realm settings
     sandbox:list [options]                                          List all available sandboxes
     sandbox:create [options] <realm> [alias]                        Create a new sandbox
     sandbox:get [options] <sandbox_id>                              Get detailed information about a sandbox

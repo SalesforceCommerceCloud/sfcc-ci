@@ -1,6 +1,6 @@
 {
   "name": "sfcc-ci",
-  "version": "2.0.0",
+  "version": "2.0.0-beta",
   "description": "Command line tool to allow Continuous Integration practices with Salesforce Commerce Cloud instances",
   "main": "index.js",
   "bin": {
@@ -16,29 +16,28 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/demandware/sfcc-ci.git"
+    "url": "git+https://github.com/SalesforceCommerceCloud/sfcc-ci.git"
   },
   "author": "Tobias Lohr",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/demandware/sfcc-ci#readme",
+  "homepage": "https://github.com/SalesforceCommerceCloud/sfcc-ci#readme",
   "dependencies": {
-    "chalk": "^2.3.0",
-    "commander": "^2.11.0",
-    "conf": "^1.1.2",
-    "jsonwebtoken": "^8.1.0",
-    "netrc": "^0.1.4",
-    "open": "0.0.5",
-    "request": "^2.82.0",
+    "chalk": "^2.4.1",
+    "commander": "^2.18.0",
+    "conf": "^2.0.0",
+    "jsonwebtoken": "^8.3.0",
+    "opn": "^5.3.0",
+    "request": "^2.88.0",
     "request-debug": "^0.2.0",
-    "table": "^4.0.1"
+    "table": "^5.0.2"
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "eslint": "^4.5.0",
+    "eslint": "^5.5.0",
     "istanbul": "^0.4.5",
-    "mocha": "^3.5.2",
-    "pkg": "^4.3.0",
-    "proxyquire": "^2.0.1",
-    "sinon": "^3.2.1"
+    "mocha": "^5.2.0",
+    "pkg": "^4.3.4",
+    "proxyquire": "^2.1.0",
+    "sinon": "^7.2.2"
   }
 }

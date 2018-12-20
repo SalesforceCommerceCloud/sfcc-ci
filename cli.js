@@ -314,14 +314,15 @@ program
             spec['realm'] = split[0];
             spec['instance'] = split[1];
         }
-        var ttl = ( options.ttl ? options.ttl : null );
+        var ttl = ( options.ttl ? parseInt(options.ttl) : null );
         require('./lib/sandbox').cli.update(spec, ttl, false);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
         console.log();
         console.log('  The TTL (time to live) in hours of the sandbox can be prolonged via the --ttl flag. The value');
-        console.log('  must, together with previous prolongiations, adhere to the maximum TTL quotas).');
+        console.log('  must, together with previous prolongiations, adhere to the maximum TTL quotas). If set to 0 or');
+        console.log('  less the sandbox will have an infinite lifetime.');
         console.log();
         console.log('  The sandbox to update must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes.');

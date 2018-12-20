@@ -213,10 +213,11 @@ program
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  The sandbox will be created for the realm using the <realm> argument or stored in dw.json config file.');
-        console.log('  You must have permission to create a new sandbox for the realm. The number of sandboxes allowed to');
-        console.log('  create is limited. The command only trigger the creation and does not wait until the sandbox is');
-        console.log('  fully up and running. Use may use `sfcc-ci sandbox:list` to check the status of the creation.');
+        console.log('  The sandbox will be created for the realm using the <realm> argument or stored in dw.json');
+        console.log('  config file. You must have permission to create a new sandbox for the realm. The number of');
+        console.log('  sandboxes allowed to create is limited. The command only trigger the creation and does not');
+        console.log('  wait until the sandbox is fully up and running. Use may use `sfcc-ci sandbox:list` to check');
+        console.log('  the status of the creation.');
         console.log();
         console.log('  You can force the command to wait until the creation of the sandbox has been finished and the');
         console.log('  is available to use (in "started" status) by using the --sync flag.');

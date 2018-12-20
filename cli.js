@@ -251,6 +251,9 @@ program
     .option('-j, --json','Formats the output in json')
     .option('-h, --host','Return the host name of the sandbox')
     .option('-O, --open','Opens a browser with the Business Manager on the sandbox')
+    .option('-u, --show-operations','Display operations performed')
+    .option('-u, --show-usage','Display detailed usage information')
+    .option('-u, --show-settings','Display settings applied')
     .action(function(sandbox_id, options) {
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
@@ -263,7 +266,10 @@ program
         var asJson = ( options.json ? options.json : false );
         var hostOnly = ( options.host ? options.host : false );
         var openBrowser = ( options.open ? options.open : false );
-        require('./lib/sandbox').cli.get(spec, asJson, hostOnly, openBrowser);
+        var showOperations = ( options.showOperations ? options.showOperations : false );
+        var showUsage = ( options.showUsage ? options.showUsage : false );
+        var showSettings = ( options.showSettings ? options.showSettings : false );
+        require('./lib/sandbox').cli.get(spec, asJson, hostOnly, openBrowser, showOperations, showUsage, showSettings);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -272,6 +278,10 @@ program
         console.log('  identify the id of your sandboxes.');
         console.log();
         console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log();
+        console.log('  Use --show-usage to display detailed usage information, --show-operations to get a list of');
+        console.log('  previous operations executed on the sandbox, --show-settings to return the settings initially');
+        console.log('  applied to the sandbox during creation.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -279,6 +289,10 @@ program
         console.log('    $ sfcc-ci sandbox:get my-sandbox-id -j');
         console.log('    $ sfcc-ci sandbox:get my-sandbox-id -h');
         console.log('    $ sfcc-ci sandbox:get my-sandbox-id -O');
+        console.log('    $ sfcc-ci sandbox:get my-sandbox-id --show-usage');
+        console.log('    $ sfcc-ci sandbox:get my-sandbox-id --show-operations');
+        console.log('    $ sfcc-ci sandbox:get my-sandbox-id --show-settings');
+        console.log();
     });
 
 program

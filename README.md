@@ -214,7 +214,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     sandbox:stop <sandbox_id>                                       Stop a sandbox
     sandbox:restart <sandbox_id>                                    Restart a sandbox
     sandbox:reset <sandbox_id>                                      Reset a sandbox
-    sandbox:remove <sandbox_id>                                     Triggers the removal of an existing sandbox
+    sandbox:delete <sandbox_id>                                     Triggers the deletion of an existing sandbox
     instance:add [options] <instance> [alias]                       Adds a new Commerce Cloud instance to the list of configured instances
     instance:set <alias_or_host>                                    Sets a Commerce Cloud instance as the default instance
     instance:clear                                                  Clears all configured Commerce Cloud instances

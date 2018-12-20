@@ -450,8 +450,8 @@ program
     });
 
 program
-    .command('sandbox:remove <sandbox_id>')
-    .description('Triggers the removal of an existing sandbox')
+    .command('sandbox:delete <sandbox_id>')
+    .description('Delete a sandbox')
     .action(function(sandbox_id, options) {
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
@@ -461,23 +461,23 @@ program
             spec['realm'] = split[0];
             spec['instance'] = split[1];
         }
-        require('./lib/sandbox').cli.remove(spec);
+        require('./lib/sandbox').cli.delete(spec);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
         console.log();
         console.log('  WARNING: This is a destructive operation and you will loose any data stored on the sandbox.');
         console.log();
-        console.log('  The sandbox to remove must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
-        console.log('  identify the id of your sandboxes. You must have permission to remove a sandbox. The command');
-        console.log('  only triggers the deletion and does not wait until the sandbox is fully removed. Use may use');
-        console.log('  `sfcc-ci sandbox:list` to check the status of the removal.');
+        console.log('  The sandbox to delete must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes. You must have permission to delete a sandbox. The command');
+        console.log('  only triggers the deletion and does not wait until the sandbox is fully deleted. Use may use');
+        console.log('  `sfcc-ci sandbox:list` to check the status of the deletion.');
         console.log();
         console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:remove my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:delete my-sandbox-id');
         console.log();
     });
 

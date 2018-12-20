@@ -204,7 +204,7 @@ program
     .option('-d, --default', 'Sets the created sandbox as default instance.')
     .description('Create a new sandbox')
     .action(function(realm, alias, options) {
-        var ttl = ( options.ttl ? options.ttl : null );
+        var ttl = ( options.ttl ? parseInt(options.ttl) : null );
         var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
         var setAsDefault = ( options.default ? options.default : false );

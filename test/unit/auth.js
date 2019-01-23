@@ -37,18 +37,6 @@ describe('Tests for lib/auth.js', function() {
         });
     });
 
-    describe('getAutoRenewToken function', function() {
-
-        it('should call config.get on relevant configuration key', function() {
-            var spy = sinon.spy(config, 'get');
-
-            auth.getAutoRenewToken();
-
-            sinon.assert.calledWith(spy, 'SFCC_CLIENT_RENEW_TOKEN');
-            spy.restore();
-        });
-    });
-
     describe('getAutoRenewBase64 function', function() {
 
         it('should call config.get on relevant configuration key', function() {

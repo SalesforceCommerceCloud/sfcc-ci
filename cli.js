@@ -751,6 +751,32 @@ program
         console.log();
     });
 
+
+program
+    .command('cartridge:add <cartridgename>')
+    .option('-p, --position <position>','Position on where to add the cartridge in its cartrigde path.' +
+    'Possible Values first|last|before|after')
+    .option('-t, --target [target]','The cartridge name ' +
+    'relative to the postion parameter (before|after) ')
+    .option('-S, --siteid <siteid>', 'the site the cartridge will be added to')
+
+    .action(function(cartridgename, options) {
+        console.info(arguments)
+        var instance = require('./lib/instance').getInstance(options.instance);;
+        var verbose = ( options.verbose ? options.verbose : false );
+        var position = ( options.position ? options.position : 'last' );
+        var target = ( options.target ? options.target : '' );
+        var siteid = ( options.siteid ? options.siteid : 'RefArch' );
+        require('./lib/cartridge').add(instance, cartridgename, position, target, siteid, verbose);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+    	console.log('    $ sfcc-ci cartridge:add plugin_applepay -p first -S RefArch);
+    	console.log('    $ sfcc-ci cartridge:add plugin_applepay -p after -t app_yourshophere -S YourShopHere;
+        console.log();
+    });
+
 program.on('--help', function() {
     console.log('');
     console.log('  Environment:');

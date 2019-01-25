@@ -772,8 +772,8 @@ program
         console.log('');
         console.log('  Examples:');
         console.log();
-    	console.log('    $ sfcc-ci cartridge:add plugin_applepay -p first -S RefArch);
-    	console.log('    $ sfcc-ci cartridge:add plugin_applepay -p after -t app_yourshophere -S YourShopHere;
+    	console.log('    $ sfcc-ci cartridge:add plugin_applepay -p first -S RefArch');
+    	console.log('    $ sfcc-ci cartridge:add plugin_applepay -p after -t app_yourshophere -S YourShopHere');
         console.log();
     });
 

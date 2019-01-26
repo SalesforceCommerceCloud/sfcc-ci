@@ -761,7 +761,6 @@ program
     .option('-S, --siteid <siteid>', 'the site the cartridge will be added to')
 
     .action(function(cartridgename, options) {
-        console.info(arguments)
         var instance = require('./lib/instance').getInstance(options.instance);;
         var verbose = ( options.verbose ? options.verbose : false );
         var position = ( options.position ? options.position : 'last' );

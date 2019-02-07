@@ -113,24 +113,17 @@ program
     .command('sandbox:realm:list')
     .description('List realms eligible to manage sandboxes for')
     .option('-r, --realm <realm>','Realm to get details for')
-    .option('-u, --show-quota','Display detailed quota information')
-    .option('-u, --show-usage','Display detailed usage information')
     .option('-j, --json','Formats the output in json')
     .action(function(options) {
         var realm = ( options.realm ? options.realm : null );
-        var showQuota = ( options.showQuota ? options.showQuota : false );
-        var showUsage = ( options.showUsage ? options.showUsage : false );
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.realm.list(realm, showQuota, showUsage, asJson);
+        require('./lib/sandbox').cli.realm.list(realm, asJson);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  Use --realm to get details of a single realm such as quotas and usage');
-        console.log('  information of sandboxes.');
-        console.log();
-        console.log('  Use --show-quota to display detailed quota information, or --show-usage to ');
-        console.log('  display detailed usage information.');
+        console.log('  Use --realm to get details of a single realm such as configuration and usage');
+        console.log('  information about sandboxes.');
         console.log();
         console.log('  Examples:');
         console.log();
@@ -138,8 +131,6 @@ program
         console.log('    $ sfcc-ci sandbox:realms --json');
         console.log('    $ sfcc-ci sandbox:realms --realm zzzz');
         console.log('    $ sfcc-ci sandbox:realms --realm zzzz --json');
-        console.log('    $ sfcc-ci sandbox:realms --realm zzzz --show-quota');
-        console.log('    $ sfcc-ci sandbox:realms --realm zzzz --show-usage');
         console.log();
     });
 

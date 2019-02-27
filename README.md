@@ -52,7 +52,7 @@ In order to perform CLI commands, you have to permit API calls to the Commerce C
 1. Log into the Business Manager
 2. Navigate to _Administration > Site Development > Open Commerce API Settings_
 3. Make sure, that you select _Data API_ and _Global_ from the select boxes
-4. Add the permission set for your client ID to the settings. 
+4. Add the permission set for your client ID to the settings.
 
 Use the following snippet as your client's permission set, replace `my_client_id` with your own client ID. Note, if you already have Open Commerce API Settings configured on your instance, e.g. for other API keys, you have to merge this permission set into the existing list of permission sets for the other clients.
 ```JSON
@@ -216,6 +216,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     code:list [options]                                             List all custom code versions deployed on the Commerce Cloud instance
     code:deploy [options] <archive>                                 Deploys a custom code archive onto a Commerce Cloud instance
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
+    code:create [options] <version>                                 Create a custom code version on a Commerce Cloud instance
     job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
 
@@ -321,7 +322,7 @@ set API_USER_PW=<my-user-pw>
 
 The remainder of the examples below assume you are on Linux or MacOS. If you are on Windows you access environment variables using `%MY_ENV_VAR%` instead of `$MY_ENV_VAR`.
 
-Note: Some CLI commands provide structured output of the operation result as JSON. To process this JSON a tool called `jq` comes in handy. Installation and documentation of `jq` is located at https://stedolan.github.io/jq/manual/. 
+Note: Some CLI commands provide structured output of the operation result as JSON. To process this JSON a tool called `jq` comes in handy. Installation and documentation of `jq` is located at https://stedolan.github.io/jq/manual/.
 
 ### Authentication ###
 
@@ -403,6 +404,7 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
 
 ```javascript
   sfcc.auth.auth(client_id, client_secret, callback);
+  sfcc.code.createCodeVersion(instance, code_version, token, callback);
   sfcc.code.activate(instance, code_version, token, callback);
   sfcc.code.deploy(instance, archive, token, options, callback);
   sfcc.code.list(instance, token, callback);
@@ -492,6 +494,21 @@ Param         | Type        | Description
 ------------- | ------------| --------------------------------
 instance      | (String)    | The instance to activate the code on
 code_version  | (String)    | The code version to activate
+token         | (String)    | The Oauth token to use use for authentication
+callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
+
+**Returns:** (void) Function has no return value
+
+***
+
+`createCodeVersion(instance, code_version, token, callback)`
+
+Creates a custom code version on a Commerce Cloud instance. If the code version already exists, an error will be thrown.
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to create the code-version on
+code_version  | (String)    | The code version to create
 token         | (String)    | The Oauth token to use use for authentication
 callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
 

@@ -660,6 +660,24 @@ program
     });
 
 program
+    .command('code:create <version>')
+    .option('-i, --instance <instance>','Instance to create the custom code version on. Can be an ' +
+        'instance alias. If not specified the currently configured instance will be used.')
+    .description('Create the custom code version on a Commerce Cloud instance')
+    .action(function(version, options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        require('./lib/code').createVersion(instance, version);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci code:create version2');
+        console.log('    $ sfcc-ci code:create version2 -i my-instance-alias');
+        console.log('    $ sfcc-ci code:create version2 -i my-instance.demandware.net');
+        console.log();
+});
+
+program
     .command('code:activate <version>')
     .option('-i, --instance <instance>','Instance to activate the custom code version on. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')

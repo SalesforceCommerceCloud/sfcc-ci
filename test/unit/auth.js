@@ -24,6 +24,15 @@ describe('Tests for lib/auth.js', function() {
     });
     var config = require('../../lib/config').obtain();
 
+    const clientKey = 'ABCD-1234-EFGH',
+        clientSecret = 'FooBar!!',
+        clientKey2 = '7777-8888-9999',
+        clientSecret2 = 'BizBazBuzzz',
+        user = 'test-user@test.com',
+        password = 'abc123',
+        AMURI1 = 'account-pod5.demandware.net',
+        AMURI2 = 'account-pod99.demandware.edu';
+
     describe('cli.logout function', function() {
 
         it('should call config.delete on relevant configuration keys', function() {
@@ -74,15 +83,6 @@ describe('Tests for lib/auth.js', function() {
     });
 
     describe('auth function', function() {
-        const clientKey = 'ABCD-1234-EFGH',
-            clientSecret = 'FooBar!!',
-            clientKey2 = '7777-8888-9999',
-            clientSecret2 = 'BizBazBuzzz',
-            user = 'test-user@test.com',
-            password = 'abc123',
-            AMURI1 = 'account-pod5.demandware.net',
-            AMURI2 = 'account-pod99.demandware.edu';
-
         describe('building request to obtain token', function() {
             beforeEach(function() {
                 requestStub.post.resetHistory();
@@ -138,7 +138,75 @@ describe('Tests for lib/auth.js', function() {
                 expect(postArgs.uri).to.equal('https://account-pod5.demandware.net/dw/oauth2/access_token');
             });
         });
-
     });
+
+    describe('#renew', function() {
+        const refreshToken = 'abc',
+            newRefreshToken = 'cde',
+            currentAccessToken = 'aaa3057e-11e9-4bc6-af0c-71eafb30ca9d',
+            newAccessToken = 'zzz3057e-11e9-4bc6-af0c-71eafb30ca9d',
+            credentials = Buffer.from(clientKey + ':' + clientSecret).toString('base64'),
+            successResponse = {statusCode: 200,
+                body: {
+                    refresh_token: newRefreshToken,
+                    access_token: newAccessToken
+                }
+            },
+            failureResponse = {statusCode: 403, body: {error: ''}},
+            callback = sinon.spy();
+
+        beforeEach(function() {
+            requestStub.post.resetHistory();
+            callback.resetHistory();
+
+            config.set('SFCC_CLIENT_RENEW_BASE', credentials);
+            config.set('SFCC_CLIENT_ID', clientKey);
+            config.set('SFCC_CLIENT_TOKEN', currentAccessToken);
+            config.set('SFCC_REFRESH_TOKEN', refreshToken);
+        });
+
+        it('rejects call when no renew token present', function() {
+            config.set('SFCC_REFRESH_TOKEN', null);
+
+            auth.renew(callback);
+
+            sinon.assert.notCalled(requestStub.post);
+            sinon.assert.notCalled(callback);
+        });
+
+        it('makes call to AM with stored credentials', function() {
+            auth.renew(callback);
+
+            sinon.assert.calledOnce(requestStub.post);
+
+            const postArgs = requestStub.post.getCall(0).args[0];
+            expect(postArgs.form.grant_type).to.equal('refresh_token');
+            expect(postArgs.form.refresh_token).to.equal(refreshToken);
+            expect(postArgs.auth.user).to.equal(clientKey);
+            expect(postArgs.auth.pass).to.equal(clientSecret);
+        });
+
+        it('updates auth tokens', function() {
+            requestStub.post = sinon.stub().yields(null, successResponse);
+            auth.renew(callback);
+
+            expect(config.get('SFCC_CLIENT_TOKEN')).to.equal(newAccessToken);
+            expect(config.get('SFCC_REFRESH_TOKEN')).to.equal(newRefreshToken);
+        });
+
+        it('executes callback on successful call', function() {
+            requestStub.post = sinon.stub().yields(null, successResponse);
+            auth.renew(callback);
+
+            sinon.assert.calledOnce(callback);
+        });
+
+        it('ignores callback on failure call', function() {
+           requestStub.post = sinon.stub().yields(null, failureResponse);
+           auth.renew(callback);
+
+           sinon.assert.notCalled(callback);
+        });
+    })
 
 });

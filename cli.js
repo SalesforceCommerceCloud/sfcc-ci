@@ -188,17 +188,21 @@ program
     });
 
 program
-    .command('sandbox:create [realm] [alias]')
+    .command('sandbox:create')
+    .option('-r, --realm <realm>','Realm to create the sandbox for')
     .option('-t, --ttl <hours>','Number of hours the sandbox will live')
     .option('-j, --json','Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .option('-d, --default', 'Sets the created sandbox as default instance.')
+    .option('-a, --set-alias <alias>','Instance alias to create for the sandbox')
     .description('Create a new sandbox')
-    .action(function(realm, alias, options) {
+    .action(function(options) {
+        var realm = ( options.realm ? options.realm : null );
         var ttl = ( options.ttl ? parseInt(options.ttl) : null );
         var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
         var setAsDefault = ( options.default ? options.default : false );
+        var alias = ( options.setAlias ? options.setAlias : null );
         require('./lib/sandbox').cli.create(realm, alias, ttl, asJson, sync, setAsDefault);
     }).on('--help', function() {
         console.log('');
@@ -214,8 +218,8 @@ program
         console.log('  is available to use (in "started" status) by using the --sync flag.');
         console.log();
         console.log('  The created sandbox is being added to the list of instances with its host name. The optional');
-        console.log('  [alias] is used as alias for the new instance. If [alias] is omitted, the host is used as');
-        console.log('  alias.');
+        console.log('  --set-alias <alias> is used as alias for the new instance. If it is omitted, the host is used');
+        console.log('  as alias.');
         console.log();
         console.log('  If executed with --default flag, the created sandbox will be set as new default instance.');
         console.log();
@@ -226,14 +230,14 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:create');
-        console.log('    $ sfcc-ci sandbox:create my-realm');
-        console.log('    $ sfcc-ci sandbox:create my-realm an-alias');
-        console.log('    $ sfcc-ci sandbox:create my-realm an-alias -d');
-        console.log('    $ sfcc-ci sandbox:create my-realm -s');
-        console.log('    $ sfcc-ci sandbox:create my-realm an-alias -s');
-        console.log('    $ sfcc-ci sandbox:create my-realm an-alias -s -d');
-        console.log('    $ sfcc-ci sandbox:create my-realm -s -j');
-        console.log('    $ sfcc-ci sandbox:create my-realm --ttl 6');
+        console.log('    $ sfcc-ci sandbox:create --realm my-realm');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm --set-alias an-alias');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -a an-alias -d');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -s');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -a an-alias -s');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -a an-alias -s -d');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -s -j');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm --ttl 6');
         console.log();
     });
 

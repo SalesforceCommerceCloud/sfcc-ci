@@ -588,8 +588,8 @@ fi
 ###### Testing ´sfcc-ci sandbox:create´
 ###############################################################################
 
-echo "Testing command ´sfcc-ci sandbox:create <INVALID_REALM>´ (expected to fail):"
-node ./cli.js sandbox:create INVALID_REALM
+echo "Testing command ´sfcc-ci sandbox:create --realm <INVALID_REALM>´ (expected to fail):"
+node ./cli.js sandbox:create --realm INVALID_REALM
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -597,8 +597,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:create <realm> --ttl 1 --sync´:"
-node ./cli.js sandbox:create $ARG_SANDBOX_REALM --ttl 1 --sync
+echo "Testing command ´sfcc-ci sandbox:create --realm <realm> --ttl 1 --sync´:"
+node ./cli.js sandbox:create --realm $ARG_SANDBOX_REALM --ttl 1 --sync
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -606,8 +606,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:create <realm> --ttl 1 --sync --json´:"
-TEST_NEW_SANDBOX_RESULT=`node ./cli.js sandbox:create $ARG_SANDBOX_REALM --ttl 1 --sync --json`
+echo "Testing command ´sfcc-ci sandbox:create --realm <realm> --ttl 1 --sync --json´:"
+TEST_NEW_SANDBOX_RESULT=`node ./cli.js sandbox:create --realm $ARG_SANDBOX_REALM --ttl 1 --sync --json`
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

@@ -279,21 +279,6 @@ else
 fi
 
 ###############################################################################
-###### Testing ´sfcc-ci instance:state:save´
-###############################################################################
-
-if [ $ARG_SCOPE = "full" ]; then
-	echo "Testing command ´sfcc-ci instance:state:save´ with --sync option:"
-	node ./cli.js instance:state:save --sync
-	if [ $? -eq 0 ]; then
-		echo -e "\t> OK"
-	else
-		echo -e "\t> FAILED"
-		exit 1
-	fi
-fi
-
-###############################################################################
 ###### Testing ´sfcc-ci instance:import´
 ###############################################################################
 
@@ -341,21 +326,6 @@ else
 	echo -e "\t> FAILED"
 	echo -e "\t> Test result was: $TEST_RESULT"
 	exit 1
-fi
-
-###############################################################################
-###### Testing ´sfcc-ci instance:state:reset´
-###############################################################################
-
-if [ $ARG_SCOPE = "full" ]; then
-	echo "Testing command ´sfcc-ci instance:state:reset´ with --sync option:"
-	node ./cli.js instance:state:reset --sync
-	if [ $? -eq 0 ]; then
-		echo -e "\t> OK"
-	else
-		echo -e "\t> FAILED"
-		exit 1
-	fi
 fi
 
 ###############################################################################

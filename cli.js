@@ -608,60 +608,6 @@ program
     });
 
 program
-    .command('instance:state:save')
-    .option('-i, --instance <instance>','Instance to save the state for. Can be an instance alias. ' +
-        'If not specified the currently configured instance will be used.')
-    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
-    .description('Perform a save of the state of a Commerce Cloud instance')
-    .action(function(options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
-        var sync = ( options.sync ? options.sync : false );
-        if (sync) {
-            require('./lib/instance').saveStateSync(instance);
-        } else {
-            require('./lib/instance').saveState(instance);
-        }
-    }).on('--help', function() {
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci instance:state:save');
-        console.log('    $ sfcc-ci instance:state:save -i my-instance-alias');
-        console.log('    $ sfcc-ci instance:state:save -i my-instance-alias -s');
-        console.log('    $ sfcc-ci instance:state:save -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci instance:state:save -i my-instance.demandware.net -s');
-        console.log('    $ sfcc-ci instance:state:save -s');
-        console.log();
-    });
-
-program
-    .command('instance:state:reset')
-    .option('-i, --instance <instance>','Instance to reset its state for. Can be an instance alias. ' +
-        'If not specified the currently configured instance will be used.')
-    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
-    .description('Perform a reset of a previously saved state of a Commerce Cloud instance')
-    .action(function(options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
-        var sync = ( options.sync ? options.sync : false );
-        if (sync) {
-            require('./lib/instance').resetStateSync(instance);
-        } else {
-            require('./lib/instance').resetState(instance);
-        }
-    }).on('--help', function() {
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci instance:state:reset');
-        console.log('    $ sfcc-ci instance:state:reset -i my-instance-alias');
-        console.log('    $ sfcc-ci instance:state:reset -i my-instance-alias -s');
-        console.log('    $ sfcc-ci instance:state:reset -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci instance:state:reset -i my-instance.demandware.net -s');
-        console.log('    $ sfcc-ci instance:state:reset -s');
-        console.log();
-    });
-
-program
     .command('code:list')
     .option('-i, --instance <instance>','Instance to get list of custom code versions from. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')

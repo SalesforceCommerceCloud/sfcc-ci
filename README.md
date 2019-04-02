@@ -31,7 +31,7 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 * Configuration of multiple instances incl. aliasing
 * WebDAV connectivity
 * Code deployment and code version management
-* System job execution and monitory (site import, state save and sate reset)
+* System job execution and monitoring (site import)
 * Custom job execution and monitoring
 * JavaScript API
 
@@ -212,8 +212,6 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     instance:list [options]                                         List instance and client details currently configured
     instance:upload [options] <archive>                             Uploads an instance import file onto a Commerce Cloud instance
     instance:import [options] <archive>                             Perform a instance import (aka site import) on a Commerce Cloud instance
-    instance:state:save [options]                                   Perform a save of the state of a Commerce Cloud instance
-    instance:state:reset [options]                                  Perform a reset of a previously saved state of a Commerce Cloud instance
     code:list [options]                                             List all custom code versions deployed on the Commerce Cloud instance
     code:deploy [options] <archive>                                 Deploys a custom code archive onto a Commerce Cloud instance
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance

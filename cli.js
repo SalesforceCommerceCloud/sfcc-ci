@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var program = require('commander');
+var { prompt } = require('inquirer');
 
 program
     .version(require('./package.json').version, '-V, --version')
@@ -442,6 +443,7 @@ program
 program
     .command('sandbox:reset')
     .option('-s, --sandbox <id>','sandbox to reset')
+    .option('-N, --noprompt','No prompt to confirm reset')
     .description('Reset a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
@@ -457,7 +459,21 @@ program
             spec['realm'] = split[0];
             spec['instance'] = split[1];
         }
-        require('./lib/sandbox').cli.reset(spec, false);
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+        if ( noPrompt ) {
+            require('./lib/sandbox').cli.reset(spec, false);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : 'Reset sandbox ' + sandbox_id + '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    require('./lib/sandbox').cli.reset(spec, false);
+                }
+            });
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -472,12 +488,14 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:reset --sandbox my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:reset --sandbox my-sandbox-id --noprompt');
         console.log();
     });
 
 program
     .command('sandbox:delete')
     .option('-s, --sandbox <id>','sandbox to delete')
+    .option('-N, --noprompt','No prompt to confirm delete')
     .description('Delete a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
@@ -493,7 +511,21 @@ program
             spec['realm'] = split[0];
             spec['instance'] = split[1];
         }
-        require('./lib/sandbox').cli.delete(spec);
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+        if ( noPrompt ) {
+            require('./lib/sandbox').cli.delete(spec);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : 'Delete sandbox ' + sandbox_id + '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    require('./lib/sandbox').cli.delete(spec);
+                }
+            });
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -510,6 +542,7 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:delete --sandbox my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:delete --sandbox my-sandbox-id --noprompt');
         console.log();
     });
 

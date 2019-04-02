@@ -505,42 +505,6 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:realm:list --realm <realm> --show-quota´:"
-node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --show-quota
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:realm:list --realm <realm> --show-quota --json´:"
-node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --show-quota --json
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:realm:list --realm <realm> --show-usage´:"
-node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --show-usage
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:realm:list --realm <realm> --show-usage --json´:"
-node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --show-usage --json
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:realm:update´
 ###############################################################################
@@ -564,8 +528,8 @@ else
 fi
 
 # memorize realm settings before tests
-TEST_REALM_MAX_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --show-quota --json | jq '.limit.sandbox.maxSandboxTTL' -r`
-TEST_REALM_DEFAULT_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --show-quota --json | jq '.limit.sandbox.defaultSandboxTTL' -r`
+TEST_REALM_MAX_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.sandbox.sandboxTTL.maximum' -r`
+TEST_REALM_DEFAULT_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.sandbox.sandboxTTL.defaultValue' -r`
 
 echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --max-sandbox-ttl 144´:"
 node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --max-sandbox-ttl 144

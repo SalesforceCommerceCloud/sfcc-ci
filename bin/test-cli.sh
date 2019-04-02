@@ -622,8 +622,8 @@ TEST_NEW_SANDBOX_INSTANCE=`echo $TEST_NEW_SANDBOX_RESULT | jq '.sandbox.instance
 ###### Testing ´sfcc-ci sandbox:get´
 ###############################################################################
 
-echo "Testing command ´sfcc-ci sandbox:get <INVALID_ID>´ (expected to fail):"
-node ./cli.js sandbox:get INVALID_ID
+echo "Testing command ´sfcc-ci sandbox:get´ (expected to fail):"
+node ./cli.js sandbox:get
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -631,8 +631,17 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get <sandbox>´:"
-node ./cli.js sandbox:get $TEST_NEW_SANDBOX_ID
+echo "Testing command ´sfcc-ci sandbox:get --sandbox <INVALID_ID>´ (expected to fail):"
+node ./cli.js sandbox:get --sandbox INVALID_ID
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox>´:"
+node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -640,8 +649,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get <sandbox> --json´:"
-node ./cli.js sandbox:get $TEST_NEW_SANDBOX_ID --json
+echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --json´:"
+node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --json
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -649,8 +658,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get <sandbox>´ (using <realm>-<instance> as id):"
-node ./cli.js sandbox:get $ARG_SANDBOX_REALM"_"$TEST_NEW_SANDBOX_INSTANCE
+echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox>´ (using <realm>-<instance> as id):"
+node ./cli.js sandbox:get --sandbox $ARG_SANDBOX_REALM"_"$TEST_NEW_SANDBOX_INSTANCE
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -658,8 +667,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get <sandbox> --host´:"
-node ./cli.js sandbox:get $TEST_NEW_SANDBOX_ID --host
+echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --host´:"
+node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --host
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -667,8 +676,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get <sandbox> --show-usage´:"
-node ./cli.js sandbox:get $TEST_NEW_SANDBOX_ID --show-usage
+echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --show-usage´:"
+node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --show-usage
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -676,8 +685,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get <sandbox> --show-operations´:"
-node ./cli.js sandbox:get $TEST_NEW_SANDBOX_ID --show-operations
+echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --show-operations´:"
+node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --show-operations
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -685,8 +694,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get <sandbox> --show-settings´:"
-node ./cli.js sandbox:get $TEST_NEW_SANDBOX_ID --show-settings
+echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --show-settings´:"
+node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --show-settings
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -738,8 +747,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:delete <INVALID_ID>´ (expected to fail):"
-node ./cli.js sandbox:delete INVALID_ID
+echo "Testing command ´sfcc-ci sandbox:delete --sandbox <INVALID_ID>´ (expected to fail):"
+node ./cli.js sandbox:delete --sandbox INVALID_ID
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -747,8 +756,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:delete <sandbox>´:"
-node ./cli.js sandbox:delete $TEST_NEW_SANDBOX_ID
+echo "Testing command ´sfcc-ci sandbox:delete --sandbox <sandbox>´:"
+node ./cli.js sandbox:delete --sandbox $TEST_NEW_SANDBOX_ID
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

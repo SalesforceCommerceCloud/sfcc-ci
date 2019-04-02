@@ -242,15 +242,21 @@ program
     });
 
 program
-    .command('sandbox:get <sandbox_id>')
+    .command('sandbox:get')
     .description('Get detailed information about a sandbox')
+    .option('-s, --sandbox <id>','sandbox to get details for')
     .option('-j, --json','Formats the output in json')
     .option('-h, --host','Return the host name of the sandbox')
     .option('-O, --open','Opens a browser with the Business Manager on the sandbox')
     .option('-u, --show-operations','Display operations performed')
     .option('-u, --show-usage','Display detailed usage information')
     .option('-u, --show-settings','Display settings applied')
-    .action(function(sandbox_id, options) {
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
@@ -273,7 +279,7 @@ program
         console.log('  The sandbox to lookup must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes.');
         console.log();
-        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
         console.log();
         console.log('  Use --show-usage to display detailed usage information, --show-operations to get a list of');
         console.log('  previous operations executed on the sandbox, --show-settings to return the settings initially');
@@ -281,13 +287,13 @@ program
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:get my-sandbox-id');
-        console.log('    $ sfcc-ci sandbox:get my-sandbox-id -j');
-        console.log('    $ sfcc-ci sandbox:get my-sandbox-id -h');
-        console.log('    $ sfcc-ci sandbox:get my-sandbox-id -O');
-        console.log('    $ sfcc-ci sandbox:get my-sandbox-id --show-usage');
-        console.log('    $ sfcc-ci sandbox:get my-sandbox-id --show-operations');
-        console.log('    $ sfcc-ci sandbox:get my-sandbox-id --show-settings');
+        console.log('    $ sfcc-ci sandbox:get --sandbox my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -j');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -h');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -O');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-usage');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-operations');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-settings');
         console.log();
     });
 
@@ -323,7 +329,7 @@ program
         console.log('  The sandbox to update must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes.');
         console.log();
-        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -332,9 +338,15 @@ program
     });
 
 program
-    .command('sandbox:start <sandbox_id>')
+    .command('sandbox:start')
+    .option('-s, --sandbox <id>','sandbox to start')
     .description('Start a sandbox')
-    .action(function(sandbox_id, options) {
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
@@ -351,18 +363,24 @@ program
         console.log('  The sandbox to start must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes.');
         console.log();
-        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:start my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:start --sandbox my-sandbox-id');
         console.log();
     });
 
 program
-    .command('sandbox:stop <sandbox_id>')
+    .command('sandbox:stop')
+    .option('-s, --sandbox <id>','sandbox to stop')
     .description('Stop a sandbox')
-    .action(function(sandbox_id, options) {
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
@@ -379,18 +397,24 @@ program
         console.log('  The sandbox to stop must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes.');
         console.log();
-        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:stop my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:stop --sandbox my-sandbox-id');
         console.log();
     });
 
 program
-    .command('sandbox:restart <sandbox_id>')
+    .command('sandbox:restart')
+    .option('-s, --sandbox <id>','sandbox to restart')
     .description('Restart a sandbox')
-    .action(function(sandbox_id, options) {
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
@@ -407,18 +431,24 @@ program
         console.log('  The sandbox to restart must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes.');
         console.log();
-        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:restart my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:restart --sandbox my-sandbox-id');
         console.log();
     });
 
 program
-    .command('sandbox:reset <sandbox_id>')
+    .command('sandbox:reset')
+    .option('-s, --sandbox <id>','sandbox to reset')
     .description('Reset a sandbox')
-    .action(function(sandbox_id, options) {
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
@@ -437,18 +467,24 @@ program
         console.log('  The sandbox to reset must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes.');
         console.log();
-        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:reset my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:reset --sandbox my-sandbox-id');
         console.log();
     });
 
 program
-    .command('sandbox:delete <sandbox_id>')
+    .command('sandbox:delete')
+    .option('-s, --sandbox <id>','sandbox to delete')
     .description('Delete a sandbox')
-    .action(function(sandbox_id, options) {
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
         // always assume it is a sandbox id
         var spec = { id : sandbox_id };
         // check if we have to lookup the sandbox by realm and instance
@@ -469,11 +505,11 @@ program
         console.log('  only triggers the deletion and does not wait until the sandbox is fully deleted. Use may use');
         console.log('  `sfcc-ci sandbox:list` to check the status of the deletion.');
         console.log();
-        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <sandbox_id>.');
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:delete my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:delete --sandbox my-sandbox-id');
         console.log();
     });
 

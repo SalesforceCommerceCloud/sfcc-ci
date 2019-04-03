@@ -8,6 +8,10 @@ describe('Tests for lib/log.js', function() {
 
     describe('json function', function() {
 
+        afterEach(() => {
+            process.exitCode = 0
+        });
+
         it('should throw TypeError if no argument passed', function() {
             expect(function() {
                 require('../../lib/log').json();

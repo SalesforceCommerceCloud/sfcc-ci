@@ -556,6 +556,7 @@ program
     .command('user:list')
     .description('List users eligible to manage')
     .option('-c, --count <count>','Max count of list items (default is 25)')
+    .option('-o, --org <org>','Org to return users for (only works in combination with <role>)')
     .option('-i, --instance <instance>','Instance to search users for. Can be an instance alias.')
     .option('-l, --login <login>','Login of a user to get details for')
     .option('-r, --role <role>','Limit users to a certain role')
@@ -564,6 +565,7 @@ program
     .option('-s, --sortby <sortby>', 'Sort by specifying any field')
     .action(function(options) {
         var count = ( options.count ? options.count : null );
+        var org = options.org;
         var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
         var login = options.login;
         var role = options.role;
@@ -576,9 +578,11 @@ program
         } else if ( instance && !login ) {
             // get users on instance
             require('./lib/user').cli.searchLocal(instance, login, query, role, sortby, count, asJson);
-        } else {
+        } else if ( ( org && role ) || ( !org && role ) || !( org && role ) ) {
             // get users from AM
-            require('./lib/user').cli.list(count, login, asJson, sortby);
+            require('./lib/user').cli.list(org, role, login, count, asJson, sortby);
+        } else {
+            require('./lib/log').error('Ambiguous options. Please consult the help using --help.');
         }
     }).on('--help', function() {
         console.log('');
@@ -589,6 +593,9 @@ program
         console.log('  be large. Use option --count to limit the number of users.');
         console.log();
         console.log('  Use --login to get details of a single user.');
+        console.log();
+        console.log('  If options --org and --role are used, you can filter users by organization and');
+        console.log('  role. --org only works in combination with --role. Only enabled users are returned.');
         console.log();
         console.log('  If option --instance is used, local users from this Commerce Cloud instance');
         console.log('  are being returned. Use --query to narrow down the users.');
@@ -601,13 +608,15 @@ program
         console.log('    $ sfcc-ci user:list')
         console.log('    $ sfcc-ci user:list -c 100')
         console.log('    $ sfcc-ci user:list --sortby "lastName"')
-        console.log('    $ sfcc-ci user:list -j')
+        console.log('    $ sfcc-ci user:list --json')
         console.log('    $ sfcc-ci user:list --instance my-instance --login local-user');
         console.log('    $ sfcc-ci user:list --instance my-instance --query \'{"term_query":' +
             '{"fields":["external_id"],"operator":"is_null"}}\' --json');
         console.log('    $ sfcc-ci user:list --instance my-instance --role Administrator');
         console.log('    $ sfcc-ci user:list --login my-login');
         console.log('    $ sfcc-ci user:list --login my-login -j');
+        console.log('    $ sfcc-ci user:list --role account-admin');
+        console.log('    $ sfcc-ci user:list --org my-org --role bm-user');
         console.log();
     });
 

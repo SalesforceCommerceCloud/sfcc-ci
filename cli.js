@@ -724,7 +724,7 @@ program
     .option('-l, --login <login>','Login of the user to delete')
     .option('-p, --purge','Purge the user')
     .option('-j, --json', 'Formats the output in json')
-    .option('-p, --noprompt','No prompt to confirm deletion')
+    .option('-N, --noprompt','No prompt to confirm deletion')
     .action(function(options) {
         var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
         var login = options.login;

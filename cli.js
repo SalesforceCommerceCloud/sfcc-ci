@@ -673,6 +673,51 @@ program
     });
 
 program
+    .command('user:update')
+    .description('Update a user')
+    .option('-l, --login <login>','Login of the user')
+    .option('-c, --changes <changes>', 'Changes to user details as json')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-N, --noprompt','No prompt to confirm update')
+    .action(function(options) {
+        var login = ( options.login ? options.login : null );
+        var changes = ( options.changes ? JSON.parse(options.changes) : null );
+        var asJson = ( options.json ? options.json : false );
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+        if ( !login ) {
+            require('./lib/log').error('Login missing. Please pass a login using -l,--login.');
+        } else if ( !changes ) {
+            require('./lib/log').error('Changes missing. Please specify changes using -c,--change.');
+        } else if ( noPrompt ) {
+            require('./lib/user').cli.update(login, changes, asJson);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : 'Update user ' + login + '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    require('./lib/user').cli.update(login, changes, asJson);
+                }
+            });
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Updates an existing user');
+        console.log('');
+        console.log('  The user will be updated in Account Manager. You should pass changes to the user')
+        console.log('  details in json (option -c,--changes).');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci user:update --login jdoe@email.org --changes \'{"userState": "ENABLED"}\'');
+        console.log();
+    });
+
+program
     .command('user:delete')
     .description('Delete a user')
     .option('-i, --instance <instance>','Instance to delete the user from. Can be an instance alias.')

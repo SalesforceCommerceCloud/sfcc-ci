@@ -675,30 +675,41 @@ program
 program
     .command('user:update')
     .description('Update a user')
+    .option('-i, --instance <instance>','Instance to update the user on. Can be an instance alias.')
     .option('-l, --login <login>','Login of the user')
     .option('-c, --changes <changes>', 'Changes to user details as json')
     .option('-j, --json', 'Formats the output in json')
     .option('-N, --noprompt','No prompt to confirm update')
     .action(function(options) {
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
         var login = ( options.login ? options.login : null );
         var changes = ( options.changes ? JSON.parse(options.changes) : null );
         var asJson = ( options.json ? options.json : false );
         var noPrompt = ( options.noprompt ? options.noprompt : false );
+
+        var updateUser = function(instance, login, changes, asJson) {
+            if ( instance ) {
+                require('./lib/user').cli.updateLocal(instance, login, changes, asJson);
+            } else {
+                require('./lib/user').cli.update(login, changes, asJson);
+            }
+        };
+
         if ( !login ) {
             require('./lib/log').error('Login missing. Please pass a login using -l,--login.');
         } else if ( !changes ) {
             require('./lib/log').error('Changes missing. Please specify changes using -c,--change.');
-        } else if ( noPrompt ) {
-            require('./lib/user').cli.update(login, changes, asJson);
+        } else if ( noPrompt && !instance ) {
+            updateUser(instance, login, changes, asJson);
         } else {
             prompt({
                 type : 'confirm',
                 name : 'ok',
                 default : false,
-                message : 'Update user ' + login + '. Are you sure?'
+                message : 'Update user ' + login + ( instance ? ' on ' + instance : '' ) + '. Are you sure?'
             }).then((answers) => {
                 if (answers['ok']) {
-                    require('./lib/user').cli.update(login, changes, asJson);
+                    updateUser(instance, login, changes, asJson);
                 }
             });
         }
@@ -708,12 +719,17 @@ program
         console.log();
         console.log('  Updates an existing user');
         console.log('');
-        console.log('  The user will be updated in Account Manager. You should pass changes to the user')
-        console.log('  details in json (option -c,--changes).');
+        console.log('  If --instance is not passed the user is updated in Account Manager.');
+        console.log('  This requires permissions in Account Manager to adminstrate the org,');
+        console.log('  the user belongs to. You should pass changes to the user details in')
+        console.log('  json (option -c,--changes).');
+        console.log('');
+        console.log('  Pass an --instance to update a local user on a Commerce Cloud instance.');
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci user:update --login jdoe@email.org --changes \'{"userState": "ENABLED"}\'');
+        console.log('    $ sfcc-ci user:update --instance my-instance.demandware.net --login jdoe@email.org --changes \'{"disabled": "true"}\'');
         console.log();
     });
 
@@ -749,7 +765,8 @@ program
                 type : 'confirm',
                 name : 'ok',
                 default : false,
-                message : ( purge ? 'Purge' : 'Delete' ) + ' user ' + login + '. Are you sure?'
+                message : ( purge ? 'Purge' : 'Delete' ) + ' user ' + login + ( instance ? ' on ' + instance : '' ) +
+                    '. Are you sure?'
             }).then((answers) => {
                 if (answers['ok']) {
                     deleteUser(instance, login, purge, asJson);

@@ -130,7 +130,7 @@ If do not want to use the JavaScript API, but just the CLI you don't need Node.j
 
 You can install the CLI using a pre-built binary or from source using Node.js.
 
-### Install Binary with curl ###
+### Install Prebuilt Binary ###
 
 If you are using the CLI but don't want to mess around with Node.js you can simply download the latest binaries for your OS at [Releases](https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/latest). The assets with each release contain binaries for MacOS, Linux and Windows.
 

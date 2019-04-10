@@ -748,7 +748,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci sandbox:delete --sandbox <INVALID_ID> --noprompt´ (expected to fail):"
-node ./cli.js sandbox:delete --sandbox INVALID_ID
+node ./cli.js sandbox:delete --sandbox INVALID_ID --noprompt
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -757,7 +757,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci sandbox:delete --sandbox <sandbox> --noprompt´:"
-node ./cli.js sandbox:delete --sandbox $TEST_NEW_SANDBOX_ID
+node ./cli.js sandbox:delete --sandbox $TEST_NEW_SANDBOX_ID --noprompt
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

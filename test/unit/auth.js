@@ -202,10 +202,10 @@ describe('Tests for lib/auth.js', function() {
         });
 
         it('ignores callback on failure call', function() {
-           requestStub.post = sinon.stub().yields(null, failureResponse);
-           auth.renew(callback);
+            requestStub.post = sinon.stub().yields(null, failureResponse);
+            auth.renew(callback);
 
-           sinon.assert.notCalled(callback);
+            sinon.assert.notCalled(callback);
         });
     })
 

@@ -249,9 +249,9 @@ program
     .option('-j, --json','Formats the output in json')
     .option('-h, --host','Return the host name of the sandbox')
     .option('-O, --open','Opens a browser with the Business Manager on the sandbox')
-    .option('-u, --show-operations','Display operations performed')
-    .option('-u, --show-usage','Display detailed usage information')
-    .option('-u, --show-settings','Display settings applied')
+    .option('--show-operations','Display operations performed')
+    .option('--show-usage','Display detailed usage information')
+    .option('--show-settings','Display settings applied')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
         if (!sandbox_id) {

@@ -12,24 +12,27 @@ if [ $? -eq 1 ]; then
 fi
 
 # pass parameters in the following order: 
-# $ bin/test-cli.sh <SCOPE> <CLIENT_ID> <CLIENT_SECRET> <USER> <USER_PW> <HOST> <SANDBOX_REALM>
+# $ bin/test-cli.sh <CLIENT_ID> <CLIENT_SECRET> <USER> <USER_PW> <HOST> <SANDBOX_REALM>
 
 # mapping input parameters
-ARG_SCOPE=$1
-ARG_CLIENT_ID=$2
-ARG_CLIENT_SECRET=$3
-ARG_USER=$4
-ARG_USER_PW=$5
-ARG_HOST=$6
-ARG_SANDBOX_REALM=$7
+ARG_CLIENT_ID=$1
+ARG_CLIENT_SECRET=$2
+ARG_USER=$3
+ARG_USER_PW=$4
+ARG_HOST=$5
+ARG_SANDBOX_REALM=$6
 
-# scope of tests, either 'minimal' or 'full'
-if [ $ARG_SCOPE = "minimal" ]; then
-	echo -e "Running default test scope with limited coverage of commands and options..."
-elif [ $ARG_SCOPE = "full" ]; then
-	echo -e "Running full test scope with maximum coverage of commands and options..."
+# check on host
+if [ "$ARG_HOST" = "" ]; then
+    echo -e "Host is unknown. Using host of created sandbox for instance tests."
 else
-	echo -e "Unknown test scope $ARG_SCOPE. Please provide either 'minimal' or 'full'."
+	echo -e "Using passed host for instance tests."
+fi
+
+# check on realm
+if [ "$ARG_SANDBOX_REALM" = "" ]; then
+    echo -e "Realm for sandbox API unknown."
+	echo 
 	exit 1
 fi
 
@@ -139,7 +142,7 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci client:renew´ (expected to succeed):"
+echo "Testing command ´sfcc-ci client:auth:renew´ (expected to succeed):"
 node ./cli.js client:auth:renew
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
@@ -160,261 +163,6 @@ else
 	echo -e "\t> FAILED"
 	exit 1
 fi
-
-###############################################################################
-###### Testing ´sfcc-ci instance:clear´
-###############################################################################
-
-echo "Testing command ´sfcc-ci instance:add´ (without alias):"
-node ./cli.js instance:add $ARG_HOST
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:clear´:"
-node ./cli.js instance:clear
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-###############################################################################
-###### Testing ´sfcc-ci instance:add´
-###############################################################################
-
-echo "Testing command ´sfcc-ci instance:add´ (with alias):"
-node ./cli.js instance:add $ARG_HOST my
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:add´ with invalid instance (expected to fail):"
-node ./cli.js instance:add my-instance.demandware.net
-if [ $? -eq 1 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:add´:"
-node ./cli.js instance:add $ARG_HOST someotheralias
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-###############################################################################
-###### Testing ´sfcc-ci instance:set´
-###############################################################################
-
-echo "Testing command ´sfcc-ci instance:set´ with host name:"
-node ./cli.js instance:set $ARG_HOST
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:set´ with alias:"
-node ./cli.js instance:set my
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-###############################################################################
-###### Testing ´sfcc-ci instance:upload´
-###############################################################################
-
-# the next set of tests are testing real interactions with a Commerce Cloud instance
-# re-authorize first using client:auth, this ensure, that we have a proper authentication
-echo "Running ´sfcc-ci client:auth <api_key> <secret>´:"
-node ./cli.js client:auth $ARG_CLIENT_ID $ARG_CLIENT_SECRET
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:upload´:"
-node ./cli.js instance:upload ./test/cli/site_import.zip
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:upload´ with --instance option:"
-node ./cli.js instance:upload ./test/cli/site_import.zip --instance $ARG_HOST
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:upload´ with non-existing file (expected to fail):"
-node ./cli.js instance:upload ./test/does/not/exist/site_import.zip
-if [ $? -eq 1 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-###############################################################################
-###### Testing ´sfcc-ci instance:import´
-###############################################################################
-
-echo "Testing command ´sfcc-ci instance:import´ without options:"
-node ./cli.js instance:import site_import.zip
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:import´ with --instance option:"
-node ./cli.js instance:import site_import.zip --instance $ARG_HOST
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:import´ with --sync option:"
-node ./cli.js instance:import site_import.zip --sync
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:import´ with --json option:"
-node ./cli.js instance:import site_import.zip --json
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:import´ with --json and --sync option:"
-TEST_RESULT=`node ./cli.js instance:import site_import.zip --json --sync | jq '.exit_status.code' -r`
-if [ $? -eq 0 ] && [ $TEST_RESULT = "OK" ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	echo -e "\t> Test result was: $TEST_RESULT"
-	exit 1
-fi
-
-###############################################################################
-###### Testing ´sfcc-ci code:deploy´
-###############################################################################
-
-echo "Testing command ´sfcc-ci code:deploy´ without option:"
-node ./cli.js code:deploy ./test/cli/custom_code.zip
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci code:deploy´ with non-existing file (expected to fail):"
-node ./cli.js code:deploy ./test/does/not/exist/custom_code.zip
-if [ $? -eq 1 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci code:deploy´ with --instance option:"
-node ./cli.js code:deploy ./test/cli/custom_code.zip --instance $ARG_HOST
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-###############################################################################
-###### Testing ´sfcc-ci code:list´
-###############################################################################
-
-echo "Testing command ´sfcc-ci code:list´ with --json option:"
-TEST_RESULT=`node ./cli.js code:list --json | jq '.count'`
-if [ $? -eq 0 ] && [ $TEST_RESULT -gt 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	echo -e "\t> Test result was: $TEST_RESULT"
-	exit 1
-fi
-
-###############################################################################
-###### Testing ´sfcc-ci code:activate´
-###############################################################################
-
-echo "Testing command ´sfcc-ci code:activate´ without option:"
-node ./cli.js code:activate modules
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci code:activate´ with --instance option:"
-node ./cli.js code:activate modules --instance $ARG_HOST
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci code:activate´ with invalid version (expected to fail):"
-node ./cli.js code:activate does_not_exist
-if [ $? -eq 1 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-###############################################################################
-###### Testing ´sfcc-ci job:run´
-###############################################################################
-
-# TODO
-
-###############################################################################
-###### Testing ´sfcc-ci job:status´
-###############################################################################
-
-# TODO
 
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:realm:list´
@@ -617,6 +365,11 @@ fi
 # grab some sandbox details for next set of tests
 TEST_NEW_SANDBOX_ID=`echo $TEST_NEW_SANDBOX_RESULT | jq '.sandbox.id' -r`
 TEST_NEW_SANDBOX_INSTANCE=`echo $TEST_NEW_SANDBOX_RESULT | jq '.sandbox.instance' -r`
+TEST_NEW_SANDBOX_HOST=`node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --host`
+
+if [ "$ARG_HOST" = "" ]; then
+	ARG_HOST=$TEST_NEW_SANDBOX_HOST
+fi
 
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:get´
@@ -733,6 +486,250 @@ else
 	echo -e "\t> FAILED"
 	exit 1
 fi
+
+###############################################################################
+###### Testing ´sfcc-ci instance:clear´
+###############################################################################
+
+echo "Testing command ´sfcc-ci instance:add´ (without alias):"
+node ./cli.js instance:add $ARG_HOST
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:clear´:"
+node ./cli.js instance:clear
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci instance:add´
+###############################################################################
+
+echo "Testing command ´sfcc-ci instance:add´ (with alias):"
+node ./cli.js instance:add $ARG_HOST my
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:add´ with invalid instance (expected to fail):"
+node ./cli.js instance:add my-instance.demandware.net
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:add´:"
+node ./cli.js instance:add $ARG_HOST someotheralias
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci instance:set´
+###############################################################################
+
+echo "Testing command ´sfcc-ci instance:set´ with host name:"
+node ./cli.js instance:set $ARG_HOST
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:set´ with alias:"
+node ./cli.js instance:set my
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci instance:upload´
+###############################################################################
+
+echo "Testing command ´sfcc-ci instance:upload´:"
+node ./cli.js instance:upload ./test/cli/site_import.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:upload´ with --instance option:"
+node ./cli.js instance:upload ./test/cli/site_import.zip --instance $ARG_HOST
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:upload´ with non-existing file (expected to fail):"
+node ./cli.js instance:upload ./test/does/not/exist/site_import.zip
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci instance:import´
+###############################################################################
+
+echo "Testing command ´sfcc-ci instance:import´ without options:"
+node ./cli.js instance:import site_import.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:import´ with --instance option:"
+node ./cli.js instance:import site_import.zip --instance $ARG_HOST
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:import´ with --sync option:"
+node ./cli.js instance:import site_import.zip --sync
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:import´ with --json option:"
+node ./cli.js instance:import site_import.zip --json
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:import´ with --json and --sync option:"
+TEST_RESULT=`node ./cli.js instance:import site_import.zip --json --sync | jq '.exit_status.code' -r`
+if [ $? -eq 0 ] && [ $TEST_RESULT = "OK" ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	echo -e "\t> Test result was: $TEST_RESULT"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci code:deploy´
+###############################################################################
+
+echo "Testing command ´sfcc-ci code:deploy´ without option:"
+node ./cli.js code:deploy ./test/cli/custom_code.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci code:deploy´ with non-existing file (expected to fail):"
+node ./cli.js code:deploy ./test/does/not/exist/custom_code.zip
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci code:deploy´ with --instance option:"
+node ./cli.js code:deploy ./test/cli/custom_code.zip --instance $ARG_HOST
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci code:list´
+###############################################################################
+
+echo "Testing command ´sfcc-ci code:list´ with --json option:"
+TEST_RESULT=`node ./cli.js code:list --json | jq '.count'`
+if [ $? -eq 0 ] && [ $TEST_RESULT -gt 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	echo -e "\t> Test result was: $TEST_RESULT"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci code:activate´
+###############################################################################
+
+echo "Testing command ´sfcc-ci code:activate´ without option:"
+node ./cli.js code:activate modules
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci code:activate´ with --instance option:"
+node ./cli.js code:activate modules --instance $ARG_HOST
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci code:activate´ with invalid version (expected to fail):"
+node ./cli.js code:activate does_not_exist
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci job:run´
+###############################################################################
+
+# TODO
+
+###############################################################################
+###### Testing ´sfcc-ci job:status´
+###############################################################################
+
+# TODO
 
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:delete´

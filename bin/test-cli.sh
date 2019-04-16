@@ -151,6 +151,24 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci client:auth´ with --renew option and resource owner grant:"
+node ./cli.js client:auth $ARG_CLIENT_ID $ARG_CLIENT_SECRET $ARG_USER $ARG_USER_PW --renew
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:renew´ (expected to succeed):"
+node ./cli.js client:auth:renew
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 ###############################################################################
 ###### Testing ´sfcc-ci auth:logout´
 ###############################################################################

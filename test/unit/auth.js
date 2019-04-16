@@ -165,13 +165,15 @@ describe('Tests for lib/auth.js', function() {
             config.set('SFCC_REFRESH_TOKEN', refreshToken);
         });
 
-        it('rejects call when no renew token present', function() {
+        it('no refresh token results in client_credentials auth', function() {
             config.set('SFCC_REFRESH_TOKEN', null);
 
             auth.renew(callback);
 
-            sinon.assert.notCalled(requestStub.post);
-            sinon.assert.notCalled(callback);
+            sinon.assert.calledOnce(requestStub.post);
+
+            const postArgs = requestStub.post.getCall(0).args[0];
+            expect(postArgs.form.grant_type).to.equal('client_credentials');
         });
 
         it('makes call to AM with stored credentials', function() {

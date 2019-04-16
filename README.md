@@ -387,7 +387,7 @@ Param         | Type        | Description
 ------------- | ------------| --------------------------------
 client_id     | (String)    | The client ID
 client_secret | (String)    | The client secret
-callback      | (Function)  | Callback function executed as a result. The token and the error will be passed as parameters to the callback function.
+callback      | (Function)  | Callback function executed as a result. The error and the token will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
 
@@ -399,7 +399,7 @@ const sfcc = require('sfcc-ci');
 var client_id = 'my_client_id';
 var client_secret = 'my_client_id';
 
-sfcc.auth.auth(client_id, client_secret, function(token, err) {
+sfcc.auth.auth(client_id, client_secret, function(err, token) {
     if(token) {
         console.log('Authentication succeeded. Token is %s', token);
     }
@@ -426,7 +426,7 @@ instance      | (String)    | The instance to activate the code on
 archive       | (String)    | The ZIP archive filename to deploy
 token         | (String)    | The Oauth token to use use for authentication
 options       | (Object)    | The options parameter can contains two properties: pfx: the path to the client certificate to use for two factor authentication. passphrase: the optional passphrase to use with the client certificate
-callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
 
 **Returns:** (void) Function has no return value
 
@@ -440,7 +440,7 @@ Param         | Type        | Description
 ------------- | ------------| --------------------------------
 instance      | (String)    | The instance to activate the code on
 token         | (String)    | The Oauth token to use use for authentication
-callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+callback      | (Function)  | Callback function executed as a result. The error and the code versions will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
 
@@ -490,7 +490,7 @@ Param         | Type        | Description
 instance      | (String)    | Instance to start the import on
 file_name     | (String)    | The import file to run the import with
 token         | (String)    | The Oauth token to use use for authentication
-callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+callback      | (Function)  | Callback function executed as a result. The error and the job execution details will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
 
@@ -510,7 +510,7 @@ instance      | (String)    | Instance to start the job on
 job_id        | (String)    | The job to start
 token         | (String)    | The Oauth token to use use for authentication
 job_params    | (Array)     | Array containing job parameters. A job parameter must be denoted by an object holding a key and a value property.
-callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+callback      | (Function)  | Callback function executed as a result. The error and the job execution details will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
 
@@ -526,7 +526,7 @@ instance         | (String)    | Instance the job was executed on.
 job_id           | (String)    | The job to get the execution status for
 job_execution_id | (String)    | The job execution id to get the status for
 token            | (String)    | The Oauth token to use use for authentication
-callback         | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+callback         | (Function)  | Callback function executed as a result. The error and the job execution details will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
 

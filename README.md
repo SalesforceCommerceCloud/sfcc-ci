@@ -138,7 +138,11 @@ If you are using the CLI but don't want to mess around with Node.js you can simp
 
 1. Download the binary for MacOS.
 
-2. Move the binary in to your PATH:
+2. Make the binary executable:
+
+        chmod +x ./sfcc-ci-macos
+
+3. Move the binary in to your PATH:
 
         sudo mv ./sfcc-ci-macos /usr/local/bin/sfcc-ci
 
@@ -146,7 +150,11 @@ If you are using the CLI but don't want to mess around with Node.js you can simp
 
 1. Download the binary for Linux.
 
-2. Move the binary in to your PATH:
+2. Make the binary executable:
+
+        chmod +x ./sfcc-ci-linux
+
+3. Move the binary in to your PATH:
 
         sudo mv ./sfcc-ci-linux /usr/local/bin/sfcc-ci
 

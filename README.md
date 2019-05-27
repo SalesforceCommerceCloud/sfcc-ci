@@ -311,6 +311,17 @@ In an automation scenario (where no user is physically present) authentication i
 sfcc-ci client:auth $API_KEY $API_SECRET $API_USER $API_USER_PW
 ```
 
+Also `dw.json` can be used for authentication
+
+```json
+{
+    "client-id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "client-secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "hostname": "<dev-sandbox>.demandware.net"
+}
+```
+
+
 Logging out (and removing any traces of secrets from the machine):
 
 ```bash

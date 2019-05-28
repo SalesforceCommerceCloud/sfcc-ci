@@ -222,6 +222,16 @@ Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a s
 
 The CLI keeps it's own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
 
+Also `dw.json` can be used for authentication
+
+```json
+{
+    "client-id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "client-secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "hostname": "<dev-sandbox>.demandware.net"
+}
+```
+
 ## Environment Variables ##
 
 The use of environment variables is optional. `sfcc-ci` respects the following environment variables which you can use to control, how the CLI works:
@@ -310,17 +320,6 @@ In an automation scenario (where no user is physically present) authentication i
 ```bash
 sfcc-ci client:auth $API_KEY $API_SECRET $API_USER $API_USER_PW
 ```
-
-Also `dw.json` can be used for authentication
-
-```json
-{
-    "client-id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    "client-secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    "hostname": "<dev-sandbox>.demandware.net"
-}
-```
-
 
 Logging out (and removing any traces of secrets from the machine):
 

@@ -31,7 +31,7 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 * Configuration of multiple instances incl. aliasing
 * WebDAV connectivity
 * Code deployment and code version management
-* System job execution and monitory (site import, state save and sate reset)
+* System job execution and monitoring (site import)
 * Custom job execution and monitoring
 * JavaScript API
 
@@ -134,7 +134,7 @@ If do not want to use the JavaScript API, but just the CLI you don't need Node.j
 
 You can install the CLI using a pre-built binary or from source using Node.js.
 
-### Install Binary with curl ###
+### Install Prebuilt Binary ###
 
 If you are using the CLI but don't want to mess around with Node.js you can simply download the latest binaries for your OS at [Releases](https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/latest). The assets with each release contain binaries for MacOS, Linux and Windows.
 
@@ -195,7 +195,8 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                               Return the current authentication token
-    sandbox:realms [options] [realm]                                List realms eligible to manage sandboxes for
+    sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
+    sandbox:realm:update [options]                                  Update realm settings
     sandbox:list [options]                                          List all available sandboxes
     sandbox:create [options] <realm> [alias]                        Create a new sandbox
     sandbox:get [options] <sandbox_id>                              Get detailed information about a sandbox
@@ -204,15 +205,13 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     sandbox:stop <sandbox_id>                                       Stop a sandbox
     sandbox:restart <sandbox_id>                                    Restart a sandbox
     sandbox:reset <sandbox_id>                                      Reset a sandbox
-    sandbox:remove <sandbox_id>                                     Triggers the removal of an existing sandbox
+    sandbox:delete <sandbox_id>                                     Triggers the deletion of an existing sandbox
     instance:add [options] <instance> [alias]                       Adds a new Commerce Cloud instance to the list of configured instances
     instance:set <alias_or_host>                                    Sets a Commerce Cloud instance as the default instance
     instance:clear                                                  Clears all configured Commerce Cloud instances
     instance:list [options]                                         List instance and client details currently configured
     instance:upload [options] <archive>                             Uploads an instance import file onto a Commerce Cloud instance
     instance:import [options] <archive>                             Perform a instance import (aka site import) on a Commerce Cloud instance
-    instance:state:save [options]                                   Perform a save of the state of a Commerce Cloud instance
-    instance:state:reset [options]                                  Perform a reset of a previously saved state of a Commerce Cloud instance
     code:list [options]                                             List all custom code versions deployed on the Commerce Cloud instance
     code:deploy [options] <archive>                                 Deploys a custom code archive onto a Commerce Cloud instance
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
@@ -427,7 +426,7 @@ Param         | Type        | Description
 ------------- | ------------| --------------------------------
 client_id     | (String)    | The client ID
 client_secret | (String)    | The client secret
-callback      | (Function)  | Callback function executed as a result. The token and the error will be passed as parameters to the callback function.
+callback      | (Function)  | Callback function executed as a result. The error and the token will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
 
@@ -439,7 +438,7 @@ const sfcc = require('sfcc-ci');
 var client_id = 'my_client_id';
 var client_secret = 'my_client_id';
 
-sfcc.auth.auth(client_id, client_secret, function(token, err) {
+sfcc.auth.auth(client_id, client_secret, function(err, token) {
     if(token) {
         console.log('Authentication succeeded. Token is %s', token);
     }
@@ -466,7 +465,7 @@ instance      | (String)    | The instance to activate the code on
 archive       | (String)    | The ZIP archive filename to deploy
 token         | (String)    | The Oauth token to use use for authentication
 options       | (Object)    | The options parameter can contains two properties: pfx: the path to the client certificate to use for two factor authentication. passphrase: the optional passphrase to use with the client certificate
-callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
 
 **Returns:** (void) Function has no return value
 
@@ -480,7 +479,7 @@ Param         | Type        | Description
 ------------- | ------------| --------------------------------
 instance      | (String)    | The instance to activate the code on
 token         | (String)    | The Oauth token to use use for authentication
-callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+callback      | (Function)  | Callback function executed as a result. The error and the code versions will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
 
@@ -545,7 +544,7 @@ Param         | Type        | Description
 instance      | (String)    | Instance to start the import on
 file_name     | (String)    | The import file to run the import with
 token         | (String)    | The Oauth token to use use for authentication
-callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+callback      | (Function)  | Callback function executed as a result. The error and the job execution details will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
 
@@ -565,7 +564,7 @@ instance      | (String)    | Instance to start the job on
 job_id        | (String)    | The job to start
 token         | (String)    | The Oauth token to use use for authentication
 job_params    | (Array)     | Array containing job parameters. A job parameter must be denoted by an object holding a key and a value property.
-callback      | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+callback      | (Function)  | Callback function executed as a result. The error and the job execution details will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
 
@@ -581,7 +580,7 @@ instance         | (String)    | Instance the job was executed on.
 job_id           | (String)    | The job to get the execution status for
 job_execution_id | (String)    | The job execution id to get the status for
 token            | (String)    | The Oauth token to use use for authentication
-callback         | (Function)  | Callback function executed as a result. The job execution details and the error will be passed as parameters to the callback function.
+callback         | (Function)  | Callback function executed as a result. The error and the job execution details will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
 

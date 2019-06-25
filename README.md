@@ -142,7 +142,11 @@ If you are using the CLI but don't want to mess around with Node.js you can simp
 
 1. Download the binary for MacOS.
 
-2. Move the binary in to your PATH:
+2. Make the binary executable:
+
+        chmod +x ./sfcc-ci-macos
+
+3. Move the binary in to your PATH:
 
         sudo mv ./sfcc-ci-macos /usr/local/bin/sfcc-ci
 
@@ -150,7 +154,11 @@ If you are using the CLI but don't want to mess around with Node.js you can simp
 
 1. Download the binary for Linux.
 
-2. Move the binary in to your PATH:
+2. Make the binary executable:
+
+        chmod +x ./sfcc-ci-linux
+
+3. Move the binary in to your PATH:
 
         sudo mv ./sfcc-ci-linux /usr/local/bin/sfcc-ci
 
@@ -235,6 +243,16 @@ Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a s
 ## Configuration ##
 
 The CLI keeps it's own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
+
+In addition the CLI can be configured by placing a `dw.json` file into the current working directory. The `dw.json` may carry details used run authentication.
+
+```json
+{
+    "client-id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "client-secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "hostname": "<dev-sandbox>.demandware.net"
+}
+```
 
 ## Environment Variables ##
 

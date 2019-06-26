@@ -496,6 +496,15 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci sandbox:update <sandbox> --ttl 0´:"
+node ./cli.js sandbox:update --sandbox $TEST_NEW_SANDBOX_ID --ttl 0
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 echo "Testing command ´sfcc-ci sandbox:update <sandbox> --ttl 2´:"
 node ./cli.js sandbox:update --sandbox $TEST_NEW_SANDBOX_ID --ttl 1
 if [ $? -eq 0 ]; then

@@ -57,7 +57,7 @@ In order to perform CLI commands, you have to permit API calls to the Commerce C
 Use the following snippet as your client's permission set, replace `my_client_id` with your own client ID. Note, if you already have Open Commerce API Settings configured on your instance, e.g. for other API keys, you have to merge this permission set into the existing list of permission sets for the other clients.
 ```JSON
     {
-      "_v": "19.1",
+      "_v": "19.5",
       "clients":
       [
         {

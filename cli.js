@@ -441,6 +441,15 @@ program.on('--help', function() {
     console.log('');
     console.log('    Use sfcc-ci <sub:command> --help to get detailed help and example usage of sub:commands');
     console.log('');
+    console.log('  Useful Resources:');
+    console.log('');
+    console.log('    Salesforce Commerce Cloud CLI Release Notes: https://sfdc.co/sfcc-cli-releasenotes');
+    console.log('    Salesforce Commerce Cloud CLI Readme: https://sfdc.co/sfcc-cli-readme');
+    console.log('    Salesforce Commerce Cloud CLI Cheatsheet: https://sfdc.co/sfcc-cli-cheatsheet');
+    console.log('    Salesforce Commerce Cloud Account Manager: https://account.demandware.com');
+    console.log('    Salesforce Commerce Cloud API Explorer: https://api-explorer.commercecloud.salesforce.com');
+    console.log('    Salesforce Commerce Cloud Documentation: https://documentation.b2c.commercecloud.salesforce.com');
+    console.log('');
 });
 
 program.parse(process.argv);

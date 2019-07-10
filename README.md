@@ -2,9 +2,9 @@
 
 The Salesforce Commerce Cloud CLI is a command line interface (CLI) for Salesforce Commerce Cloud. It can be used to facilitate deployment and continuous integration practices using Salesforce Commerce Cloud instances.
 
-The CLI can be used from any machine either locally or from build tools, like Jenkins, Travis CI, Bitbucket Pipelines etc.
+The CLI can be used from any machine either locally or from build tools, like Jenkins, Travis CI, Bitbucket Pipelines, Heroku CI etc.
 
-Along with the CLI there is a JavaScript API which can be used to integrate with higher level applications on Node.js.
+In addition to the CLI a basic JavaScript API is included which can be used to integrate with higher level applications on Node.js.
 
 # License #
 
@@ -25,9 +25,10 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 
 **Features:**
 
+* Interactive and headless authentication against Account Manager
+* Support for B2C On-Demand Developer Sandboxes 
 * Uses Open Commerce APIs completely
 * Authentication using Oauth2 only, no Business Manager user needed
-* Interactive and headless authentication
 * Configuration of multiple instances incl. aliasing
 * WebDAV connectivity
 * Code deployment and code version management
@@ -198,7 +199,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Commands:
 
-    auth:login [options] <client>                                   Authenticate a present user for interactive use
+    auth:login [options] [client] [secret]                          Authenticate a present user for interactive use
     auth:logout                                                     End the current sessions and clears the authentication
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
@@ -206,14 +207,14 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
     sandbox:realm:update [options]                                  Update realm settings
     sandbox:list [options]                                          List all available sandboxes
-    sandbox:create [options] <realm> [alias]                        Create a new sandbox
-    sandbox:get [options] <sandbox_id>                              Get detailed information about a sandbox
+    sandbox:create [options]                                        Create a new sandbox
+    sandbox:get [options]                                           Get detailed information about a sandbox
     sandbox:update [options]                                        Update a sandbox
-    sandbox:start <sandbox_id>                                      Start a sandbox
-    sandbox:stop <sandbox_id>                                       Stop a sandbox
-    sandbox:restart <sandbox_id>                                    Restart a sandbox
-    sandbox:reset <sandbox_id>                                      Reset a sandbox
-    sandbox:delete <sandbox_id>                                     Triggers the deletion of an existing sandbox
+    sandbox:start [options]                                         Start a sandbox
+    sandbox:stop [options]                                          Stop a sandbox
+    sandbox:restart [options]                                       Restart a sandbox
+    sandbox:reset [options]                                         Reset a sandbox
+    sandbox:delete [options]                                        Delete a sandbox
     instance:add [options] <instance> [alias]                       Adds a new Commerce Cloud instance to the list of configured instances
     instance:set <alias_or_host>                                    Sets a Commerce Cloud instance as the default instance
     instance:clear                                                  Clears all configured Commerce Cloud instances

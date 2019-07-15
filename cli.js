@@ -213,7 +213,7 @@ program
         console.log('  config file. You must have permission to create a new sandbox for the realm. The number of');
         console.log('  sandboxes allowed to create is limited. The command only trigger the creation and does not');
         console.log('  wait until the sandbox is fully up and running. Use may use `sfcc-ci sandbox:list` to check');
-        console.log('  the status of the creation.');
+        console.log('  the status of the sandbox.');
         console.log();
         console.log('  You can force the command to wait until the creation of the sandbox has been finished and the');
         console.log('  is available to use (in "started" status) by using the --sync flag.');

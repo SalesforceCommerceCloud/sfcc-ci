@@ -1,0 +1,9 @@
+{
+  "environments": {
+    "test": {
+      "scripts": {
+        "test": "npm run test && npm run test:functional:cli $TEST_SFCC_API_KEY $TEST_SFCC_API_SECRET $TEST_SFCC_USER $TEST_SFCC_USER_PW '' $TEST_SFCC_SANDBOX_REALM"
+      }
+    }
+  }
+}

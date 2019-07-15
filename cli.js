@@ -437,6 +437,26 @@ program
     });
 
 program
+    .command('org:list')
+    .description('List all orgs eligible to manage')
+    .option('-o, --org <org>','Organization to get details for')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-s, --sortby <sortby>', 'Sort by specifying any field')
+    .action(function(options) {
+        var org = ( options.org ? options.org : null );
+        var asJson = ( options.json ? options.json : false );
+        var sortby = ( options.sortBy ? options.sortBy : null );
+        require('./lib/org').cli.list(org, asJson, sortby);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci org:list')
+        console.log('    $ sfcc-ci org:list --org "my-org"')
+        console.log();
+    });
+
+program
     .command('role:list')
     .description('List roles')
     .option('-i, --instance <instance>','Instance to return roles for')

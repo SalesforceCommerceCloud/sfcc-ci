@@ -7,6 +7,9 @@ program
     .option('-D, --debug', 'enable verbose output', function() {
         process.env.DEBUG = true;
         process.env.NODE_DEBUG = 'request';
+    })
+    .option('--selfsigned', 'allow connection to hosts using self-signed certificates', function() {
+        process.env.SFCC_ALLOW_SELF_SIGNED = true;
     });
 
 program

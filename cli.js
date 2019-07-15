@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var program = require('commander');
+var { prompt } = require('inquirer');
 
 program
     .version(require('./package.json').version, '-V, --version')
@@ -9,11 +10,11 @@ program
     });
 
 program
-    .command('auth:login <client>')
+    .command('auth:login [client] [secret]')
     .option('-a, --authserver [authserver]','The authorization server used to authenticate')
     .description('Authenticate a present user for interactive use')
-    .action(function(client, options) {
-        require('./lib/auth').login(client, null, options.authserver);
+    .action(function(client, secret, options) {
+        require('./lib/auth').login(client, secret, options.authserver);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -21,10 +22,19 @@ program
         console.log('  Authenticate a user (resource owner) for interactive use. The user must be present and must');
         console.log('  provide his login credentials as part of the authentication flow. The authentication requires');
         console.log('  an API key (client).');
+        if ( require('./lib/auth').OAUTH_AUTHORIZATION_CODE_GRANT_ALLOWED ) {
+            console.log();
+            console.log('  The client [secret] is optional. If the secret is not provided, the authentication is done');
+            console.log('  using the Oauth2 authorization code grant. If the secret is not provided, the ');
+            console.log('  authentication is done using the Oauth2 implicit grant.');
+        }
         console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci auth:login app-client-id');
+        if ( require('./lib/auth').OAUTH_AUTHORIZATION_CODE_GRANT_ALLOWED ) {
+            console.log('    $ sfcc-ci auth:login app-client-id app-client-secret');
+        }
         console.log('    $ sfcc-ci auth:login app-client-id -a account.demandware.com');
         console.log();
     });
@@ -101,6 +111,442 @@ program
     });
 
 program
+    .command('sandbox:realm:list')
+    .description('List realms eligible to manage sandboxes for')
+    .option('-r, --realm <realm>','Realm to get details for')
+    .option('-j, --json','Formats the output in json')
+    .action(function(options) {
+        var realm = ( options.realm ? options.realm : null );
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/sandbox').cli.realm.list(realm, asJson);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Use --realm to get details of a single realm such as configuration and usage');
+        console.log('  information about sandboxes.');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:realms');
+        console.log('    $ sfcc-ci sandbox:realms --json');
+        console.log('    $ sfcc-ci sandbox:realms --realm zzzz');
+        console.log('    $ sfcc-ci sandbox:realms --realm zzzz --json');
+        console.log();
+    });
+
+program
+    .command('sandbox:realm:update')
+    .description('Update realm settings')
+    .option('-r, --realm <realm>','Realm to update')
+    .option('-m, --max-sandbox-ttl <maxSandboxTTL>','Maximum number of hours a sandbox can live in the realm')
+    .option('-d, --default-sandbox-ttl <defaultSandboxTTL>','Number of hours a sandbox lives in the realm by default')
+    .option('-j, --json','Formats the output in json')
+    .action(function(options) {
+        var realm = ( options.realm ? options.realm : null );
+        if (!realm) {
+            this.missingArgument('realm');
+            return;
+        }
+        var maxSandboxTTL = ( options.maxSandboxTtl ? parseInt(options.maxSandboxTtl) : false );
+        var defaultSandboxTTL = ( options.defaultSandboxTtl ? parseInt(options.defaultSandboxTtl) : false );
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/sandbox').cli.realm.update(realm, maxSandboxTTL, defaultSandboxTTL, asJson);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Update details of a realm.');
+        console.log();
+        console.log('  Use --max-sandbox-ttl to update the maximum number of hours a sandbox can live');
+        console.log('  in the realm (must adhere to the maximum TTL quota). Use --default-sandbox-ttl to');
+        console.log('  update the number of hours a sandbox lives in the realm when no TTL was given upon');
+        console.log('  provisioning (must adhere to the maximum TTL quota).');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:realm:update --realm zzzz --max-sandbox-ttl 72');
+        console.log('    $ sfcc-ci sandbox:realm:update --realm zzzz --default-sandbox-ttl 24');
+        console.log();
+    });
+
+program
+    .command('sandbox:list')
+    .description('List all available sandboxes')
+    .option('-j, --json','Formats the output in json')
+    .option('-S, --sortby <sortby>', 'Sort by specifying any field')
+    .action(function(options) {
+        var asJson = ( options.json ? options.json : false );
+        var sortby = ( options.sortby ? options.sortby : null );
+        require('./lib/sandbox').cli.list(asJson, sortby);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:list');
+        console.log('    $ sfcc-ci sandbox:list --json');
+        console.log();
+    });
+
+program
+    .command('sandbox:create')
+    .option('-r, --realm <realm>','Realm to create the sandbox for')
+    .option('-t, --ttl <hours>','Number of hours the sandbox will live')
+    .option('-j, --json','Formats the output in json')
+    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
+    .option('-d, --default', 'Sets the created sandbox as default instance.')
+    .option('-a, --set-alias <alias>','Instance alias to create for the sandbox')
+    .description('Create a new sandbox')
+    .action(function(options) {
+        var realm = ( options.realm ? options.realm : null );
+        var ttl = ( options.ttl ? parseInt(options.ttl) : null );
+        var asJson = ( options.json ? options.json : false );
+        var sync = ( options.sync ? options.sync : false );
+        var setAsDefault = ( options.default ? options.default : false );
+        var alias = ( options.setAlias ? options.setAlias : null );
+        require('./lib/sandbox').cli.create(realm, alias, ttl, asJson, sync, setAsDefault);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The sandbox will be created for the realm using the <realm> argument or stored in dw.json');
+        console.log('  config file. You must have permission to create a new sandbox for the realm. The number of');
+        console.log('  sandboxes allowed to create is limited. The command only trigger the creation and does not');
+        console.log('  wait until the sandbox is fully up and running. Use may use `sfcc-ci sandbox:list` to check');
+        console.log('  the status of the creation.');
+        console.log();
+        console.log('  You can force the command to wait until the creation of the sandbox has been finished and the');
+        console.log('  is available to use (in "started" status) by using the --sync flag.');
+        console.log();
+        console.log('  The created sandbox is being added to the list of instances with its host name. The optional');
+        console.log('  --set-alias <alias> is used as alias for the new instance. If it is omitted, the host is used');
+        console.log('  as alias.');
+        console.log();
+        console.log('  If executed with --default flag, the created sandbox will be set as new default instance.');
+        console.log();
+        console.log('  The TTL (time to live) in hours of the sandbox can be modified via the --ttl flag. The value');
+        console.log('  must adhere to the maximum TTL quotas) If absent the realms default sandbox TTL is used.');
+        console.log('  If the sandbox age reaches its TTL, it will be deleted automatically.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:create');
+        console.log('    $ sfcc-ci sandbox:create --realm my-realm');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm --set-alias an-alias');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -a an-alias -d');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -s');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -a an-alias -s');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -a an-alias -s -d');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -s -j');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm --ttl 6');
+        console.log();
+    });
+
+program
+    .command('sandbox:get')
+    .description('Get detailed information about a sandbox')
+    .option('-s, --sandbox <id>','sandbox to get details for')
+    .option('-j, --json','Formats the output in json')
+    .option('-h, --host','Return the host name of the sandbox')
+    .option('-O, --open','Opens a browser with the Business Manager on the sandbox')
+    .option('--show-operations','Display operations performed')
+    .option('--show-usage','Display detailed usage information')
+    .option('--show-settings','Display settings applied')
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        var asJson = ( options.json ? options.json : false );
+        var hostOnly = ( options.host ? options.host : false );
+        var openBrowser = ( options.open ? options.open : false );
+        var showOperations = ( options.showOperations ? options.showOperations : false );
+        var showUsage = ( options.showUsage ? options.showUsage : false );
+        var showSettings = ( options.showSettings ? options.showSettings : false );
+        require('./lib/sandbox').cli.get(spec, asJson, hostOnly, openBrowser, showOperations, showUsage, showSettings);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The sandbox to lookup must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
+        console.log();
+        console.log('  Use --show-usage to display detailed usage information, --show-operations to get a list of');
+        console.log('  previous operations executed on the sandbox, --show-settings to return the settings initially');
+        console.log('  applied to the sandbox during creation.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:get --sandbox my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -j');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -h');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -O');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-usage');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-operations');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-settings');
+        console.log();
+    });
+
+program
+    .command('sandbox:update')
+    .option('-s, --sandbox <id>','sandbox to update')
+    .option('-t, --ttl <hours>','number of hours to add to the sandbox lifetime')
+    .description('Update a sandbox')
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        var ttl = ( options.ttl ? parseInt(options.ttl) : null );
+        require('./lib/sandbox').cli.update(spec, ttl, false);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The TTL (time to live) in hours of the sandbox can be prolonged via the --ttl flag. The value');
+        console.log('  must, together with previous prolongiations, adhere to the maximum TTL quotas). If set to 0 or');
+        console.log('  less the sandbox will have an infinite lifetime.');
+        console.log();
+        console.log('  The sandbox to update must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --ttl 8');
+        console.log();
+    });
+
+program
+    .command('sandbox:start')
+    .option('-s, --sandbox <id>','sandbox to start')
+    .description('Start a sandbox')
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        require('./lib/sandbox').cli.start(spec, false);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The sandbox to start must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:start --sandbox my-sandbox-id');
+        console.log();
+    });
+
+program
+    .command('sandbox:stop')
+    .option('-s, --sandbox <id>','sandbox to stop')
+    .description('Stop a sandbox')
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        require('./lib/sandbox').cli.stop(spec, false);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The sandbox to stop must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:stop --sandbox my-sandbox-id');
+        console.log();
+    });
+
+program
+    .command('sandbox:restart')
+    .option('-s, --sandbox <id>','sandbox to restart')
+    .description('Restart a sandbox')
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        require('./lib/sandbox').cli.restart(spec, false);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The sandbox to restart must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:restart --sandbox my-sandbox-id');
+        console.log();
+    });
+
+program
+    .command('sandbox:reset')
+    .option('-s, --sandbox <id>','sandbox to reset')
+    .option('-N, --noprompt','No prompt to confirm reset')
+    .description('Reset a sandbox')
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+        if ( noPrompt ) {
+            require('./lib/sandbox').cli.reset(spec, false);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : 'Reset sandbox ' + sandbox_id + '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    require('./lib/sandbox').cli.reset(spec, false);
+                }
+            });
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  WARNING: This is a destructive operation and you will loose any data stored on the sandbox.');
+        console.log();
+        console.log('  The sandbox to reset must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:reset --sandbox my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:reset --sandbox my-sandbox-id --noprompt');
+        console.log();
+    });
+
+program
+    .command('sandbox:delete')
+    .option('-s, --sandbox <id>','sandbox to delete')
+    .option('-N, --noprompt','No prompt to confirm delete')
+    .description('Delete a sandbox')
+    .action(function(options) {
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        if (!sandbox_id) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+        if ( noPrompt ) {
+            require('./lib/sandbox').cli.delete(spec);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : 'Delete sandbox ' + sandbox_id + '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    require('./lib/sandbox').cli.delete(spec);
+                }
+            });
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  WARNING: This is a destructive operation and you will loose any data stored on the sandbox.');
+        console.log();
+        console.log('  The sandbox to delete must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
+        console.log('  identify the id of your sandboxes. You must have permission to delete a sandbox. The command');
+        console.log('  only triggers the deletion and does not wait until the sandbox is fully deleted. Use may use');
+        console.log('  `sfcc-ci sandbox:list` to check the status of the deletion.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:delete --sandbox my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:delete --sandbox my-sandbox-id --noprompt');
+        console.log();
+    });
+
+program
     .command('instance:add <instance> [alias]')
     .option('-d, --default', 'Set the new instance as default')
     .description('Adds a new Commerce Cloud instance to the list of configured instances')
@@ -122,7 +568,7 @@ program
     .command('instance:set <alias_or_host>')
     .description('Sets a Commerce Cloud instance as the default instance')
     .action(function(alias_or_host) {
-        require('./lib/instance').cli.setDefault(alias_or_host);
+        require('./lib/instance').config.setDefault(alias_or_host);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -231,60 +677,6 @@ program
         console.log('    $ sfcc-ci instance:import archive.zip -j');
         console.log('    $ sfcc-ci instance:import archive.zip -s');
         console.log('    $ sfcc-ci instance:import archive.zip -s -j');
-        console.log();
-    });
-
-program
-    .command('instance:state:save')
-    .option('-i, --instance <instance>','Instance to save the state for. Can be an instance alias. ' +
-        'If not specified the currently configured instance will be used.')
-    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
-    .description('Perform a save of the state of a Commerce Cloud instance')
-    .action(function(options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
-        var sync = ( options.sync ? options.sync : false );
-        if (sync) {
-            require('./lib/instance').saveStateSync(instance);
-        } else {
-            require('./lib/instance').saveState(instance);
-        }
-    }).on('--help', function() {
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci instance:state:save');
-        console.log('    $ sfcc-ci instance:state:save -i my-instance-alias');
-        console.log('    $ sfcc-ci instance:state:save -i my-instance-alias -s');
-        console.log('    $ sfcc-ci instance:state:save -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci instance:state:save -i my-instance.demandware.net -s');
-        console.log('    $ sfcc-ci instance:state:save -s');
-        console.log();
-    });
-
-program
-    .command('instance:state:reset')
-    .option('-i, --instance <instance>','Instance to reset its state for. Can be an instance alias. ' +
-        'If not specified the currently configured instance will be used.')
-    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
-    .description('Perform a reset of a previously saved state of a Commerce Cloud instance')
-    .action(function(options) {
-        var instance = require('./lib/instance').getInstance(options.instance);
-        var sync = ( options.sync ? options.sync : false );
-        if (sync) {
-            require('./lib/instance').resetStateSync(instance);
-        } else {
-            require('./lib/instance').resetState(instance);
-        }
-    }).on('--help', function() {
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci instance:state:reset');
-        console.log('    $ sfcc-ci instance:state:reset -i my-instance-alias');
-        console.log('    $ sfcc-ci instance:state:reset -i my-instance-alias -s');
-        console.log('    $ sfcc-ci instance:state:reset -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci instance:state:reset -i my-instance.demandware.net -s');
-        console.log('    $ sfcc-ci instance:state:reset -s');
         console.log();
     });
 
@@ -435,6 +827,7 @@ program.on('--help', function() {
     console.log('');
     console.log('    $SFCC_LOGIN_URL         set login url used for authentication');
     console.log('    $SFCC_OAUTH_LOCAL_PORT  set Oauth local port for authentication flow');
+    console.log('    $SFCC_SANDBOX_API_HOST  set sandbox API host');
     console.log('    $DEBUG                  enable verbose output');
     console.log('');
     console.log('  Detailed Help:');

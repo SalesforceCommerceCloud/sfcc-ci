@@ -1,6 +1,10 @@
 # Salesforce Commerce Cloud CLI #
 
-The Salesforce Commerce Cloud CLI is a command line interface for interacting with Commerce Cloud instances from the command line / shell of various operating systems in order to facilitate Continuous Integration practices using Commerce Cloud. It provides a JavaScript API which can be used to integrate with higher level build tools and other applications.
+The Salesforce Commerce Cloud CLI is a command line interface (CLI) for Salesforce Commerce Cloud. It can be used to facilitate deployment and continuous integration practices using Salesforce Commerce Cloud instances.
+
+The CLI can be used from any machine either locally or from build tools, like Jenkins, Travis CI, Bitbucket Pipelines, Heroku CI etc.
+
+In addition to the CLI a basic JavaScript API is included which can be used to integrate with higher level applications on Node.js.
 
 # License #
 
@@ -21,13 +25,14 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 
 **Features:**
 
+* Interactive and headless authentication against Account Manager
+* Support for B2C On-Demand Developer Sandboxes 
 * Uses Open Commerce APIs completely
 * Authentication using Oauth2 only, no Business Manager user needed
-* Interactive and headless authentication
 * Configuration of multiple instances incl. aliasing
 * WebDAV connectivity
 * Code deployment and code version management
-* System job execution and monitory (site import, state save and sate reset)
+* System job execution and monitoring (site import)
 * Custom job execution and monitoring
 * JavaScript API
 
@@ -37,9 +42,9 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 
 ### Configure an API key ###
 
-Ensure you have a valid Commerce Cloud API key (client ID) set up. If you don't have a API key, you can create one using the [Account Manager](https://account.demandware.com).
+Ensure you have a valid Commerce Cloud API key (client ID) set up. If you don't have a API key, you can create one using the [Account Manager](https://account.demandware.com). Management of API keys is done in _Account Manager > API Client_ and requires _Account Administrator_ or _API Administrator_ role.
 
-For automation (e.g. a build server integration) you'll need the API key as well as the API secret for authentication. If you plan to use the interactive mode, you have to configure your API client to use redirect url `http://localhost:8080`. You do this when you create a new or modify an existing Client ID in Account Manager via the _Redirect URIs_ setting.
+For automation (e.g. a build server integration) you'll need the API key as well as the API secret for authentication. If you want to use authentication in interactive mode, you have to set _Redirect URIs_ to `http://localhost:8080`. If you want to manage sandboxes you have to set _Default Scopes_ to `roles tenantFilter profile`.
 
 ### Grant your API key access to your instances ###
 
@@ -53,7 +58,7 @@ In order to perform CLI commands, you have to permit API calls to the Commerce C
 Use the following snippet as your client's permission set, replace `my_client_id` with your own client ID. Note, if you already have Open Commerce API Settings configured on your instance, e.g. for other API keys, you have to merge this permission set into the existing list of permission sets for the other clients.
 ```JSON
     {
-      "_v": "19.1",
+      "_v": "19.5",
       "clients":
       [
         {
@@ -138,7 +143,11 @@ If you are using the CLI but don't want to mess around with Node.js you can simp
 
 1. Download the binary for MacOS.
 
-2. Move the binary in to your PATH:
+2. Make the binary executable:
+
+        chmod +x ./sfcc-ci-macos
+
+3. Move the binary in to your PATH:
 
         sudo mv ./sfcc-ci-macos /usr/local/bin/sfcc-ci
 
@@ -146,7 +155,11 @@ If you are using the CLI but don't want to mess around with Node.js you can simp
 
 1. Download the binary for Linux.
 
-2. Move the binary in to your PATH:
+2. Make the binary executable:
+
+        chmod +x ./sfcc-ci-linux
+
+3. Move the binary in to your PATH:
 
         sudo mv ./sfcc-ci-linux /usr/local/bin/sfcc-ci
 
@@ -186,19 +199,28 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
   Commands:
 
-    auth:login [options] <client>                                   Authenticate a present user for interactive use
+    auth:login [options] [client] [secret]                          Authenticate a present user for interactive use
     auth:logout                                                     End the current sessions and clears the authentication
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                               Return the current authentication token
+    sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
+    sandbox:realm:update [options]                                  Update realm settings
+    sandbox:list [options]                                          List all available sandboxes
+    sandbox:create [options]                                        Create a new sandbox
+    sandbox:get [options]                                           Get detailed information about a sandbox
+    sandbox:update [options]                                        Update a sandbox
+    sandbox:start [options]                                         Start a sandbox
+    sandbox:stop [options]                                          Stop a sandbox
+    sandbox:restart [options]                                       Restart a sandbox
+    sandbox:reset [options]                                         Reset a sandbox
+    sandbox:delete [options]                                        Delete a sandbox
     instance:add [options] <instance> [alias]                       Adds a new Commerce Cloud instance to the list of configured instances
     instance:set <alias_or_host>                                    Sets a Commerce Cloud instance as the default instance
     instance:clear                                                  Clears all configured Commerce Cloud instances
     instance:list [options]                                         List instance and client details currently configured
     instance:upload [options] <archive>                             Uploads an instance import file onto a Commerce Cloud instance
     instance:import [options] <archive>                             Perform a instance import (aka site import) on a Commerce Cloud instance
-    instance:state:save [options]                                   Perform a save of the state of a Commerce Cloud instance
-    instance:state:reset [options]                                  Perform a reset of a previously saved state of a Commerce Cloud instance
     code:list [options]                                             List all custom code versions deployed on the Commerce Cloud instance
     code:deploy [options] <archive>                                 Deploys a custom code archive onto a Commerce Cloud instance
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
@@ -209,6 +231,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
     $SFCC_LOGIN_URL         set login url used for authentication
     $SFCC_OAUTH_LOCAL_PORT  set Oauth local port for authentication flow
+    $SFCC_SANDBOX_API_HOST  set sandbox API host
     $DEBUG                  enable verbose output
 
   Detailed Help:
@@ -222,12 +245,23 @@ Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a s
 
 The CLI keeps it's own settings. The location of these settings are OS specific. On Linux they are located at `$HOME/.config/sfcc-ci-nodejs/`, on MacOS they are located at `$HOME/Library/Preferences/sfcc-ci-nodejs/`.
 
+In addition the CLI can be configured by placing a `dw.json` file into the current working directory. The `dw.json` may carry details used run authentication.
+
+```json
+{
+    "client-id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "client-secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "hostname": "<dev-sandbox>.demandware.net"
+}
+```
+
 ## Environment Variables ##
 
 The use of environment variables is optional. `sfcc-ci` respects the following environment variables which you can use to control, how the CLI works:
 
 * `SFCC_LOGIN_URL` The login url used for authentication.
 * `SFCC_OAUTH_LOCAL_PORT` Oauth local port for authentication flow.
+* `SFCC_SANDBOX_API_HOST` Sandbox API host.
 * `DEBUG` Debugging mode.
 
 If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
@@ -251,6 +285,16 @@ export SFCC_OAUTH_LOCAL_PORT=<alternative-port>
 ```
 
 Removing the env var (`unset SFCC_OAUTH_LOCAL_PORT`) will make the CLI use the default port again.
+
+## Sandbox API ##
+
+`sfcc-ci` uses a default host for the sandbox API. You can overwrite this host and use an alternative host using the env var `SFCC_SANDBOX_API_HOST`:
+
+```bash
+export SFCC_SANDBOX_API_HOST=<alternative-sandbox-api-host>
+```
+
+Removing the env var (`unset SFCC_SANDBOX_API_HOST`) will make the CLI use the default host again.
 
 ## Debugging ##
 
@@ -335,9 +379,21 @@ sfcc-ci instance:upload <path/to/data.zip> -i your-instance.demandware.net
 sfcc-ci instance:import <data.zip> -i your-instance.demandware.net -s
 ```
 
-Running the instance import without waiting for the import to finish you omit the `--sync,-s` flag:
+Running the instance import without waiting for the import to finish you omit the `--sync,-c` flag:
 
 ```bash
+sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
+```
+
+### Sandboxes ###
+
+Provision a new sandbox, uploading code and running an instance import:
+
+```bash
+SANDBOX=`sfcc-ci sandbox:create <a-realm> -s -j`
+SANDBOX_HOST=`$SANDBOX | jq '.instance.host' -r`
+sfcc-ci code:deploy <path/to/code.zip> -i $SANDBOX_HOST
+sfcc-ci instance:upload <path/to/data.zip> -i $SANDBOX_HOST -s
 sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
 ```
 

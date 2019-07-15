@@ -10,6 +10,9 @@ program
     })
     .option('--selfsigned', 'allow connection to hosts using self-signed certificates', function() {
         process.env.SFCC_ALLOW_SELF_SIGNED = true;
+    })
+    .option('-I, --ignorewarnings', 'ignore any warnings logged to the console', function() {
+        process.env.SFCC_IGNORE_WARNINGS = true;
     });
 
 program

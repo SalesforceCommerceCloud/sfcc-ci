@@ -115,6 +115,12 @@ Use the following snippet as your client's permission set, replace `my_client_id
               "write_attributes":"(**)"
             },
             {
+              "resource_id":"/users",
+              "methods":["get"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
               "resource_id":"/users/*",
               "methods":["put","get","patch","delete"],
               "read_attributes":"(**)",

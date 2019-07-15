@@ -732,7 +732,8 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci user:update --login jdoe@email.org --changes \'{"userState": "ENABLED"}\'');
-        console.log('    $ sfcc-ci user:update --instance my-instance.demandware.net --login jdoe@email.org --changes \'{"disabled": "true"}\'');
+        console.log('    $ sfcc-ci user:update -i my-instance.demandware.net -l jdoe@email.org -c ' +
+            '\'{"disabled": true}\'');
         console.log();
     });
 

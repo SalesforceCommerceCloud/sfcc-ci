@@ -838,7 +838,8 @@ program
         var siteid = ( options.siteid ? options.siteid : 'RefArch' );
         require('./lib/cartridge').add(instance, cartridgename, position, target, siteid, verbose);
     }).on('--help', function() {
-        console.log('');
+        console.log('Adds a cartridge to the sites cartridge path. This is just the assignment of your cartridge to the Site'):
+        console.log('Deploy it using the code:deploy methods before hand');
         console.log('  Examples:');
         console.log();
     	console.log('    $ sfcc-ci cartridge:add plugin_applepay -p first -S RefArch');

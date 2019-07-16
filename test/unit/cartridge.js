@@ -118,7 +118,9 @@ describe('Tests for lib/cartridge.js', function() {
             // instance, cartridgename, position, target, siteid, verbose
             module.add('zzzz-999', 'your_shop_here', 'before', 'bc_api', 'YourShopHere', true)
 
-            expect(consoleResult).to.equal('Attempting Cartridge Add Request {"mockOptions":true,"body":{"name":"your_shop_here","position":"before","target":"bc_api"}}Cartridge %s added on %s (%s)your_shop_herezzzz-999YourShopHere');
+            expect(consoleResult).to.equal('Attempting Cartridge Add Request ' +
+                '{"mockOptions":true,"body":{"name":"your_shop_here","position":"before","target":"bc_api"}}' +
+                'Cartridge %s added on %s (%s)your_shop_herezzzz-999YourShopHere');
         });
 
         it('Should warn via callback about cartridge already add', function() {

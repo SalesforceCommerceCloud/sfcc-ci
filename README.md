@@ -34,6 +34,7 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 * Code deployment and code version management
 * System job execution and monitoring (site import)
 * Custom job execution and monitoring
+* Exploring Account Manager orgs and management of users and roles
 * JavaScript API
 
 # How do I get set up? #

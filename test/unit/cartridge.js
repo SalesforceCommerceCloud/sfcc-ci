@@ -87,6 +87,40 @@ describe('Tests for lib/cartridge.js', function() {
             expect(consoleResult).to.equal('Cartridge %s added on %s (%s)your_shop_herezzzz-999YourShopHere');
         });
 
+        it('Should inform verbose log  about cartridge add attempt', function() {
+            var consoleResult = '';
+            var module = proxyquire('../../lib/cartridge',
+                {
+                    './auth' : {getToken: function(){
+                        return '1'
+                    }},
+                    './log' : {info: function(message, arg1, string2, string3){
+                        if (typeof(arg1) === 'string') {
+                            consoleResult += message + arg1 + string2 + string3;
+                        } else {
+                            consoleResult += message + JSON.stringify(arg1);
+                        }
+                    }},
+                    './ocapi' : {
+                        getOptions: function(instance) {
+                            if (instance === 'zzzz-999') {
+                                return {mockOptions: true}
+                            }
+                        },
+                        ensureValidToken: function(err, res, success, wait) {
+                            success(false, {statusCode: 200});
+                        }
+                    },
+                    'request' : {post: function(options, callback) {
+                        callback();
+                    }}
+                });
+            // instance, cartridgename, position, target, siteid, verbose
+            module.add('zzzz-999', 'your_shop_here', 'before', 'bc_api', 'YourShopHere', true)
+
+            expect(consoleResult).to.equal('Attempting Cartridge Add Request {"mockOptions":true,"body":{"name":"your_shop_here","position":"before","target":"bc_api"}}Cartridge %s added on %s (%s)your_shop_herezzzz-999YourShopHere');
+        });
+
         it('Should warn via callback about cartridge already add', function() {
             var consoleResult;
             var module = proxyquire('../../lib/cartridge',
@@ -117,7 +151,7 @@ describe('Tests for lib/cartridge.js', function() {
             expect(consoleResult).to.equal('Cartridge %s already active on %syour_shop_herezzzz-999');
         });
 
-        it('Should error via callback if ', function() {
+        it('Should error via callback if OCAPI cannot add cartridge', function() {
             var consoleResult;
             var module = proxyquire('../../lib/cartridge',
                 {

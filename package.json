@@ -9,10 +9,10 @@
   "scripts": {
     "lint": "eslint --ignore-path .gitignore ./",
     "test": "npm run lint && npm run test:unit",
-    "test:unit": "node_modules/.bin/_mocha test/unit --recursive",
-    "test:unit:coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha test/unit --recursive",
+    "test:unit": "mocha test/unit --recursive",
+    "test:unit:coverage": "istanbul cover _mocha test/unit --recursive",
     "test:functional:cli": "bin/test-cli.sh",
-    "dist": "node_modules/.bin/pkg . --out-path dist/"
+    "dist": "pkg . --out-path dist/"
   },
   "repository": {
     "type": "git",

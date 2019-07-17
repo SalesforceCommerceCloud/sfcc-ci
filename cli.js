@@ -247,7 +247,7 @@ program
     .description('Get detailed information about a sandbox')
     .option('-s, --sandbox <id>','sandbox to get details for')
     .option('-j, --json','Formats the output in json')
-    .option('-h, --host','Return the host name of the sandbox')
+    .option('--host','Return the host name of the sandbox')
     .option('-O, --open','Opens a browser with the Business Manager on the sandbox')
     .option('--show-operations','Display operations performed')
     .option('--show-usage','Display detailed usage information')
@@ -290,7 +290,7 @@ program
         console.log();
         console.log('    $ sfcc-ci sandbox:get --sandbox my-sandbox-id');
         console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -j');
-        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -h');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --host');
         console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -O');
         console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-usage');
         console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-operations');

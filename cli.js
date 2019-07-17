@@ -824,28 +824,33 @@ program
 
 program
     .command('cartridge:add <cartridgename>')
+    .option('-i, --instance <instance>','Instance to add cartridge name to. Can be an instance alias. If not ' +
+    'specified the currently configured instance will be used.')
     .option('-p, --position <position>','Position on where to add the cartridge in its cartrigde path.' +
     'Possible Values first|last|before|after')
     .option('-t, --target [target]','The cartridge name ' +
     'relative to the postion parameter (before|after) ')
-    .option('-S, --siteid <siteid>', 'the site the cartridge will be added to')
-
+    .option('--siteid <siteid>', 'the site the cartridge will be added to')
+    .description('Adds a cartridge-name to the site\'s cartridge path')
     .action(function(cartridgename, options) {
-        var instance = require('./lib/instance').getInstance(options.instance);;
+        var instance = require('./lib/instance').getInstance(options.instance);
         var verbose = ( options.verbose ? options.verbose : false );
         var position = ( options.position ? options.position : 'last' );
         var target = ( options.target ? options.target : '' );
         var siteid = ( options.siteid ? options.siteid : 'RefArch' );
         require('./lib/cartridge').add(instance, cartridgename, position, target, siteid, verbose);
     }).on('--help', function() {
-        console.log('Adds a cartridge to the sites cartridge path.');
-        console.log('This is just the assignment of your cartridge to the Site');
-        console.log('Deploy it using the code:deploy methods before hand');
+        console.log('');
+        console.log('  Details:');
+        console.log('');
+        console.log('  This command only assigns the cartridge name to a given site');
+        console.log('  The cartridge code itself must be deployed specifically using code:deploy command');
+        console.log('');
         console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci cartridge:add plugin_applepay -p first -S RefArch');
-        console.log('    $ sfcc-ci cartridge:add plugin_applepay -p after -t app_yourshophere -S YourShopHere');
-        console.log();
+        console.log('');
+        console.log('    $ sfcc-ci cartridge:add plugin_applepay -p first --siteid RefArch');
+        console.log('    $ sfcc-ci cartridge:add plugin_applepay -p after -t app_yourshophere --siteid YourShopHere');
+        console.log('');
     });
 
 program.on('--help', function() {

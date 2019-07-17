@@ -208,7 +208,6 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     sandbox:realm:update [options]                                  Update realm settings
     sandbox:list [options]                                          List all available sandboxes
     sandbox:create [options]                                        Create a new sandbox
-    sandbox:get [options]                                           Get detailed information about a sandbox
     sandbox:update [options]                                        Update a sandbox
     sandbox:start [options]                                         Start a sandbox
     sandbox:stop [options]                                          Stop a sandbox

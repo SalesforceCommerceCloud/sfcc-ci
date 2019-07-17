@@ -172,19 +172,70 @@ program
 
 program
     .command('sandbox:list')
-    .description('List all available sandboxes')
+    .description('List available sandboxes and detailed information')
     .option('-j, --json','Formats the output in json')
     .option('-S, --sortby <sortby>', 'Sort by specifying any field')
+    .option('-s, --sandbox <id>','sandbox to get details for')
+    .option('-h, --host','Return only the host name of the sandbox')
+    .option('-O, --open','Opens a browser with the Business Manager on the sandbox')
+    .option('--show-operations','Display operations performed')
+    .option('--show-usage','Display detailed usage information')
+    .option('--show-settings','Display settings applied')
     .action(function(options) {
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortby ? options.sortby : null );
-        require('./lib/sandbox').cli.list(asJson, sortby);
+        var sandbox_id = ( options.sandbox ? options.sandbox : null );
+
+        if (!sandbox_id) {
+            // list possibly multiple sandboxes
+            require('./lib/sandbox').cli.list(asJson, sortby);
+            return;
+        }
+        // otherwise return details for a single sandbox
+        // always assume it is a sandbox id
+        var spec = { id : sandbox_id };
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox_id.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        }
+
+        var hostOnly = ( options.host ? options.host : false );
+        var openBrowser = ( options.open ? options.open : false );
+        var showOperations = ( options.showOperations ? options.showOperations : false );
+        var showUsage = ( options.showUsage ? options.showUsage : false );
+        var showSettings = ( options.showSettings ? options.showSettings : false );
+        require('./lib/sandbox').cli.get(spec, asJson, hostOnly, openBrowser, showOperations, showUsage, showSettings);
     }).on('--help', function() {
         console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Use this command to list either all available sandboxes or show details of a single');
+        console.log('  sandbox. Use option -s,--sandbox to request details of a single sandbox, otherwise');
+        console.log('  all sandboxes, the user is eligible to manage are being returned. The sandbox to lookup')
+        console.log('  must be identified by its id. Use may use `sfcc-ci sandbox:list` without option --sandbox to');
+        console.log('  explore all your sandboxes.');
+        console.log();
+        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id> as handy alternative');
+        console.log('  to the long uuid.');
+        console.log();
+        console.log('  Use --show-usage to display detailed usage information, --show-operations to get a list of');
+        console.log('  previous operations executed on the sandbox, --show-settings to return the settings initially');
+        console.log('  applied to the sandbox during creation.');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:list');
+        console.log('    $ sfcc-ci sandbox:list --sortby createdBy');
         console.log('    $ sfcc-ci sandbox:list --json');
+        console.log('    $ sfcc-ci sandbox:list --sandbox my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:list -s my-sandbox-id -j');
+        console.log('    $ sfcc-ci sandbox:list -s my-sandbox-id -h');
+        console.log('    $ sfcc-ci sandbox:list -s my-sandbox-id -O');
+        console.log('    $ sfcc-ci sandbox:list -s my-sandbox-id --show-usage');
+        console.log('    $ sfcc-ci sandbox:list -s my-sandbox-id --show-operations');
+        console.log('    $ sfcc-ci sandbox:list -s my-sandbox-id --show-settings');
         console.log();
     });
 
@@ -239,62 +290,6 @@ program
         console.log('    $ sfcc-ci sandbox:create -r my-realm -a an-alias -s -d');
         console.log('    $ sfcc-ci sandbox:create -r my-realm -s -j');
         console.log('    $ sfcc-ci sandbox:create -r my-realm --ttl 6');
-        console.log();
-    });
-
-program
-    .command('sandbox:get')
-    .description('Get detailed information about a sandbox')
-    .option('-s, --sandbox <id>','sandbox to get details for')
-    .option('-j, --json','Formats the output in json')
-    .option('-h, --host','Return the host name of the sandbox')
-    .option('-O, --open','Opens a browser with the Business Manager on the sandbox')
-    .option('--show-operations','Display operations performed')
-    .option('--show-usage','Display detailed usage information')
-    .option('--show-settings','Display settings applied')
-    .action(function(options) {
-        var sandbox_id = ( options.sandbox ? options.sandbox : null );
-        if (!sandbox_id) {
-            this.missingArgument('sandbox');
-            return;
-        }
-        // always assume it is a sandbox id
-        var spec = { id : sandbox_id };
-        // check if we have to lookup the sandbox by realm and instance
-        var split = sandbox_id.split(/[-_]/);
-        if (split.length === 2) {
-            spec['realm'] = split[0];
-            spec['instance'] = split[1];
-        }
-        var asJson = ( options.json ? options.json : false );
-        var hostOnly = ( options.host ? options.host : false );
-        var openBrowser = ( options.open ? options.open : false );
-        var showOperations = ( options.showOperations ? options.showOperations : false );
-        var showUsage = ( options.showUsage ? options.showUsage : false );
-        var showSettings = ( options.showSettings ? options.showSettings : false );
-        require('./lib/sandbox').cli.get(spec, asJson, hostOnly, openBrowser, showOperations, showUsage, showSettings);
-    }).on('--help', function() {
-        console.log('');
-        console.log('  Details:');
-        console.log();
-        console.log('  The sandbox to lookup must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
-        console.log('  identify the id of your sandboxes.');
-        console.log();
-        console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
-        console.log();
-        console.log('  Use --show-usage to display detailed usage information, --show-operations to get a list of');
-        console.log('  previous operations executed on the sandbox, --show-settings to return the settings initially');
-        console.log('  applied to the sandbox during creation.');
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci sandbox:get --sandbox my-sandbox-id');
-        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -j');
-        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -h');
-        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id -O');
-        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-usage');
-        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-operations');
-        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-settings');
         console.log();
     });
 

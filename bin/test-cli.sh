@@ -383,17 +383,17 @@ fi
 # grab some sandbox details for next set of tests
 TEST_NEW_SANDBOX_ID=`echo $TEST_NEW_SANDBOX_RESULT | jq '.sandbox.id' -r`
 TEST_NEW_SANDBOX_INSTANCE=`echo $TEST_NEW_SANDBOX_RESULT | jq '.sandbox.instance' -r`
-TEST_NEW_SANDBOX_HOST=`node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --host`
+TEST_NEW_SANDBOX_HOST=`node ./cli.js sandbox:list --sandbox $TEST_NEW_SANDBOX_ID --host`
 
 if [ "$ARG_HOST" = "" ]; then
 	ARG_HOST=$TEST_NEW_SANDBOX_HOST
 fi
 
 ###############################################################################
-###### Testing ´sfcc-ci sandbox:get´
+###### Testing ´sfcc-ci sandbox:list´ with option ´-s,--sandbox´
 ###############################################################################
 
-echo "Testing command ´sfcc-ci sandbox:get´ (expected to fail):"
+echo "Testing command ´sfcc-ci sandbox:get´ (unknown, expected to fail):"
 node ./cli.js sandbox:get
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
@@ -402,8 +402,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get --sandbox <INVALID_ID>´ (expected to fail):"
-node ./cli.js sandbox:get --sandbox INVALID_ID
+echo "Testing command ´sfcc-ci sandbox:list --sandbox´ (expected to fail):"
+node ./cli.js sandbox:list --sandbox
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -411,8 +411,17 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox>´:"
-node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID
+echo "Testing command ´sfcc-ci sandbox:list --sandbox <INVALID_ID>´ (expected to fail):"
+node ./cli.js sandbox:list --sandbox INVALID_ID
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:list --sandbox <sandbox>´:"
+node ./cli.js sandbox:list --sandbox $TEST_NEW_SANDBOX_ID
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -420,8 +429,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --json´:"
-node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --json
+echo "Testing command ´sfcc-ci sandbox:list --sandbox <sandbox> --json´:"
+node ./cli.js sandbox:list --sandbox $TEST_NEW_SANDBOX_ID --json
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -429,8 +438,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox>´ (using <realm>-<instance> as id):"
-node ./cli.js sandbox:get --sandbox $ARG_SANDBOX_REALM"_"$TEST_NEW_SANDBOX_INSTANCE
+echo "Testing command ´sfcc-ci sandbox:list --sandbox <sandbox>´ (using <realm>-<instance> as id):"
+node ./cli.js sandbox:list --sandbox $ARG_SANDBOX_REALM"_"$TEST_NEW_SANDBOX_INSTANCE
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -438,8 +447,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --host´:"
-node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --host
+echo "Testing command ´sfcc-ci sandbox:list --sandbox <sandbox> --host´:"
+node ./cli.js sandbox:list --sandbox $TEST_NEW_SANDBOX_ID --host
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -447,8 +456,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --show-usage´:"
-node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --show-usage
+echo "Testing command ´sfcc-ci sandbox:list --sandbox <sandbox> --show-usage´:"
+node ./cli.js sandbox:list --sandbox $TEST_NEW_SANDBOX_ID --show-usage
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -456,8 +465,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --show-operations´:"
-node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --show-operations
+echo "Testing command ´sfcc-ci sandbox:list --sandbox <sandbox> --show-operations´:"
+node ./cli.js sandbox:list --sandbox $TEST_NEW_SANDBOX_ID --show-operations
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -465,8 +474,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --show-settings´:"
-node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --show-settings
+echo "Testing command ´sfcc-ci sandbox:list --sandbox <sandbox> --show-settings´:"
+node ./cli.js sandbox:list --sandbox $TEST_NEW_SANDBOX_ID --show-settings
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

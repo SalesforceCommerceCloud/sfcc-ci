@@ -1029,6 +1029,8 @@ program
         console.log('    $ sfcc-ci user:list --instance my-instance --login local-user');
         console.log('    $ sfcc-ci user:list --instance my-instance --query \'{"term_query":' +
             '{"fields":["external_id"],"operator":"is_null"}}\' --json');
+        console.log('    $ sfcc-ci user:list --instance my-instance --query \'{"term_query":' +
+            '{"fields":["disabled"],"operator":"is","values":[true]}}\'');
         console.log('    $ sfcc-ci user:list --instance my-instance --role Administrator');
         console.log('    $ sfcc-ci user:list --login my-login');
         console.log('    $ sfcc-ci user:list --login my-login -j');

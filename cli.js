@@ -973,6 +973,7 @@ program
     .command('user:list')
     .description('List users eligible to manage')
     .option('-c, --count <count>','Max count of list items (default is 25)')
+    .option('--start <start>','Zero-based index of first item to return (default is 0)')
     .option('-o, --org <org>','Org to return users for (only works in combination with <role>)')
     .option('-i, --instance <instance>','Instance to search users for. Can be an instance alias.')
     .option('-l, --login <login>','Login of a user to get details for')
@@ -982,6 +983,7 @@ program
     .option('-s, --sortby <sortby>', 'Sort by specifying any field')
     .action(function(options) {
         var count = ( options.count ? options.count : null );
+        var start = ( options.start ? options.start : null );
         var org = options.org;
         var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
         var login = options.login;
@@ -991,10 +993,10 @@ program
         var sortby = ( options.sortby ? options.sortby : null );
         if ( instance && login ) {
             // get users on the instance with role
-            require('./lib/user').cli.searchLocal(instance, login, query, null, null, count, asJson);
+            require('./lib/user').cli.searchLocal(instance, login, query, null, null, null, null, asJson);
         } else if ( instance && !login ) {
             // get users on instance
-            require('./lib/user').cli.searchLocal(instance, login, query, role, sortby, count, asJson);
+            require('./lib/user').cli.searchLocal(instance, login, query, role, sortby, count, start, asJson);
         } else if ( ( org && role ) || ( !org && role ) || !( org && role ) ) {
             // get users from AM
             require('./lib/user').cli.list(org, role, login, count, asJson, sortby);
@@ -1024,6 +1026,7 @@ program
         console.log();
         console.log('    $ sfcc-ci user:list')
         console.log('    $ sfcc-ci user:list -c 100')
+        console.log('    $ sfcc-ci user:list -c 200 --start 200')
         console.log('    $ sfcc-ci user:list --sortby "lastName"')
         console.log('    $ sfcc-ci user:list --json')
         console.log('    $ sfcc-ci user:list --instance my-instance --login local-user');

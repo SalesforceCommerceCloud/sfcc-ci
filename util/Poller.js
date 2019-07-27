@@ -32,6 +32,7 @@ class Poller extends EventEmitter {
 
     next() {
         if (this.hasEnded) {
+            clearTimeout(this.timeoutID);
             return {};
         }
         if (this.isExceeded) {

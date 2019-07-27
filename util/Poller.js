@@ -4,12 +4,13 @@ const EventEmitter = require('events');
 /**
  * This class provides a more convenient method to handle polling
  *
- * While polling we allow to react on predefined results, occuring after each polling step, by returning the stepResult
+ * While polling we allow to react on predefined results, occuring after each polling step
  *
  * stepResult:
  *  isExceeded: Stops the polling and return status object
  *  errorThresholdContinue: Continue polling and return status object
  *  errorThresholdExceeded: Stops polling and return status object
+ *  hasError: isExceeded || errorThresholdExceeded
  */
 class Poller extends EventEmitter {
     /**
@@ -18,6 +19,7 @@ class Poller extends EventEmitter {
     constructor(timeout = 1000, errorThreshold = 3) {
         super();
         this.timeout = timeout;
+        this.timeoutID = null;
         this.errorThreshold = errorThreshold;
 
         // updated through polling
@@ -30,22 +32,21 @@ class Poller extends EventEmitter {
 
     next() {
         if (this.hasEnded) {
-            clearInterval(this.timeout);
             return {};
         }
         if (this.isExceeded) {
-            clearInterval(this.timeout);
+            clearInterval(this.timeoutID);
             this.stepResult.hasError = true;
             return this.stepResult.isExceeded = true;
         } else if (this.errorResponse && this.errorThreshold === 0) {
-            clearInterval(this.timeout);
+            clearInterval(this.timeoutID);
             this.stepResult.hasError = true;
             return this.stepResult.errorThresholdExceeded = true;
         } else if (this.errorResponse && this.errorThreshold > 0) {
             this.errorThreshold--;
             this.stepResult.errorThresholdContinue = true;
         }
-        setTimeout(() => this.emit('poll'), this.timeout);
+        this.timeoutID = setTimeout(() => this.emit('poll'), this.timeout);
     }
 
 

@@ -35,11 +35,11 @@ class Poller extends EventEmitter {
             return {};
         }
         if (this.isExceeded) {
-            clearInterval(this.timeoutID);
+            clearTimeout(this.timeoutID);
             this.stepResult.hasError = true;
             return this.stepResult.isExceeded = true;
         } else if (this.errorResponse && this.errorThreshold === 0) {
-            clearInterval(this.timeoutID);
+            clearTimeout(this.timeoutID);
             this.stepResult.hasError = true;
             return this.stepResult.errorThresholdExceeded = true;
         } else if (this.errorResponse && this.errorThreshold > 0) {

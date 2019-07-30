@@ -23,22 +23,21 @@ class Poller extends EventEmitter {
         this.errorThreshold = errorThreshold;
 
         // updated through polling
-        this.isExceeded = false;
+        this.isTimeoutExceeded = false;
         this.errorResponse = null;
         this.hasEnded = false;
 
         this.stepResult = {};
     }
-
     next() {
         if (this.hasEnded) {
             clearTimeout(this.timeoutID);
             return {};
         }
-        if (this.isExceeded) {
+        if (this.isTimeoutExceeded) {
             clearTimeout(this.timeoutID);
             this.stepResult.hasError = true;
-            return this.stepResult.isExceeded = true;
+            return this.stepResult.isTimeoutExceeded = true;
         } else if (this.errorResponse && this.errorThreshold === 0) {
             clearTimeout(this.timeoutID);
             this.stepResult.hasError = true;
@@ -49,7 +48,6 @@ class Poller extends EventEmitter {
         }
         this.timeoutID = setTimeout(() => this.emit('poll'), this.timeout);
     }
-
 
     start(cb) {
         this.on('poll', cb);

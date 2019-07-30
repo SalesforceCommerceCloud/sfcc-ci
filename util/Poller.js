@@ -5,12 +5,6 @@ const EventEmitter = require('events');
  * This class provides a more convenient method to handle polling
  *
  * While polling we allow to react on predefined results, occuring after each polling step
- *
- * stepResult:
- *  isExceeded: Stops the polling and return status object
- *  errorThresholdContinue: Continue polling and return status object
- *  errorThresholdExceeded: Stops polling and return status object
- *  hasError: isExceeded || errorThresholdExceeded
  */
 class Poller extends EventEmitter {
     /**
@@ -23,28 +17,37 @@ class Poller extends EventEmitter {
         this.errorThreshold = errorThreshold;
 
         // updated through polling
-        this.isTimeoutExceeded = false;
         this.errorResponse = null;
+
+        this.errorThresholdContinue = false;
+        this.isTimeoutExceeded = false;
         this.hasEnded = false;
+        this.hasGeneralError = false;
+        this.hasError = false;
 
         this.stepResult = {};
     }
     next() {
+        // reset threshold
+        this.errorThresholdContinue = false;
+
         if (this.hasEnded) {
             clearTimeout(this.timeoutID);
             return {};
         }
         if (this.isTimeoutExceeded) {
-            clearTimeout(this.timeoutID);
-            this.stepResult.hasError = true;
-            return this.stepResult.isTimeoutExceeded = true;
+            this.hasError = true;
+        } else if (this.hasGeneralError) {
+            this.hasError = true;
         } else if (this.errorResponse && this.errorThreshold === 0) {
-            clearTimeout(this.timeoutID);
-            this.stepResult.hasError = true;
-            return this.stepResult.errorThresholdExceeded = true;
+            this.hasError = true;
         } else if (this.errorResponse && this.errorThreshold > 0) {
             this.errorThreshold--;
-            this.stepResult.errorThresholdContinue = true;
+            this.errorThresholdContinue = true;
+        }
+        if (this.hasError) {
+            clearTimeout(this.timeoutID);
+            return;
         }
         this.timeoutID = setTimeout(() => this.emit('poll'), this.timeout);
     }

@@ -788,3 +788,25 @@ else
 	echo -e "\t> FAILED"
 	exit 1
 fi
+
+###############################################################################
+###### Testing ´sfcc-ci org:list´
+###############################################################################
+
+echo "Testing command ´sfcc-ci org:list´ without option:"
+node ./cli.js org:list
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci org:list --org <org>´ with invalid org (expected to fail):"
+node ./cli.js org:list --org does_not_exist
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi

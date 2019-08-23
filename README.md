@@ -35,6 +35,7 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 * System job execution and monitoring (site import)
 * Custom job execution and monitoring
 * Add cartridges to site cartridge path
+* Exploring Account Manager orgs and management of users and roles
 * JavaScript API
 
 # How do I get set up? #
@@ -95,6 +96,48 @@ Use the following snippet as your client's permission set, replace `my_client_id
               "methods": ["post"], 
               "read_attributes": "(**)", 
               "write_attributes": "(**)",
+            },
+            {
+              "resource_id":"/role_search",
+              "methods":["post"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/roles/*",
+              "methods":["get"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/roles/*/user_search",
+              "methods":["post"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/roles/*/users/*",
+              "methods":["put","delete"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/user_search",
+              "methods":["post"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/users",
+              "methods":["get"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/users/*",
+              "methods":["put","get","patch","delete"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
             }
           ]
         }
@@ -234,6 +277,14 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
     cartridge:add <cartridgename> [options]
+    org:list [options]                                              List all orgs eligible to manage
+    role:list [options]                                             List roles
+    role:grant [options]                                            Grant a role to a user
+    role:revoke [options]                                           Revoke a role from a user
+    user:list [options]                                             List users eligible to manage
+    user:create [options]                                           Create a new user
+    user:update [options]                                           Update a user
+    user:delete [options]                                           Delete a user
 
   Environment:
 

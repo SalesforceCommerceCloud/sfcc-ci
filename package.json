@@ -22,9 +22,11 @@
   "license": "ISC",
   "homepage": "https://github.com/SalesforceCommerceCloud/sfcc-ci#readme",
   "dependencies": {
+    "archiver": "^3.1.1",
     "chalk": "^2.4.1",
     "commander": "^2.18.0",
     "conf": "^2.0.0",
+    "file-system": "^2.2.2",
     "inquirer": "^6.2.0",
     "jsonwebtoken": "^8.3.0",
     "open": "^6.4.0",

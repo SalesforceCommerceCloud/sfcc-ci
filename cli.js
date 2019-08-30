@@ -16,6 +16,22 @@ program
     });
 
 program
+    .command('archive [target] [source]')
+    .description('Archives the cartridges for upload on webdav')
+    .action(function(target, source) {
+        require('./lib/archive').archive(target, source);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Archives the cartridges in preparation for upload with the webdav api');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci archive target.zip source');
+    });
+
+program
     .command('auth:login [client] [secret]')
     .option('-a, --authserver [authserver]','The authorization server used to authenticate')
     .description('Authenticate a present user for interactive use')

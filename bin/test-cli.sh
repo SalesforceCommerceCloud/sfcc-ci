@@ -84,6 +84,7 @@ echo "Testing command ´sfcc-ci archive´ with valid source"
 node ./cli.js archive test.zip test
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
+	rm test.zip
 else
 	echo -e "\t> FAILED"
 	exit 1

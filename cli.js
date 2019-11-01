@@ -111,6 +111,51 @@ program
     });
 
 program
+    .command('data:upload')
+    .option('-i, --instance <instance>','Instance to upload the file to. Can be an ' +
+        'instance alias. If not specified the currently configured instance will be used.')
+    .option('-t, --target <target>', 'Target (WebDAV) location to upload to')
+    .option('-f, --file <file>', 'File to upload')
+    .option('-c, --certificate <certificate>','Path to the certificate to use for two factor authentication.')
+    .option('-p, --passphrase <passphrase>','Passphrase to be used to read the given certificate.')
+    .description('Uploads a file onto a Commerce Cloud instance')
+    .action(function(options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        var target = ( options.target ? options.target : null );
+        if (!target) {
+            this.missingArgument('target');
+            return;
+        }
+        var file = ( options.file ? options.file : null );
+        if (!file) {
+            this.missingArgument('file');
+            return;
+        }
+        require('./lib/webdav').cli.upload(instance, '/' + target, file, true, {
+            pfx: options.certificate,
+            passphrase: options.passphrase
+        });
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Uploads the file onto an instance into the target WebDAV folder.');
+        console.log('  Note, that there is a max file size of 100 MB for uploading files. You may');
+        console.log('  want to zip or gzip the file to upload.');
+        console.log();
+        console.log('  The file may include a path to the actual location where the file resides locally.');
+        console.log('  The provided --target <target> is relative to /webdav/Sites/, e.g. "impex/src/upload".');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci data:upload --instance my-instance.demandware.net --target impex/src/upload ' +
+            '--file data.xml');
+        console.log('    $ sfcc-ci data:upload --instance my-instance.demandware.net --target impex/src/instance ' +
+            '--file site-import.zip');
+        console.log();
+    });
+
+program
     .command('sandbox:realm:list')
     .description('List realms eligible to manage sandboxes for')
     .option('-r, --realm <realm>','Realm to get details for')

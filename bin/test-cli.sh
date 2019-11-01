@@ -747,6 +747,19 @@ else
 fi
 
 ###############################################################################
+###### Testing ´sfcc-ci data:upload´
+###############################################################################
+
+echo "Testing command ´sfcc-ci data:upload´:"
+node ./cli.js data:upload --instance $ARG_HOST --target impex/src/upload --file ./test/cli/site_import.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
 ###### Testing ´sfcc-ci job:run´
 ###############################################################################
 

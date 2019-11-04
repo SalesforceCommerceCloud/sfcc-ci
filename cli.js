@@ -7,6 +7,12 @@ program
     .option('-D, --debug', 'enable verbose output', function() {
         process.env.DEBUG = true;
         process.env.NODE_DEBUG = 'request';
+    })
+    .option('--selfsigned', 'allow connection to hosts using self-signed certificates', function() {
+        process.env.SFCC_ALLOW_SELF_SIGNED = true;
+    })
+    .option('-I, --ignorewarnings', 'ignore any warnings logged to the console', function() {
+        process.env.SFCC_IGNORE_WARNINGS = true;
     });
 
 program
@@ -865,6 +871,401 @@ program
         console.log('    $ sfcc-ci job:status my-job my-job-execution-id -o');
         console.log();
     });
+
+program
+    .command('org:list')
+    .description('List all orgs eligible to manage')
+    .option('-o, --org <org>','Organization to get details for')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-s, --sortby <sortby>', 'Sort by specifying any field')
+    .action(function(options) {
+        var org = ( options.org ? options.org : null );
+        var asJson = ( options.json ? options.json : false );
+        var sortby = ( options.sortBy ? options.sortBy : null );
+        require('./lib/org').cli.list(org, asJson, sortby);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci org:list')
+        console.log('    $ sfcc-ci org:list --org "my-org"')
+        console.log();
+    });
+
+program
+    .command('role:list')
+    .description('List roles')
+    .option('-i, --instance <instance>','Instance to return roles for')
+    .option('-c, --count <count>','Max count of list items (default is 25)')
+    .option('-r, --role <role>','Role to get details for')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-s, --sortby <sortby>', 'Sort by specifying any field')
+    .option('-v, --verbose', 'Outputs additional details of a role')
+    .action(function(options) {
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
+        var count = ( options.count ? options.count : null );
+        var role = ( options.role ? options.role : null );
+        var asJson = ( options.json ? options.json : false );
+        var sortby = ( options.sortBy ? options.sortBy : null );
+        var verbose = ( options.verbose ? options.verbose : false );
+
+        if ( options.instance ) {
+            require('./lib/role').cli.listLocal(instance, role, null, role, sortby, count, asJson, verbose);
+        } else {
+            require('./lib/role').cli.list(count, asJson);
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  List roles available to grant to users. By default roles from Account Manager eligible');
+        console.log('  to grant to users are returned. If the --instance option is used, roles defined on that');
+        console.log('  Commerce Cloud instance are returned.');
+        console.log();
+        console.log('  Use --role to get details of a single role. Use --verbose to show permissions the');
+        console.log('  role includes and the users on the instance granted with that role.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci role:list');
+        console.log('    $ sfcc-ci role:list --instance my-instance.demandware.net');
+        console.log('    $ sfcc-ci role:list --instance my-instance.demandware.net --role "Administrator"')
+        console.log();
+    });
+
+program
+    .command('role:grant')
+    .description('Grant a role to a user')
+    .option('-i, --instance <instance>','Instance to grant a user a role to')
+    .option('-l, --login <login>','Login of user to grant role to')
+    .option('-r, --role <role>','Role to grant')
+    .option('-s, --scope <scope>','Scope of role to grant')
+    .option('-j, --json', 'Formats the output in json')
+    .action(function(options) {
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
+        var login = ( options.login ? options.login : null );
+        var role = ( options.role ? options.role : null );
+        var scope = ( options.scope ? options.scope : null );
+        var asJson = ( options.json ? options.json : false );
+
+        if ( instance && scope ) {
+            require('./lib/log').error('Ambiguous options. Use -h,--help for help.');
+        } else if ( instance ) {
+            require('./lib/user').cli.grantLocal(instance, login, role, asJson);
+        } else {
+            require('./lib/user').cli.grant(login, role, scope, asJson);
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Grants a role to a user in Account Manager. Use additional --scope to grant the role');
+        console.log('  to a specific scope. This allows to limit the role for a specific Commerce Cloud instance');
+        console.log('  or a group of instances. Scopes are only supported by specific roles in Account Manager.');
+        console.log();
+        console.log('  Use --instance to grant a role to a user on a Commerce Cloud instance.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role');
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope zzzz_dev');
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope zzzz_*');
+        console.log('    $ sfcc-ci role:grant --login the-user --role the-role --scope "zzzz_s01,zzzz_s02"');
+        console.log('    $ sfcc-ci role:grant --instance my-instance.demandware.net --login the-user --role the-role');
+        console.log();
+    });
+
+program
+    .command('role:revoke')
+    .description('Revoke a role from a user')
+    .option('-i, --instance <instance>','Instance to revoke a user a role from')
+    .option('-l, --login <login>','Login of user to revoke role from')
+    .option('-r, --role <role>','Role to revoke')
+    .option('-s, --scope <scope>','Scope of role to revoke')
+    .option('-j, --json', 'Formats the output in json')
+    .action(function(options) {
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
+        var login = ( options.login ? options.login : null );
+        var role = ( options.role ? options.role : null );
+        var scope = ( options.scope ? options.scope : null );
+        var asJson = ( options.json ? options.json : false );
+
+        if ( instance && scope ) {
+            require('./lib/log').error('Ambiguous options. Use -h,--help for help.');
+        } else if ( instance ) {
+            require('./lib/user').cli.revokeLocal(instance, login, role, asJson);
+        } else {
+            require('./lib/user').cli.revoke(login, role, scope, asJson);
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Revokes a role from a user in Account Manager. Use additional --scope to reduce');
+        console.log('  the scope of a role. This allows to limit the role to specific Commerce Cloud');
+        console.log('  instances. Multiple instances or a range of instances can be specified.');
+        console.log('');
+        console.log('  Use --instance to revoke a role from a user on a Commerce Cloud instance.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role');
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope zzzz_dev');
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope zzzz_*');
+        console.log('    $ sfcc-ci role:revoke --login the-user --role the-role --scope "zzzz_s01,zzzz_s02"');
+        console.log('    $ sfcc-ci role:revoke --instance my-instance.demandware.net --login the-user --role the-role');
+        console.log();
+    });
+
+program
+    .command('user:list')
+    .description('List users eligible to manage')
+    .option('-c, --count <count>','Max count of list items (default is 25)')
+    .option('--start <start>','Zero-based index of first item to return (default is 0)')
+    .option('-o, --org <org>','Org to return users for (only works in combination with <role>)')
+    .option('-i, --instance <instance>','Instance to search users for. Can be an instance alias.')
+    .option('-l, --login <login>','Login of a user to get details for')
+    .option('-r, --role <role>','Limit users to a certain role')
+    .option('-q, --query <query>','Query to search users for')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-s, --sortby <sortby>', 'Sort by specifying any field')
+    .action(function(options) {
+        var count = ( options.count ? options.count : null );
+        var start = ( options.start ? options.start : null );
+        var org = options.org;
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
+        var login = options.login;
+        var role = options.role;
+        var query = ( options.query ? JSON.parse(options.query) : null );
+        var asJson = ( options.json ? options.json : false );
+        var sortby = ( options.sortby ? options.sortby : null );
+        if ( instance && login ) {
+            // get users on the instance with role
+            require('./lib/user').cli.searchLocal(instance, login, query, null, null, null, null, asJson);
+        } else if ( instance && !login ) {
+            // get users on instance
+            require('./lib/user').cli.searchLocal(instance, login, query, role, sortby, count, start, asJson);
+        } else if ( ( org && role ) || ( !org && role ) || !( org && role ) ) {
+            // get users from AM
+            require('./lib/user').cli.list(org, role, login, count, asJson, sortby);
+        } else {
+            require('./lib/log').error('Ambiguous options. Please consult the help using --help.');
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  By default users in the Account Manager organization the user is eligible');
+        console.log('  to manage are being returned. Depending on the number of users the list may');
+        console.log('  be large. Use option --count to limit the number of users.');
+        console.log();
+        console.log('  Use --login to get details of a single user.');
+        console.log();
+        console.log('  If options --org and --role are used, you can filter users by organization and');
+        console.log('  role. --org only works in combination with --role. Only enabled users are returned.');
+        console.log();
+        console.log('  If option --instance is used, local users from this Commerce Cloud instance');
+        console.log('  are being returned. Use --query to narrow down the users.');
+        console.log();
+        console.log('  Use options --instance and --login to get details of a local user on the');
+        console.log('  Commerce Cloud instance.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci user:list')
+        console.log('    $ sfcc-ci user:list -c 100')
+        console.log('    $ sfcc-ci user:list -c 200 --start 200')
+        console.log('    $ sfcc-ci user:list --sortby "lastName"')
+        console.log('    $ sfcc-ci user:list --json')
+        console.log('    $ sfcc-ci user:list --instance my-instance --login local-user');
+        console.log('    $ sfcc-ci user:list --instance my-instance --query \'{"term_query":' +
+            '{"fields":["external_id"],"operator":"is_null"}}\' --json');
+        console.log('    $ sfcc-ci user:list --instance my-instance --query \'{"term_query":' +
+            '{"fields":["disabled"],"operator":"is","values":[true]}}\'');
+        console.log('    $ sfcc-ci user:list --instance my-instance --role Administrator');
+        console.log('    $ sfcc-ci user:list --login my-login');
+        console.log('    $ sfcc-ci user:list --login my-login -j');
+        console.log('    $ sfcc-ci user:list --role account-admin');
+        console.log('    $ sfcc-ci user:list --org my-org --role bm-user');
+        console.log();
+    });
+
+program
+    .command('user:create')
+    .description('Create a new user')
+    .option('-o, --org <org>', 'Org to create the user for')
+    .option('-i, --instance <instance>','Instance to create the user on. Can be an instance alias.')
+    .option('-l, --login <login>','Login of the user')
+    .option('-u, --user <user>', 'User details as json')
+    .option('-j, --json', 'Formats the output in json')
+    .action(function(options) {
+        var org = ( options.org ? options.org : null );
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
+        var login = ( options.login ? options.login : null );
+        var user = ( options.user ? JSON.parse(options.user) : null );
+        var asJson = ( options.json ? options.json : false );
+        if ( ( !org && !instance ) || ( org && instance ) ) {
+            require('./lib/log').error('Ambiguous options. Pass either -o,--org or -i,--instance.');
+        } else if ( !login ) {
+            require('./lib/log').error('Login missing. Please pass a login using -l,--login.');
+        } else if ( instance && login ) {
+            // create locally
+            require('./lib/user').cli.createLocal(instance, login, user, asJson);
+        } else if ( org && login ) {
+            // create in AM
+            require('./lib/user').cli.create(org, user, login, null, null, asJson);
+        } else {
+            require('./lib/log').error('Ambiguous options. Use -h,--help for help.');
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Create a new user.');
+        console.log('');
+        console.log('  If an org is passed using -o,--org, the user will be created in the Account Manager');
+        console.log('  for the passed org. The login (an email) must be unique. After a successful');
+        console.log('  creation the user will receive a confirmation e-mail with a link to activate his');
+        console.log('  account. Default roles of the user in Account Manager are "xchange-user" and "doc-user".');
+        console.log('');
+        console.log('  Use -i,--instance to create a local user is on the Commerce Cloud instance.');
+        console.log('  The login must be unique. By default no roles will be assigned to the user on the instance.');
+        console.log('');
+        console.log('  You should pass details of the user in json (option -u,--user).');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci user:create --org my-org --login jdoe@email.org --user \'{"firstName":' +
+            '"John", "lastName":"Doe", "roles": ["xchange-user"]}\'');
+        console.log('    $ sfcc-ci user:create --instance my-instance --login "my-user" --user \'{"email":' +
+            '"jdoe@email.org", "first_name":"John", "last_name":"Doe", "roles": ["Administrator"]}\'');
+        console.log();
+    });
+
+program
+    .command('user:update')
+    .description('Update a user')
+    .option('-i, --instance <instance>','Instance to update the user on. Can be an instance alias.')
+    .option('-l, --login <login>','Login of the user')
+    .option('-c, --changes <changes>', 'Changes to user details as json')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-N, --noprompt','No prompt to confirm update')
+    .action(function(options) {
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
+        var login = ( options.login ? options.login : null );
+        var changes = ( options.changes ? JSON.parse(options.changes) : null );
+        var asJson = ( options.json ? options.json : false );
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+
+        var updateUser = function(instance, login, changes, asJson) {
+            if ( instance ) {
+                require('./lib/user').cli.updateLocal(instance, login, changes, asJson);
+            } else {
+                require('./lib/user').cli.update(login, changes, asJson);
+            }
+        };
+
+        if ( !login ) {
+            require('./lib/log').error('Login missing. Please pass a login using -l,--login.');
+        } else if ( !changes ) {
+            require('./lib/log').error('Changes missing. Please specify changes using -c,--change.');
+        } else if ( noPrompt && !instance ) {
+            updateUser(instance, login, changes, asJson);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : 'Update user ' + login + ( instance ? ' on ' + instance : '' ) + '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    updateUser(instance, login, changes, asJson);
+                }
+            });
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Updates an existing user');
+        console.log('');
+        console.log('  If --instance is not passed the user is updated in Account Manager.');
+        console.log('  This requires permissions in Account Manager to adminstrate the org,');
+        console.log('  the user belongs to. You should pass changes to the user details in')
+        console.log('  json (option -c,--changes).');
+        console.log('');
+        console.log('  Pass an --instance to update a local user on a Commerce Cloud instance.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci user:update --login jdoe@email.org --changes \'{"userState": "ENABLED"}\'');
+        console.log('    $ sfcc-ci user:update -i my-instance.demandware.net -l jdoe@email.org -c ' +
+            '\'{"disabled": true}\'');
+        console.log();
+    });
+
+program
+    .command('user:delete')
+    .description('Delete a user')
+    .option('-i, --instance <instance>','Instance to delete the user from. Can be an instance alias.')
+    .option('-l, --login <login>','Login of the user to delete')
+    .option('-p, --purge','Purge the user')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-N, --noprompt','No prompt to confirm deletion')
+    .action(function(options) {
+        var instance = ( options.instance ? require('./lib/instance').getInstance(options.instance) : null );
+        var login = options.login;
+        var purge = ( options.purge ? options.purge : false );
+        var asJson = ( options.json ? options.json : false );
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+
+        var deleteUser = function(instance, login, purge, asJson) {
+            if ( instance ) {
+                require('./lib/user').cli.deleteLocal(instance, login, asJson);
+            } else {
+                require('./lib/user').cli.delete(login, purge, asJson);
+            }
+        };
+
+        if ( !login ) {
+            require('./lib/log').error('Missing required --login. Use -h,--help for help.');
+        } else if ( noPrompt ) {
+            deleteUser(instance, login, purge, asJson);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : ( purge ? 'Purge' : 'Delete' ) + ' user ' + login + ( instance ? ' on ' + instance : '' ) +
+                    '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    deleteUser(instance, login, purge, asJson);
+                }
+            });
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Delete a user.');
+        console.log('');
+        console.log('  If --instance is not passed the user is deleted in Account Manager.');
+        console.log('  This requires permissions in Account Manager to adminstrate the org,');
+        console.log('  the user belongs to. The user is only marked as deleted and cannot');
+        console.log('  log into Account Manager anymore.');
+        console.log('  Use option --purge to completely purge the user.');
+        console.log('');
+        console.log('  Pass an --instance to delete a local user from a Commerce Cloud instance.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci user:delete --login jdoe@email.org');
+        console.log('    $ sfcc-ci user:delete --instance my-instance.demandware.net --login jdoe@email.org');
+        console.log('    $ sfcc-ci user:delete --login jdoe@email.org --purge');
+        console.log();
+    });
+
 
 program.on('--help', function() {
     console.log('');

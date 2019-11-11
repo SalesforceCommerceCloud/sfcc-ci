@@ -547,6 +547,120 @@ program
     });
 
 program
+    .command('sandbox:alias:add')
+    .option('-s, --sandbox <id>','sandbox to create alias for')
+    // can not use '--alias' here because of: https://github.com/tj/commander.js/issues/183
+    // and https://github.com/tj/commander.js/issues/592
+    .option('-a, --aliasName <name>','alias name to register')
+    .option('-j, --json', 'Optional, formats the output in json')
+    .description('Registers a hostname alias for a sandbox.')
+    .action(function(options) {
+        var sandbox = options.sandbox;
+        if (!sandbox) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        var aliasName = options.aliasName;
+        if (!aliasName) {
+            this.missingArgument('aliasName');
+            return;
+        }
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/alias').cli.alias.create(sandbox, aliasName, asJson);
+    }).on('--help', function() {
+        console.log('  Registers a hostname alias for a sandbox. This will open a registration link in your browser');
+        console.log('  as soon as you have inserted the domain and a given target IP in your etc/hosts file and ');
+        console.log('  also set the alias for your site in the BusinessManager.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:alias:add -s 83f05593-6272-382f-be1c-bc8e5021a243 -a sbx1.merchant.com');
+        console.log('    $ sfcc-ci sandbox:alias:add -s 83f05593-6272-382f-be1c-bc8e5021a243 -a sbx1.merchant.com -j');
+        console.log();
+    });
+
+program
+    .command('sandbox:alias:list')
+    .option('-s, --sandbox <id>','sandbox to list hostname aliases for')
+    .option('-j, --json', 'Optional, formats the output in json')
+    .description('Lists all hostname aliases, which are registered for the given sandbox.')
+    .action(function(options) {
+        var sandbox = ( options.sandbox ? options.sandbox : false );
+        if (!sandbox) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/alias').cli.alias.list(sandbox, asJson);
+    }).on('--help', function() {
+        console.log('  Lists all hostname aliases for the given sandbox with their registration link.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:alias:list -s 83f05593-6272-382f-be1c-bc8e5021a243');
+        console.log('    $ sfcc-ci sandbox:alias:list -s 83f05593-6272-382f-be1c-bc8e5021a243 --json');
+        console.log();
+    });
+
+program
+    .command('sandbox:alias:read')
+    .option('-s, --sandbox <sandboxIs>','sandbox to read specific alias for')
+    // can not use '--alias' here because of: https://github.com/tj/commander.js/issues/183
+    // and https://github.com/tj/commander.js/issues/592
+    .option('-a, --aliasId <aliasId>','ID of the hostname alias to access')
+    .option('-j, --json', 'Optional, formats the output in json')
+    .description('Reads an alias for a sandbox and calls the registration link.')
+    .action(function(options) {
+        var sandbox = options.sandbox;
+        if (!sandbox) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        var aliasId = options.aliasId;
+        if (!aliasId) {
+            this.missingArgument('aliasId');
+            return;
+        }
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/alias').cli.alias.get(sandbox, aliasId, asJson);
+    }).on('--help', function() {
+        console.log('  Reads a hostname alias for a sandbox and calls the registration link.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:alias:read -s 83f05593-6272-... -a 83f05593-6272-...');
+        console.log('    $ sfcc-ci sandbox:alias:read -s 83f05593-6272-... -a 83f05593-6272-... --json');
+        console.log();
+    });
+
+program
+    .command('sandbox:alias:delete')
+    .option('-s, --sandbox <id>','sandbox to delete the hostname alias for')
+    .option('-a, --aliasId <aliasId>','ID of the hostname alias to delete')
+    .description('Removes a sandbox alias by its ID')
+    .action(function(options) {
+        var sandbox = options.sandbox;
+        if (!sandbox) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        var aliasId = options.aliasId;
+        if (!aliasId) {
+            this.missingArgument('aliasId');
+            return;
+        }
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/alias').cli.alias.remove(sandbox, aliasId, asJson);
+    }).on('--help', function() {
+        console.log('  Deletes a hostname alias from the sandbox.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:alias:delete -s 83f05593-6272-... -a 83f05593-6272-...');
+        console.log();
+    });
+
+program
     .command('instance:add <instance> [alias]')
     .option('-d, --default', 'Set the new instance as default')
     .description('Adds a new Commerce Cloud instance to the list of configured instances')

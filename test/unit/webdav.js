@@ -330,7 +330,6 @@ describe('Tests for lib/webdav.js', function() {
                 },
                 './ocapi': {
                     'ensureValidToken' : function (err, res, callback1, callback2) {
-                        console.log('proxied methode executed!');
                         callback1();
                     }
                 }

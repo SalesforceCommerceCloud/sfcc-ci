@@ -264,8 +264,8 @@ else
 fi
 
 # memorize realm settings before tests
-TEST_REALM_MAX_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.sandbox.sandboxTTL.maximum' -r`
-TEST_REALM_DEFAULT_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.sandbox.sandboxTTL.defaultValue' -r`
+TEST_REALM_MAX_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.configuration.sandbox.sandboxTTL.maximum' -r`
+TEST_REALM_DEFAULT_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.configuration.sandbox.sandboxTTL.defaultValue' -r`
 
 echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --max-sandbox-ttl 144´:"
 node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --max-sandbox-ttl 144
@@ -284,8 +284,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --default-sandbox-ttl 48´:"
-node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --default-sandbox-ttl 48
+echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --default-sandbox-ttl 12´:"
+node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --default-sandbox-ttl 12
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -624,35 +624,8 @@ fi
 ###### Testing ´sfcc-ci instance:import´
 ###############################################################################
 
-echo "Testing command ´sfcc-ci instance:import´ without options:"
-node ./cli.js instance:import site_import.zip
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:import´ with --instance option:"
-node ./cli.js instance:import site_import.zip --instance $ARG_HOST
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
 echo "Testing command ´sfcc-ci instance:import´ with --sync option:"
 node ./cli.js instance:import site_import.zip --sync
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:import´ with --json option:"
-node ./cli.js instance:import site_import.zip --json
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -667,6 +640,15 @@ if [ $? -eq 0 ] && [ $TEST_RESULT = "OK" ]; then
 else
 	echo -e "\t> FAILED"
 	echo -e "\t> Test result was: $TEST_RESULT"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:import´ with --instance option:"
+node ./cli.js instance:import site_import.zip --instance $ARG_HOST
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
 	exit 1
 fi
 
@@ -770,6 +752,28 @@ fi
 ###############################################################################
 
 # TODO
+
+###############################################################################
+###### Testing ´sfcc-ci cartridge:add´
+###############################################################################
+
+echo "Testing command ´sfcc-ci cartridge:add without --siteid (expected to fail)"
+node ./cli.js cartridge:add my_plugin -p first
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci cartridge:add"
+node ./cli.js cartridge:add my_plugin -p first --siteid MySite
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
 
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:delete´

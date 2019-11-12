@@ -34,6 +34,7 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 * Code deployment and code version management
 * System job execution and monitoring (site import)
 * Custom job execution and monitoring
+* Add cartridges to site cartridge path
 * Exploring Account Manager orgs and management of users and roles
 * JavaScript API
 
@@ -89,6 +90,12 @@ Use the following snippet as your client's permission set, replace `my_client_id
               "methods": ["get"],
               "read_attributes": "(**)",
               "write_attributes": "(**)"
+            },
+            { 
+              "resource_id": "/sites/*/cartridges", 
+              "methods": ["post"], 
+              "read_attributes": "(**)", 
+              "write_attributes": "(**)",
             },
             {
               "resource_id":"/role_search",
@@ -270,6 +277,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
     job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
+    cartridge:add <cartridgename> [options]
     org:list [options]                                              List all orgs eligible to manage
     role:list [options]                                             List roles
     role:grant [options]                                            Grant a role to a user
@@ -447,6 +455,14 @@ SANDBOX_HOST=`$SANDBOX | jq '.instance.host' -r`
 sfcc-ci code:deploy <path/to/code.zip> -i $SANDBOX_HOST
 sfcc-ci instance:upload <path/to/data.zip> -i $SANDBOX_HOST -s
 sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
+```
+### Cartridges ###
+Handles the cartridge path of your Site. Very useful for plugin installation.
+You can put the cartridge on top or at the bottom of the cartridge path. Or if given an anchor cartridge at the before or after a cartridge.
+
+```bash
+sfcc-ci cartridge:add <cartridgename> -p [first|last] -S <siteid>
+sfcc-ci cartridge:add <cartridgename> -p [before|after] -t [targetcartidge] -S <siteid>
 ```
 
 # Using the JavaScript API #

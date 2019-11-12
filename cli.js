@@ -884,7 +884,7 @@ program
     .option('-t, --target [target]','The cartridge name ' +
     'relative to the postion parameter (before|after) ')
     .option('--siteid <siteid>', 'the site the cartridge will be added to')
-    .description('Adds a cartridge-name to the site\'s cartridge path')
+    .description('Adds a cartridge-name to the site cartridge path')
     .action(function(cartridgename, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
         var verbose = ( options.verbose ? options.verbose : false );
@@ -896,7 +896,9 @@ program
         console.log('');
         console.log('  Details:');
         console.log('');
-        console.log('  This command only assigns the cartridge name to a given site');
+        console.log('  This command only assigns the cartridge name to a given site. If --siteid is omitted');
+        console.log('  then RefArch is used as site id.');
+        console.log();
         console.log('  The cartridge code itself must be deployed specifically using code:deploy command');
         console.log('');
         console.log('  Examples:');

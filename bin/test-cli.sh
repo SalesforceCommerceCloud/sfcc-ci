@@ -624,35 +624,8 @@ fi
 ###### Testing ´sfcc-ci instance:import´
 ###############################################################################
 
-echo "Testing command ´sfcc-ci instance:import´ without options:"
-node ./cli.js instance:import site_import.zip
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:import´ with --instance option:"
-node ./cli.js instance:import site_import.zip --instance $ARG_HOST
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
 echo "Testing command ´sfcc-ci instance:import´ with --sync option:"
 node ./cli.js instance:import site_import.zip --sync
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:import´ with --json option:"
-node ./cli.js instance:import site_import.zip --json
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -667,6 +640,15 @@ if [ $? -eq 0 ] && [ $TEST_RESULT = "OK" ]; then
 else
 	echo -e "\t> FAILED"
 	echo -e "\t> Test result was: $TEST_RESULT"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:import´ with --instance option:"
+node ./cli.js instance:import site_import.zip --instance $ARG_HOST
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
 	exit 1
 fi
 
@@ -777,7 +759,7 @@ fi
 
 echo "Testing command ´sfcc-ci cartridge:add:"
 node ./cli.js cartridge:add my_plugin -p first --siteid MySite
-if [ $? -eq 1 ]; then
+if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
 	echo -e "\t> FAILED"

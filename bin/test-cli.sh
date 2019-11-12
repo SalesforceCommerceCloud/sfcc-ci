@@ -772,6 +772,19 @@ fi
 # TODO
 
 ###############################################################################
+###### Testing ´sfcc-ci cartridge:add´
+###############################################################################
+
+echo "Testing command ´sfcc-ci cartridge:add:"
+node ./cli.js cartridge:add my_plugin -p first --siteid MySite
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
 ###### Testing ´sfcc-ci sandbox:delete´
 ###############################################################################
 

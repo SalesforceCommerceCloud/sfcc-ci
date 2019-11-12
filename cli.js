@@ -551,7 +551,7 @@ program
     .option('-s, --sandbox <id>','sandbox to create alias for')
     // can not use '--alias' here because of: https://github.com/tj/commander.js/issues/183
     // and https://github.com/tj/commander.js/issues/592
-    .option('-a, --aliasName <name>','alias name to register')
+    .option('-h, --host <host>','hostname alias to register')
     .option('-j, --json', 'Optional, formats the output in json')
     .description('Registers a hostname alias for a sandbox.')
     .action(function(options) {
@@ -560,13 +560,13 @@ program
             this.missingArgument('sandbox');
             return;
         }
-        var aliasName = options.aliasName;
+        var aliasName = options.host;
         if (!aliasName) {
-            this.missingArgument('aliasName');
+            this.missingArgument('host');
             return;
         }
         var asJson = ( options.json ? options.json : false );
-        require('./lib/alias').cli.alias.create(sandbox, aliasName, asJson);
+        require('./lib/sandbox').cli.alias.create(sandbox, aliasName, asJson);
     }).on('--help', function() {
         console.log('  Registers a hostname alias for a sandbox. This will open a registration link in your browser');
         console.log('  as soon as you have inserted the domain and a given target IP in your etc/hosts file and ');
@@ -582,61 +582,43 @@ program
 program
     .command('sandbox:alias:list')
     .option('-s, --sandbox <id>','sandbox to list hostname aliases for')
+    // can not use '--alias' here because of: https://github.com/tj/commander.js/issues/183
+    // and https://github.com/tj/commander.js/issues/592
+    .option('-a, --aliasid <aliasid>','Optional ID of the hostname alias to only get a single one')
     .option('-j, --json', 'Optional, formats the output in json')
     .description('Lists all hostname aliases, which are registered for the given sandbox.')
     .action(function(options) {
-        var sandbox = ( options.sandbox ? options.sandbox : false );
+        var sandbox = options.sandbox
         if (!sandbox) {
             this.missingArgument('sandbox');
             return;
         }
         var asJson = ( options.json ? options.json : false );
-        require('./lib/alias').cli.alias.list(sandbox, asJson);
-    }).on('--help', function() {
-        console.log('  Lists all hostname aliases for the given sandbox with their registration link.');
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci sandbox:alias:list -s 83f05593-6272-382f-be1c-bc8e5021a243');
-        console.log('    $ sfcc-ci sandbox:alias:list -s 83f05593-6272-382f-be1c-bc8e5021a243 --json');
-        console.log();
-    });
-
-program
-    .command('sandbox:alias:read')
-    .option('-s, --sandbox <sandboxIs>','sandbox to read specific alias for')
-    // can not use '--alias' here because of: https://github.com/tj/commander.js/issues/183
-    // and https://github.com/tj/commander.js/issues/592
-    .option('-a, --aliasId <aliasId>','ID of the hostname alias to access')
-    .option('-j, --json', 'Optional, formats the output in json')
-    .description('Reads an alias for a sandbox and calls the registration link.')
-    .action(function(options) {
-        var sandbox = options.sandbox;
-        if (!sandbox) {
-            this.missingArgument('sandbox');
-            return;
-        }
-        var aliasId = options.aliasId;
+        var aliasId = options.aliasid;
         if (!aliasId) {
-            this.missingArgument('aliasId');
-            return;
+            require('./lib/sandbox').cli.alias.list(sandbox, asJson);
+        } else {
+            require('./lib/sandbox').cli.alias.get(sandbox, aliasId, asJson);
         }
-        var asJson = ( options.json ? options.json : false );
-        require('./lib/alias').cli.alias.get(sandbox, aliasId, asJson);
     }).on('--help', function() {
-        console.log('  Reads a hostname alias for a sandbox and calls the registration link.');
+        console.log('  Lists all hostname aliases for the given sandbox with their registration link or retrieves');
+        console.log('  a single one and call the registration link for it.');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:alias:read -s 83f05593-6272-... -a 83f05593-6272-...');
-        console.log('    $ sfcc-ci sandbox:alias:read -s 83f05593-6272-... -a 83f05593-6272-... --json');
+        console.log('    $ sfcc-ci sandbox:alias:list -s 83f05593-6272-...');
+        console.log('    $ sfcc-ci sandbox:alias:list -s 83f05593-6272-... -a 83f05593-6272-...');
+        console.log('    $ sfcc-ci sandbox:alias:list -s 83f05593-6272-... --json');
         console.log();
     });
 
 program
     .command('sandbox:alias:delete')
     .option('-s, --sandbox <id>','sandbox to delete the hostname alias for')
-    .option('-a, --aliasId <aliasId>','ID of the hostname alias to delete')
+    // can not use '--alias' here because of: https://github.com/tj/commander.js/issues/183
+    // and https://github.com/tj/commander.js/issues/592
+    .option('-a, --aliasid <aliasid>','ID of the hostname alias to delete')
+    .option('-j, --json', 'Optional, formats the output in json')
     .description('Removes a sandbox alias by its ID')
     .action(function(options) {
         var sandbox = options.sandbox;
@@ -644,15 +626,15 @@ program
             this.missingArgument('sandbox');
             return;
         }
-        var aliasId = options.aliasId;
+        var aliasId = options.aliasid;
         if (!aliasId) {
-            this.missingArgument('aliasId');
+            this.missingArgument('aliasid');
             return;
         }
         var asJson = ( options.json ? options.json : false );
-        require('./lib/alias').cli.alias.remove(sandbox, aliasId, asJson);
+        require('./lib/sandbox').cli.sandbox.remove(sandbox, aliasId, asJson);
     }).on('--help', function() {
-        console.log('  Deletes a hostname alias from the sandbox.');
+        console.log('  Deletes a hostname alias from the sandbox by its ID.');
         console.log('');
         console.log('  Examples:');
         console.log();

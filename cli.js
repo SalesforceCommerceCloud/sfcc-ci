@@ -152,6 +152,8 @@ program
         console.log('  The file may include a path to the actual location where the file resides locally.');
         console.log('  The provided --target <target> is relative to /webdav/Sites/, e.g. "impex/src/upload".');
         console.log();
+        console.log('  Currently supported top level --target is "impex".');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci data:upload --instance my-instance.demandware.net --target impex/src/upload ' +

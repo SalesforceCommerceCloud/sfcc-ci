@@ -264,8 +264,8 @@ else
 fi
 
 # memorize realm settings before tests
-TEST_REALM_MAX_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.sandbox.sandboxTTL.maximum' -r`
-TEST_REALM_DEFAULT_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.sandbox.sandboxTTL.defaultValue' -r`
+TEST_REALM_MAX_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.configuration.sandbox.sandboxTTL.maximum' -r`
+TEST_REALM_DEFAULT_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.configuration.sandbox.sandboxTTL.defaultValue' -r`
 
 echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --max-sandbox-ttl 144´:"
 node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --max-sandbox-ttl 144
@@ -284,8 +284,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --default-sandbox-ttl 48´:"
-node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --default-sandbox-ttl 48
+echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --default-sandbox-ttl 12´:"
+node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --default-sandbox-ttl 12
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

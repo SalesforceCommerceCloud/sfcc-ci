@@ -95,7 +95,7 @@ Use the following snippet as your client's permission set, replace `my_client_id
               "resource_id": "/sites/*/cartridges", 
               "methods": ["post"], 
               "read_attributes": "(**)", 
-              "write_attributes": "(**)",
+              "write_attributes": "(**)"
             },
             {
               "resource_id":"/role_search",
@@ -277,7 +277,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
     job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
-    cartridge:add <cartridgename> [options]
+    cartridge:add [options] <cartridgename>                         Adds a cartridge-name to the site cartridge path
     org:list [options]                                              List all orgs eligible to manage
     role:list [options]                                             List roles
     role:grant [options]                                            Grant a role to a user

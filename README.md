@@ -34,6 +34,8 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 * Code deployment and code version management
 * System job execution and monitoring (site import)
 * Custom job execution and monitoring
+* Add cartridges to site cartridge path
+* Exploring Account Manager orgs and management of users and roles
 * JavaScript API
 
 # How do I get set up? #
@@ -88,6 +90,54 @@ Use the following snippet as your client's permission set, replace `my_client_id
               "methods": ["get"],
               "read_attributes": "(**)",
               "write_attributes": "(**)"
+            },
+            { 
+              "resource_id": "/sites/*/cartridges", 
+              "methods": ["post"], 
+              "read_attributes": "(**)", 
+              "write_attributes": "(**)",
+            },
+            {
+              "resource_id":"/role_search",
+              "methods":["post"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/roles/*",
+              "methods":["get"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/roles/*/user_search",
+              "methods":["post"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/roles/*/users/*",
+              "methods":["put","delete"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/user_search",
+              "methods":["post"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/users",
+              "methods":["get"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/users/*",
+              "methods":["put","get","patch","delete"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
             }
           ]
         }
@@ -204,6 +254,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                               Return the current authentication token
+    data:upload [options]                                           Uploads a file onto a Commerce Cloud instance
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
     sandbox:realm:update [options]                                  Update realm settings
     sandbox:list [options]                                          List all available sandboxes
@@ -226,6 +277,15 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
     job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
+    cartridge:add <cartridgename> [options]
+    org:list [options]                                              List all orgs eligible to manage
+    role:list [options]                                             List roles
+    role:grant [options]                                            Grant a role to a user
+    role:revoke [options]                                           Revoke a role from a user
+    user:list [options]                                             List users eligible to manage
+    user:create [options]                                           Create a new user
+    user:update [options]                                           Update a user
+    user:delete [options]                                           Delete a user
 
   Environment:
 
@@ -395,6 +455,14 @@ SANDBOX_HOST=`$SANDBOX | jq '.instance.host' -r`
 sfcc-ci code:deploy <path/to/code.zip> -i $SANDBOX_HOST
 sfcc-ci instance:upload <path/to/data.zip> -i $SANDBOX_HOST -s
 sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
+```
+### Cartridges ###
+Handles the cartridge path of your Site. Very useful for plugin installation.
+You can put the cartridge on top or at the bottom of the cartridge path. Or if given an anchor cartridge at the before or after a cartridge.
+
+```bash
+sfcc-ci cartridge:add <cartridgename> -p [first|last] -S <siteid>
+sfcc-ci cartridge:add <cartridgename> -p [before|after] -t [targetcartidge] -S <siteid>
 ```
 
 # Using the JavaScript API #

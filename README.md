@@ -245,6 +245,8 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
 
     -V, --version                                                   output the version number
     -D, --debug                                                     enable verbose output
+    --selfsigned                                                    allow connection to hosts using self-signed certificates
+    -I, --ignorewarnings                                            ignore any warnings logged to the console
     -h, --help                                                      output usage information
 
   Commands:

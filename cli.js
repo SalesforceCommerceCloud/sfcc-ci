@@ -801,6 +801,49 @@ program
     });
 
 program
+    .command('code:delete')
+    .option('-c, --code <code>','Code version to delete')
+    .option('-i, --instance <instance>','Instance to delete the code version from. Can be an ' +
+        'instance alias. If not specified the currently configured instance will be used.')
+    .option('-N, --noprompt','No prompt to confirm deletion')
+    .option('-j, --json', 'Formats the output in json')
+    .description('Delete a custom code version')
+    .action(function(options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        var code = ( options.code ? options.code : null );
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+        var asJson = ( options.json ? options.json : false )
+
+        if ( !code ) {
+            require('./lib/log').error('Code version missing. Please pass a code version using -c,--code.');
+        } else if ( !instance ) {
+            require('./lib/log').error('Instance missing. Please pass an instance using -i,--instance.');
+        } else if ( noPrompt ) {
+            require('./lib/code').cli.delete(instance, code, asJson);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : 'Delete code version ' + code + ' on ' + instance + '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    require('./lib/code').cli.delete(instance, code, asJson);
+                }
+            });
+        }
+
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci code:delete --code version1');
+        console.log('    $ sfcc-ci code:delete --code version1 -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci code:delete --code version1 -i my-instance.demandware.net --noprompt');
+        console.log();
+    });
+
+program
     .command('job:run <job_id> [job_parameters...]')
     .option('-i, --instance <instance>','Instance to run the job on. Can be an instance alias. If not ' +
         'specified the currently configured instance will be used.')

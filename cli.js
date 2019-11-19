@@ -305,6 +305,7 @@ program
     .option('--show-operations','Display operations performed')
     .option('--show-usage','Display detailed usage information')
     .option('--show-settings','Display settings applied')
+    .option('--show-storage','Display detailed storage information')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
         if (!sandbox_id) {
@@ -322,10 +323,17 @@ program
         var asJson = ( options.json ? options.json : false );
         var hostOnly = ( options.host ? options.host : false );
         var openBrowser = ( options.open ? options.open : false );
-        var showOperations = ( options.showOperations ? options.showOperations : false );
-        var showUsage = ( options.showUsage ? options.showUsage : false );
-        var showSettings = ( options.showSettings ? options.showSettings : false );
-        require('./lib/sandbox').cli.get(spec, asJson, hostOnly, openBrowser, showOperations, showUsage, showSettings);
+        var topic = null;
+        if ( options.showOperations ) {
+            topic = 'operations';
+        } else if ( options.showUsage ) {
+            topic = 'usage';
+        } else if ( options.showSettings ) {
+            topic = 'settings';
+        } else if ( options.showStorage ) {
+            topic = 'storage';
+        }
+        require('./lib/sandbox').cli.get(spec, asJson, hostOnly, openBrowser, topic);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -337,7 +345,8 @@ program
         console.log();
         console.log('  Use --show-usage to display detailed usage information, --show-operations to get a list of');
         console.log('  previous operations executed on the sandbox, --show-settings to return the settings initially');
-        console.log('  applied to the sandbox during creation.');
+        console.log('  applied to the sandbox during creation. Use --show-storage to retrieve detailed storage');
+        console.log('  capacity.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -348,6 +357,7 @@ program
         console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-usage');
         console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-operations');
         console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-settings');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-storage');
         console.log();
     });
 

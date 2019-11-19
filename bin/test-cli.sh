@@ -474,6 +474,15 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --show-storage´:"
+node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --show-storage
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:update´
 ###############################################################################

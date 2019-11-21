@@ -241,6 +241,15 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci sandbox:realm:list --realm <realm> --show-usage´:"
+node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --show-usage
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:realm:update´
 ###############################################################################

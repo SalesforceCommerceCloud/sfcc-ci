@@ -779,6 +779,15 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci code:deploy´ with --instance and --activate option:"
+node ./cli.js code:deploy ./test/cli/custom_code.zip --instance $ARG_HOST --activate
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 ###############################################################################
 ###### Testing ´sfcc-ci code:list´
 ###############################################################################
@@ -798,7 +807,7 @@ fi
 ###############################################################################
 
 echo "Testing command ´sfcc-ci code:activate´ without option:"
-node ./cli.js code:activate modules
+node ./cli.js code:activate version1
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -827,6 +836,15 @@ fi
 ###############################################################################
 ###### Testing ´sfcc-ci code:delete´
 ###############################################################################
+
+echo "Testing command ´sfcc-ci code:delete´ without invalid code version (expected to fail):"
+node ./cli.js code:delete --code does_not_exists --instance $ARG_HOST --noprompt
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
 
 echo "Testing command ´sfcc-ci code:delete´:"
 node ./cli.js code:delete --code version1 --instance $ARG_HOST --noprompt

@@ -165,33 +165,33 @@ describe('Alias Tests for lib/sandbox.js', function() {
 
     describe('Delete Alias', function() {
         it('Delete existing alias', () => {
-            sandbox.cli.alias.remove({id: "s1"},"a1", true);
+            sandbox.cli.alias.delete({id: "s1"},"a1", true);
             sinon.assert.calledWith(consJson, {success: true});
-            sandbox.cli.alias.remove({id: "s1"},"a1", false);
+            sandbox.cli.alias.delete({id: "s1"},"a1", false);
             sinon.assert.calledWith(consInfo, "Success");
         });
         it('Delete SBX invalid alias', () => {
-            sandbox.cli.alias.remove({id: "s1"},"invalidAliasId", true);
+            sandbox.cli.alias.delete({id: "s1"},"invalidAliasId", true);
             sinon.assert.calledWith(consJson, {error: "Deleting sandbox alias failed: Invalid alias ID."});
-            sandbox.cli.alias.remove({id: "s1"},"invalidAliasId", false);
+            sandbox.cli.alias.delete({id: "s1"},"invalidAliasId", false);
             sinon.assert.calledWith(consError, "Deleting sandbox alias failed: Invalid alias ID.");
         });
         it('Delete SBX alias not found', () => {
-            sandbox.cli.alias.remove({id: "s1"},"unknownAliasId", true);
+            sandbox.cli.alias.delete({id: "s1"},"unknownAliasId", true);
             sinon.assert.calledWith(consJson, {success: true});
-            sandbox.cli.alias.remove({id: "s1"},"unknownAliasId", false);
+            sandbox.cli.alias.delete({id: "s1"},"unknownAliasId", false);
             sinon.assert.calledWith(consInfo, "Success");
         });
         it('Delete SBX alias, invalid sandbox', () => {
-            sandbox.cli.alias.remove({id: "invalidSandboxId"},"s1", true);
+            sandbox.cli.alias.delete({id: "invalidSandboxId"},"s1", true);
             sinon.assert.calledWith(consJson, {error: "Deleting sandbox alias failed: Invalid sandbox ID."});
-            sandbox.cli.alias.remove({id: "invalidSandboxId"},"s1", false);
+            sandbox.cli.alias.delete({id: "invalidSandboxId"},"s1", false);
             sinon.assert.calledWith(consError, "Deleting sandbox alias failed: Invalid sandbox ID.");
         });
         it('Delete SBX alias, sandbox not found', () => {
-            sandbox.cli.alias.remove({id: "unknownSandboxId"},"s1", true);
+            sandbox.cli.alias.delete({id: "unknownSandboxId"},"s1", true);
             sinon.assert.calledWith(consJson, {success: true});
-            sandbox.cli.alias.remove({id: "unknownSandboxId"},"s1", false);
+            sandbox.cli.alias.delete({id: "unknownSandboxId"},"s1", false);
             sinon.assert.calledWith(consInfo, "Success");
         });
     });

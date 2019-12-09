@@ -646,7 +646,7 @@ program
         console.log('  Registers a hostname alias for a sandbox. This will open a registration link in your browser');
         console.log('  as soon as you have inserted the domain and a given target IP in your etc/hosts file. ');
         console.log('  Note that you also have to include the hostname in your site alias configuration in Business');
-        console.log('  ManagerTo make the following redirect to your storefront working.');
+        console.log('  Manager to make the following redirect to your storefront working.');
         console.log('');
         console.log('  Examples:');
         console.log();

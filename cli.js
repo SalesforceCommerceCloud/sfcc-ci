@@ -744,7 +744,7 @@ program
         var instance = require('./lib/instance').getInstance(options.instance);
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortby ? options.sortby : null );
-        require('./lib/code').list(instance, asJson, sortby);
+        require('./lib/code').cli.list(instance, asJson, sortby);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -761,15 +761,17 @@ program
     .command('code:deploy <archive>')
     .option('-i, --instance <instance>','Instance to deploy the custom code archive to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
+    .option('-a, --activate', 'Whether to activate the deployed code version, false by default')
     .option('-c, --certificate [certificate]','Path to the certificate to use for two factor authentication.')
     .option('-p, --passphrase [passphrase]','Passphrase to be used to read the given certificate.')
     .description('Deploys a custom code archive onto a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        require('./lib/webdav').deployCode(instance, archive, {
+        var activate = ( options.activate ? options.activate : false );
+        require('./lib/code').cli.deploy(instance, archive, {
             pfx: options.certificate,
             passphrase: options.passphrase
-        });
+        }, activate);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
@@ -779,6 +781,7 @@ program
         console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net');
         console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net '
             + '-c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
+        console.log('    $ sfcc-ci code:deploy code.zip --activate');
         console.log();
     });
 
@@ -789,7 +792,7 @@ program
     .description('Activate the custom code version on a Commerce Cloud instance')
     .action(function(version, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        require('./lib/code').activate(instance, version);
+        require('./lib/code').cli.activate(instance, version);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');

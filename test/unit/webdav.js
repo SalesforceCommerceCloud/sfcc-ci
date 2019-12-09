@@ -3,9 +3,7 @@ var sinon = require('sinon');
 var proxyquire = require('proxyquire').noCallThru().noPreserveCache();
 //var proxyquire = require('proxyquire');
 
-var assert = chai.assert;
 var expect = chai.expect;
-var should = chai.should();
 
 // stub of the request library
 var requestStub = sinon.spy();
@@ -42,7 +40,7 @@ describe('Tests for lib/webdav.js', function() {
         }
     });
 
-    describe('upload function', function() {
+    describe('cli.upload function', function() {
 
         beforeEach(function() {
             requestStub.resetHistory();
@@ -263,83 +261,52 @@ describe('Tests for lib/webdav.js', function() {
         });
     });
 
-    describe('deployCode function', function() {
+    describe('postFile function', function() {
 
         beforeEach(function() {
             requestStub.resetHistory();
-            errorStub.resetHistory();
-            warnStub.resetHistory();
         });
 
-        it('should error out if file does not exist', function(){
-
-            var webdav = proxyquire('../../lib/webdav', {
-                'fs' : {
-                    'existsSync' :  () => false,
-                    'statSync' : function () {
-                        return {
-                            'isFile' : () => false
-                        }
-                    }
-                }
-            });
-
-            webdav.deployCode('instance', 'mycode.zip', {});
-
-            const errorArgs = errorStub.getCall(0).args;
-            expect(errorArgs[0]).to.equal('File "%s" does not exist');
-            expect(errorArgs[1]).to.equal('mycode.zip');
-        });
-
-        it('should log error if file is not a file', function(){
-            var webdav = proxyquire('../../lib/webdav', {
-                'fs' : {
-                    'existsSync' :  () => true,
-                    'statSync' : function () {
-                        return {
-                            'isFile' : () => false
-                        }
-                    }
-                }
-            });
-            webdav.deployCode('instance', 'mycode.zip', {});
-
-            const errorArgs = errorStub.getCall(0).args;
-            expect(errorArgs[0]).to.equal('File "%s" does not exist or is not a file');
-            expect(errorArgs[1]).to.equal('mycode.zip');
-        });
-
-        it('makes a post, unzip and delete request', function(){
-            var webdav = proxyquire('../../lib/webdav', {
-                'request': requestStub,
-                'fs' : {
-                    'existsSync' :  () => true,
-                    'statSync' : function () {
-                        return {
-                            'isFile' : () => true
-                        }
-                    },
-                    'createReadStream' : function () {
-                        return {
-                            'pipe' : function() {}
-                        }
-                    }
-                },
-                './auth': {
-                    'getToken' : () => 'mytoken'
-                },
-                './ocapi': {
-                    'ensureValidToken' : function (err, res, callback1, callback2) {
-                        callback1();
-                    }
-                }
-            });
-            webdav.deployCode('instance', 'mycode.zip', {});
+        it('makes a put request', function(){
+            webdav.postFile('instance', '/cartridges', 'mycode.zip', 'mytoken', true, {}, function(){});
 
             const postArgs = requestStub.getCall(0).args[0];
             expect(postArgs.baseUrl).to.equal('https://instance');
             expect(postArgs.uri).to.equal('/on/demandware.servlet/webdav/Sites/cartridges/mycode.zip');
             expect(postArgs.method).to.equal('PUT');
+        });
+    });
+
+    describe('unzip function', function() {
+
+        beforeEach(function() {
+            requestStub.resetHistory();
+        });
+
+        it('makes a post request with form method unzip', function(){
+            webdav.unzip('instance', '/cartridges', 'mycode.zip', 'mytoken', true, {}, function(){});
+
+            const postArgs = requestStub.getCall(0).args[0];
+            expect(postArgs.baseUrl).to.equal('https://instance');
+            expect(postArgs.uri).to.equal('/on/demandware.servlet/webdav/Sites/cartridges/mycode.zip');
+            expect(postArgs.method).to.equal('POST');
+            expect(postArgs.form.method).to.equal('UNZIP');
+        });
+    });
+
+    describe('deleteFile function', function() {
+
+        beforeEach(function() {
+            requestStub.resetHistory();
+        });
+
+        it('makes a delete request', function(){
+            webdav.deleteFile('instance', '/cartridges', 'mycode.zip', 'mytoken', true, {}, function(){});
+
+            const postArgs = requestStub.getCall(0).args[0];
+            expect(postArgs.baseUrl).to.equal('https://instance');
+            expect(postArgs.uri).to.equal('/on/demandware.servlet/webdav/Sites/cartridges/mycode.zip');
+            expect(postArgs.method).to.equal('DELETE');
         });
     });
 });

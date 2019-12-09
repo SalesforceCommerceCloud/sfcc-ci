@@ -211,4 +211,8 @@ describe('Tests for lib/auth.js', function() {
         });
     })
 
+    after(function () {
+        sinon.restore();
+    });
+
 });

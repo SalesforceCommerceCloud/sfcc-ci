@@ -518,17 +518,8 @@ fi
 ###### Testing ´sfcc-ci sandbox:alias:...´
 ###############################################################################
 
-echo "Testing command ´sfcc-ci sandbox:alias:read´ (without alias):"
-node ./cli.js sandbox:alias:read --sandbox $TEST_NEW_SANDBOX_ID
-if [ $? -eq 1 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:alias:read´ (invalid alias):"
-node ./cli.js sandbox:alias:read --sandbox $TEST_NEW_SANDBOX_ID -a invalidId
+echo "Testing command ´sfcc-ci sandbox:alias:list´ (invalid alias):"
+node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID -a invalidId
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -564,8 +555,8 @@ else
 fi
 
 TEST_NEW_ALIAS_ID=`echo $ALIAS_RESULT | jq '.sandbox.id' -r`
-echo "Testing command ´sfcc-ci sandbox:alias:read´ (invalid alias):"
-node ./cli.js sandbox:alias:read --sandbox $TEST_NEW_SANDBOX_ID -a $TEST_NEW_ALIAS_ID
+echo "Testing command ´sfcc-ci sandbox:alias:list´:"
+node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID -a $TEST_NEW_ALIAS_ID
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

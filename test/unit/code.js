@@ -16,6 +16,21 @@ describe('Tests for lib/code.js', function() {
         }
     });
 
+    describe('cli.activate function', function() {
+
+        beforeEach(function() {
+            requestStub.resetHistory();
+        });
+
+        it('makes a patch request', function(){
+            code.cli.activate('instance', 'version_to_activate');
+
+            const patchArgs = requestStub.getCall(0).args[0];
+            expect(patchArgs.uri).to.equal('https://instance/s/-/dw/data/v19_5/code_versions/version_to_activate');
+            expect(patchArgs.method).to.equal('PATCH');
+        });
+    });
+
     describe('cli.delete function', function() {
 
         it('makes a delete request', function(){

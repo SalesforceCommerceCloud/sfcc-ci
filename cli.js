@@ -913,14 +913,28 @@ program
         }, activate);
     }).on('--help', function() {
         console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  The deployed archive file will be unpacked on the instance. It is recommended to use');
+        console.log('  a top level folder as the code version containing the cartridges:');
+        console.log('');
+        console.log('  code_version.zip');
+        console.log('    |-- code_version');
+        console.log('      |-- cartridge1');
+        console.log('      |-- cartridge2');
+        console.log('      |-- cartridge3');
+        console.log('');
+        console.log('  Use the optional --activate flag to activate the deployed code version. This assumes');
+        console.log('  that the deployed archive file has the same name as the enclosed code version.');
+        console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci code:deploy code.zip');
-        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance-alias');
-        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net');
-        console.log('    $ sfcc-ci code:deploy code.zip -i my-instance.demandware.net '
+        console.log('    $ sfcc-ci code:deploy code_version.zip');
+        console.log('    $ sfcc-ci code:deploy code_version.zip -i my-instance-alias');
+        console.log('    $ sfcc-ci code:deploy code_version.zip -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci code:deploy code_version.zip -i my-instance.demandware.net '
             + '-c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
-        console.log('    $ sfcc-ci code:deploy code.zip --activate');
+        console.log('    $ sfcc-ci code:deploy code_version.zip --activate');
         console.log();
     });
 

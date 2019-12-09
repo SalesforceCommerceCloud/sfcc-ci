@@ -241,6 +241,15 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci sandbox:realm:list --realm <realm> --show-usage´:"
+node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --show-usage
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:realm:update´
 ###############################################################################
@@ -474,6 +483,15 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --show-storage´:"
+node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --show-storage
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:update´
 ###############################################################################
@@ -507,6 +525,84 @@ fi
 
 echo "Testing command ´sfcc-ci sandbox:update <sandbox> --ttl 2´:"
 node ./cli.js sandbox:update --sandbox $TEST_NEW_SANDBOX_ID --ttl 1
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci sandbox:alias:...´
+###############################################################################
+
+echo "Testing command ´sfcc-ci sandbox:alias:list´ (invalid alias):"
+node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID -a invalidId
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:add´ (without sbx and alias):"
+node ./cli.js sandbox:alias:add
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:add´ (without alias):"
+node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:add´: "
+ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -a my.newalias.com`
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+TEST_NEW_ALIAS_ID=`echo $ALIAS_RESULT | jq '.sandbox.id' -r`
+echo "Testing command ´sfcc-ci sandbox:alias:list´:"
+node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID -a $TEST_NEW_ALIAS_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:list´ (without sbx):"
+node ./cli.js sandbox:alias:list
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+
+echo "Testing command ´sfcc-ci sandbox:alias:list:´"
+node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:delete´ (invalid alias):"
+node ./cli.js sandbox:alias:delete --sandbox $TEST_NEW_SANDBOX_ID -a $TEST_NEW_ALIAS_ID
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -722,6 +818,19 @@ fi
 echo "Testing command ´sfcc-ci code:activate´ with invalid version (expected to fail):"
 node ./cli.js code:activate does_not_exist
 if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci code:delete´
+###############################################################################
+
+echo "Testing command ´sfcc-ci code:delete´:"
+node ./cli.js code:delete --code version1 --instance $ARG_HOST --noprompt
+if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
 	echo -e "\t> FAILED"

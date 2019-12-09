@@ -9,9 +9,10 @@ var expect = chai.expect;
 var requestStub = sinon.spy();
 
 // stub of the log library
-var errorStub = sinon.spy(require('../../lib/log'), 'error');
-var warnStub = sinon.spy(require('../../lib/log'), 'warn');
-var infoStub = sinon.spy(require('../../lib/log'), 'info');
+var testbase = require('./_base');
+var errorStub = testbase.errorLogStub;
+var warnStub = testbase.warnLogStub;
+var infoStub = testbase.infoLogStub;
 
 describe('Tests for lib/webdav.js', function() {
 

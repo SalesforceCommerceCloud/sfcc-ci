@@ -167,24 +167,28 @@ program
     .command('sandbox:realm:list')
     .description('List realms eligible to manage sandboxes for')
     .option('-r, --realm <realm>','Realm to get details for')
+    .option('--show-usage', 'Whether to return detailed usage data')
     .option('-j, --json','Formats the output in json')
     .action(function(options) {
         var realm = ( options.realm ? options.realm : null );
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.realm.list(realm, asJson);
+        var topic = ( options.showUsage ? 'usage' : null );
+        require('./lib/sandbox').cli.realm.list(realm, topic, asJson);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  Use --realm to get details of a single realm such as configuration and usage');
-        console.log('  information about sandboxes.');
+        console.log('  Use --realm <realm> to get details of a single realm such as configuration and usage');
+        console.log('  information about sandboxes. Use --usage to retrieve detailed usage information of');
+        console.log('  sandboxes in that realm.');
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:realms');
-        console.log('    $ sfcc-ci sandbox:realms --json');
-        console.log('    $ sfcc-ci sandbox:realms --realm zzzz');
-        console.log('    $ sfcc-ci sandbox:realms --realm zzzz --json');
+        console.log('    $ sfcc-ci sandbox:realm');
+        console.log('    $ sfcc-ci sandbox:realm --json');
+        console.log('    $ sfcc-ci sandbox:realm --realm zzzz');
+        console.log('    $ sfcc-ci sandbox:realm --realm zzzz --json');
+        console.log('    $ sfcc-ci sandbox:realm --realm zzzz --show-usage');
         console.log();
     });
 
@@ -305,6 +309,7 @@ program
     .option('--show-operations','Display operations performed')
     .option('--show-usage','Display detailed usage information')
     .option('--show-settings','Display settings applied')
+    .option('--show-storage','Display detailed storage information')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
         if (!sandbox_id) {
@@ -322,10 +327,17 @@ program
         var asJson = ( options.json ? options.json : false );
         var hostOnly = ( options.host ? options.host : false );
         var openBrowser = ( options.open ? options.open : false );
-        var showOperations = ( options.showOperations ? options.showOperations : false );
-        var showUsage = ( options.showUsage ? options.showUsage : false );
-        var showSettings = ( options.showSettings ? options.showSettings : false );
-        require('./lib/sandbox').cli.get(spec, asJson, hostOnly, openBrowser, showOperations, showUsage, showSettings);
+        var topic = null;
+        if ( options.showOperations ) {
+            topic = 'operations';
+        } else if ( options.showUsage ) {
+            topic = 'usage';
+        } else if ( options.showSettings ) {
+            topic = 'settings';
+        } else if ( options.showStorage ) {
+            topic = 'storage';
+        }
+        require('./lib/sandbox').cli.get(spec, asJson, hostOnly, openBrowser, topic);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -337,7 +349,8 @@ program
         console.log();
         console.log('  Use --show-usage to display detailed usage information, --show-operations to get a list of');
         console.log('  previous operations executed on the sandbox, --show-settings to return the settings initially');
-        console.log('  applied to the sandbox during creation.');
+        console.log('  applied to the sandbox during creation. Use --show-storage to retrieve detailed storage');
+        console.log('  capacity.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -348,6 +361,7 @@ program
         console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-usage');
         console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-operations');
         console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-settings');
+        console.log('    $ sfcc-ci sandbox:get -s my-sandbox-id --show-storage');
         console.log();
     });
 
@@ -600,6 +614,131 @@ program
     });
 
 program
+    .command('sandbox:alias:add')
+    .option('-s, --sandbox <id>','sandbox to create alias for')
+    .option('-h, --host <host>','hostname alias to register')
+    .option('-j, --json', 'Optional, formats the output in json')
+    .description('Registers a hostname alias for a sandbox.')
+    .action(function(options) {
+        var sandbox = options.sandbox;
+        if (!sandbox) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        var spec = {};
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        } else {
+            // assume it is a sandbox id
+            spec = { id : sandbox };
+        }
+        var aliasName = options.host;
+        if (!aliasName) {
+            this.missingArgument('host');
+            return;
+        }
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/sandbox').cli.alias.create(spec, aliasName, asJson);
+    }).on('--help', function() {
+        console.log('  Registers a hostname alias for a sandbox. This will open a registration link in your browser');
+        console.log('  as soon as you have inserted the domain and a given target IP in your etc/hosts file. ');
+        console.log('  Note that you also have to include the hostname in your site alias configuration in Business');
+        console.log('  ManagerTo make the following redirect to your storefront working.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:alias:add -s my-sandbox-id -h sbx1.merchant.com');
+        console.log('    $ sfcc-ci sandbox:alias:add -s my-sandbox-id -h sbx1.merchant.com -j');
+        console.log();
+    });
+
+program
+    .command('sandbox:alias:list')
+    .option('-s, --sandbox <id>','sandbox to list hostname aliases for')
+    // can not use '--alias' here because of: https://github.com/tj/commander.js/issues/183
+    // and https://github.com/tj/commander.js/issues/592
+    .option('-a, --aliasid <aliasid>','Optional ID of the hostname alias to only get a single one')
+    .option('-j, --json', 'Optional, formats the output in json')
+    .description('Lists all hostname aliases, which are registered for the given sandbox.')
+    .action(function(options) {
+        var sandbox = options.sandbox;
+        if (!sandbox) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        var spec = {};
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        } else {
+            // assume it is a sandbox id
+            spec = { id : sandbox };
+        }
+        var asJson = ( options.json ? options.json : false );
+        var aliasId = options.aliasid;
+        if (!aliasId) {
+            require('./lib/sandbox').cli.alias.list(spec, asJson);
+        } else {
+            require('./lib/sandbox').cli.alias.get(spec, aliasId, asJson);
+        }
+    }).on('--help', function() {
+        console.log('  Lists all hostname aliases for the given sandbox with their registration link or retrieves');
+        console.log('  a single one and call the registration link for it.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:alias:list -s my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:alias:list -s my-sandbox-id -a 83f05593-6272-...');
+        console.log('    $ sfcc-ci sandbox:alias:list -s my-sandbox-id --json');
+        console.log();
+    });
+
+program
+    .command('sandbox:alias:delete')
+    .option('-s, --sandbox <id>','sandbox to delete the hostname alias for')
+    // can not use '--alias' here because of: https://github.com/tj/commander.js/issues/183
+    // and https://github.com/tj/commander.js/issues/592
+    .option('-a, --aliasid <aliasid>','ID of the hostname alias to delete')
+    .option('-j, --json', 'Optional, formats the output in json')
+    .description('Removes a sandbox alias by its ID')
+    .action(function(options) {
+        var sandbox = options.sandbox;
+        if (!sandbox) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        var spec = {};
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        } else {
+            // assume it is a sandbox id
+            spec = { id : sandbox };
+        }
+        var aliasId = options.aliasid;
+        if (!aliasId) {
+            this.missingArgument('aliasid');
+            return;
+        }
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/sandbox').cli.sandbox.remove(spec, aliasId, asJson);
+    }).on('--help', function() {
+        console.log('  Deletes a hostname alias from the sandbox by its ID.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:alias:delete -s my-sandbox-id -a 83f05593-6272-...');
+        console.log();
+    });
+
+program
     .command('instance:add <instance> [alias]')
     .option('-d, --default', 'Set the new instance as default')
     .description('Adds a new Commerce Cloud instance to the list of configured instances')
@@ -800,6 +939,49 @@ program
         console.log('    $ sfcc-ci code:activate version1');
         console.log('    $ sfcc-ci code:activate version1 -i my-instance-alias');
         console.log('    $ sfcc-ci code:activate version1 -i my-instance.demandware.net');
+        console.log();
+    });
+
+program
+    .command('code:delete')
+    .option('-c, --code <code>','Code version to delete')
+    .option('-i, --instance <instance>','Instance to delete the code version from. Can be an ' +
+        'instance alias. If not specified the currently configured instance will be used.')
+    .option('-N, --noprompt','No prompt to confirm deletion')
+    .option('-j, --json', 'Formats the output in json')
+    .description('Delete a custom code version')
+    .action(function(options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        var code = ( options.code ? options.code : null );
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+        var asJson = ( options.json ? options.json : false )
+
+        if ( !code ) {
+            require('./lib/log').error('Code version missing. Please pass a code version using -c,--code.');
+        } else if ( !instance ) {
+            require('./lib/log').error('Instance missing. Please pass an instance using -i,--instance.');
+        } else if ( noPrompt ) {
+            require('./lib/code').cli.delete(instance, code, asJson);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : 'Delete code version ' + code + ' on ' + instance + '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    require('./lib/code').cli.delete(instance, code, asJson);
+                }
+            });
+        }
+
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci code:delete --code version1');
+        console.log('    $ sfcc-ci code:delete --code version1 -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci code:delete --code version1 -i my-instance.demandware.net --noprompt');
         console.log();
     });
 

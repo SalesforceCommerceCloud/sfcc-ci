@@ -753,7 +753,7 @@ fi
 ###############################################################################
 
 echo "Testing command ´sfcc-ci code:deploy´ without option:"
-node ./cli.js code:deploy ./test/cli/custom_code.zip
+node ./cli.js code:deploy ./test/cli/code_version.zip
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -762,7 +762,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci code:deploy´ with non-existing file (expected to fail):"
-node ./cli.js code:deploy ./test/does/not/exist/custom_code.zip
+node ./cli.js code:deploy ./test/does/not/exist/code_version.zip
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -771,7 +771,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci code:deploy´ with --instance option:"
-node ./cli.js code:deploy ./test/cli/custom_code.zip --instance $ARG_HOST
+node ./cli.js code:deploy ./test/cli/code_version.zip --instance $ARG_HOST
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -780,7 +780,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci code:deploy´ with --instance and --activate option:"
-node ./cli.js code:deploy ./test/cli/custom_code.zip --instance $ARG_HOST --activate
+node ./cli.js code:deploy ./test/cli/code_version.zip --instance $ARG_HOST --activate
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -816,7 +816,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci code:activate´ with --instance option:"
-node ./cli.js code:activate modules --instance $ARG_HOST
+node ./cli.js code:activate code_version --instance $ARG_HOST
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

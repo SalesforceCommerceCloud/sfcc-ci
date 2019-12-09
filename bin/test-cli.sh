@@ -533,7 +533,7 @@ else
 fi
 
 ###############################################################################
-###### Testing ´sfcc-ci sandbox:alias:...´
+###### Testing ´sfcc-ci sandbox:alias:*´
 ###############################################################################
 
 echo "Testing command ´sfcc-ci sandbox:alias:list´ (invalid alias):"
@@ -564,7 +564,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci sandbox:alias:add´: "
-ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -a my.newalias.com`
+ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.newalias.com`
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

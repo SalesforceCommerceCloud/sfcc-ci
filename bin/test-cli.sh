@@ -533,6 +533,84 @@ else
 fi
 
 ###############################################################################
+###### Testing ´sfcc-ci sandbox:alias:...´
+###############################################################################
+
+echo "Testing command ´sfcc-ci sandbox:alias:list´ (invalid alias):"
+node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID -a invalidId
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:add´ (without sbx and alias):"
+node ./cli.js sandbox:alias:add
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:add´ (without alias):"
+node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:add´: "
+ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -a my.newalias.com`
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+TEST_NEW_ALIAS_ID=`echo $ALIAS_RESULT | jq '.sandbox.id' -r`
+echo "Testing command ´sfcc-ci sandbox:alias:list´:"
+node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID -a $TEST_NEW_ALIAS_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:list´ (without sbx):"
+node ./cli.js sandbox:alias:list
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+
+echo "Testing command ´sfcc-ci sandbox:alias:list:´"
+node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:delete´ (invalid alias):"
+node ./cli.js sandbox:alias:delete --sandbox $TEST_NEW_SANDBOX_ID -a $TEST_NEW_ALIAS_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
 ###### Testing ´sfcc-ci instance:clear´
 ###############################################################################
 

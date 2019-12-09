@@ -84,5 +84,5 @@ describe('Tests for lib/ocapi.js', function() {
 
             sinon.assert.calledTwice(requestStub);
         });
-    })
+    });
 });

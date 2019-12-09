@@ -614,6 +614,131 @@ program
     });
 
 program
+    .command('sandbox:alias:add')
+    .option('-s, --sandbox <id>','sandbox to create alias for')
+    .option('-h, --host <host>','hostname alias to register')
+    .option('-j, --json', 'Optional, formats the output in json')
+    .description('Registers a hostname alias for a sandbox.')
+    .action(function(options) {
+        var sandbox = options.sandbox;
+        if (!sandbox) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        var spec = {};
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        } else {
+            // assume it is a sandbox id
+            spec = { id : sandbox };
+        }
+        var aliasName = options.host;
+        if (!aliasName) {
+            this.missingArgument('host');
+            return;
+        }
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/sandbox').cli.alias.create(spec, aliasName, asJson);
+    }).on('--help', function() {
+        console.log('  Registers a hostname alias for a sandbox. This will open a registration link in your browser');
+        console.log('  as soon as you have inserted the domain and a given target IP in your etc/hosts file. ');
+        console.log('  Note that you also have to include the hostname in your site alias configuration in Business');
+        console.log('  ManagerTo make the following redirect to your storefront working.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:alias:add -s my-sandbox-id -h sbx1.merchant.com');
+        console.log('    $ sfcc-ci sandbox:alias:add -s my-sandbox-id -h sbx1.merchant.com -j');
+        console.log();
+    });
+
+program
+    .command('sandbox:alias:list')
+    .option('-s, --sandbox <id>','sandbox to list hostname aliases for')
+    // can not use '--alias' here because of: https://github.com/tj/commander.js/issues/183
+    // and https://github.com/tj/commander.js/issues/592
+    .option('-a, --aliasid <aliasid>','Optional ID of the hostname alias to only get a single one')
+    .option('-j, --json', 'Optional, formats the output in json')
+    .description('Lists all hostname aliases, which are registered for the given sandbox.')
+    .action(function(options) {
+        var sandbox = options.sandbox;
+        if (!sandbox) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        var spec = {};
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        } else {
+            // assume it is a sandbox id
+            spec = { id : sandbox };
+        }
+        var asJson = ( options.json ? options.json : false );
+        var aliasId = options.aliasid;
+        if (!aliasId) {
+            require('./lib/sandbox').cli.alias.list(spec, asJson);
+        } else {
+            require('./lib/sandbox').cli.alias.get(spec, aliasId, asJson);
+        }
+    }).on('--help', function() {
+        console.log('  Lists all hostname aliases for the given sandbox with their registration link or retrieves');
+        console.log('  a single one and call the registration link for it.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:alias:list -s my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:alias:list -s my-sandbox-id -a 83f05593-6272-...');
+        console.log('    $ sfcc-ci sandbox:alias:list -s my-sandbox-id --json');
+        console.log();
+    });
+
+program
+    .command('sandbox:alias:delete')
+    .option('-s, --sandbox <id>','sandbox to delete the hostname alias for')
+    // can not use '--alias' here because of: https://github.com/tj/commander.js/issues/183
+    // and https://github.com/tj/commander.js/issues/592
+    .option('-a, --aliasid <aliasid>','ID of the hostname alias to delete')
+    .option('-j, --json', 'Optional, formats the output in json')
+    .description('Removes a sandbox alias by its ID')
+    .action(function(options) {
+        var sandbox = options.sandbox;
+        if (!sandbox) {
+            this.missingArgument('sandbox');
+            return;
+        }
+        var spec = {};
+        // check if we have to lookup the sandbox by realm and instance
+        var split = sandbox.split(/[-_]/);
+        if (split.length === 2) {
+            spec['realm'] = split[0];
+            spec['instance'] = split[1];
+        } else {
+            // assume it is a sandbox id
+            spec = { id : sandbox };
+        }
+        var aliasId = options.aliasid;
+        if (!aliasId) {
+            this.missingArgument('aliasid');
+            return;
+        }
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/sandbox').cli.sandbox.remove(spec, aliasId, asJson);
+    }).on('--help', function() {
+        console.log('  Deletes a hostname alias from the sandbox by its ID.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:alias:delete -s my-sandbox-id -a 83f05593-6272-...');
+        console.log();
+    });
+
+program
     .command('instance:add <instance> [alias]')
     .option('-d, --default', 'Set the new instance as default')
     .description('Adds a new Commerce Cloud instance to the list of configured instances')

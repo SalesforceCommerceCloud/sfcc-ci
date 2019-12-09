@@ -825,6 +825,19 @@ else
 fi
 
 ###############################################################################
+###### Testing ´sfcc-ci code:delete´
+###############################################################################
+
+echo "Testing command ´sfcc-ci code:delete´:"
+node ./cli.js code:delete --code version1 --instance $ARG_HOST --noprompt
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
 ###### Testing ´sfcc-ci data:upload´
 ###############################################################################
 

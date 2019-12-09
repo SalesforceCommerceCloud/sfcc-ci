@@ -75,7 +75,7 @@ Use the following snippet as your client's permission set, replace `my_client_id
             },
             {
               "resource_id": "/code_versions/*",
-              "methods": ["patch"],
+              "methods": ["patch", "delete"],
               "read_attributes": "(**)",
               "write_attributes": "(**)"
             },
@@ -277,6 +277,7 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     code:list [options]                                             List all custom code versions deployed on the Commerce Cloud instance
     code:deploy [options] <archive>                                 Deploys a custom code archive onto a Commerce Cloud instance
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
+    code:delete [options]                                           Delete a custom code version
     job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
     cartridge:add [options] <cartridgename>                         Adds a cartridge-name to the site cartridge path

@@ -643,10 +643,15 @@ program
         var asJson = ( options.json ? options.json : false );
         require('./lib/sandbox').cli.alias.create(spec, aliasName, asJson);
     }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
         console.log('  Registers a hostname alias for a sandbox. This will open a registration link in your browser');
         console.log('  as soon as you have inserted the domain and a given target IP in your etc/hosts file. ');
         console.log('  Note that you also have to include the hostname in your site alias configuration in Business');
         console.log('  Manager to make the following redirect to your storefront working.');
+        console.log('');
+        console.log('  Use --json to only print the created alias incl. the registration link.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -687,8 +692,13 @@ program
             require('./lib/sandbox').cli.alias.get(spec, aliasId, asJson);
         }
     }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
         console.log('  Lists all hostname aliases for the given sandbox with their registration link or retrieves');
         console.log('  a single one and call the registration link for it.');
+        console.log('');
+        console.log('  Use --json to only print the alias details incl. the registration link.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -704,6 +714,7 @@ program
     // can not use '--alias' here because of: https://github.com/tj/commander.js/issues/183
     // and https://github.com/tj/commander.js/issues/592
     .option('-a, --aliasid <aliasid>','ID of the hostname alias to delete')
+    .option('-N, --noprompt','No prompt to confirm delete')
     .option('-j, --json', 'Optional, formats the output in json')
     .description('Removes a sandbox alias by its ID')
     .action(function(options) {
@@ -728,13 +739,33 @@ program
             return;
         }
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.sandbox.remove(spec, aliasId, asJson);
+
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+        if ( noPrompt ) {
+            require('./lib/sandbox').cli.alias.delete(spec, aliasId, asJson);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : 'Delete sandbox alias ' + aliasId + '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    require('./lib/sandbox').cli.alias.delete(spec, aliasId, false);
+                }
+            });
+        }
     }).on('--help', function() {
-        console.log('  Deletes a hostname alias from the sandbox by its ID.');
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Deletes a hostname alias from the sandbox by its ID. Use `sfcc-ci sandbox:alias:list`');
+        console.log('  to get all registered sandbox aliases.');
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:alias:delete -s my-sandbox-id -a 83f05593-6272-...');
+        console.log('    $ sfcc-ci sandbox:alias:delete -s my-sandbox-id -a 83f05593-6272-... --noprompt');
         console.log();
     });
 

@@ -536,7 +536,7 @@ fi
 ###### Testing ´sfcc-ci sandbox:alias:*´
 ###############################################################################
 
-echo "Testing command ´sfcc-ci sandbox:alias:list´ (invalid alias):"
+echo "Testing command ´sfcc-ci sandbox:alias:list´ invalid alias (expected to fail):"
 node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID -a invalidId
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
@@ -572,7 +572,7 @@ else
 	exit 1
 fi
 
-TEST_NEW_ALIAS_ID=`echo $ALIAS_RESULT | jq '.sandboxId' -r`
+TEST_NEW_ALIAS_ID=`echo $ALIAS_RESULT | jq '.id' -r`
 echo "Testing command ´sfcc-ci sandbox:alias:list´ with sbx and alias:"
 node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID -a $TEST_NEW_ALIAS_ID --json
 if [ $? -eq 0 ]; then
@@ -837,7 +837,7 @@ fi
 ###### Testing ´sfcc-ci code:delete´
 ###############################################################################
 
-echo "Testing command ´sfcc-ci code:delete´ without invalid code version (expected to fail):"
+echo "Testing command ´sfcc-ci code:delete´ with invalid code version (expected to fail):"
 node ./cli.js code:delete --code does_not_exists --instance $ARG_HOST --noprompt
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"

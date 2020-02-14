@@ -359,6 +359,15 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci sandbox:list --show-deleted´:"
+node ./cli.js sandbox:list --show-deleted
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:create´
 ###############################################################################

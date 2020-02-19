@@ -230,17 +230,20 @@ program
 program
     .command('sandbox:list')
     .description('List all available sandboxes')
+    .option('--show-deleted', 'Whether to include deleted sandboxes')
     .option('-j, --json','Formats the output in json')
     .option('-S, --sortby <sortby>', 'Sort by specifying any field')
     .action(function(options) {
+        var showDeleted = ( options.showDeleted ? true : false );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortby ? options.sortby : null );
-        require('./lib/sandbox').cli.list(asJson, sortby);
+        require('./lib/sandbox').cli.list(showDeleted, asJson, sortby);
     }).on('--help', function() {
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:list');
+        console.log('    $ sfcc-ci sandbox:list --show-deleted');
         console.log('    $ sfcc-ci sandbox:list --json');
         console.log();
     });

@@ -236,13 +236,12 @@ You are now ready to use the tool by running the main command `sfcc-ci`.
 
 ## Commands ##
 
-Use `sfcc-ci --help` to get started and see the list of commands available:
+Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of commands available:
 
 ```bash
-  Usage: sfcc-ci [options] [command]
+    Usage: cli [options] [command]
 
   Options:
-
     -V, --version                                                   output the version number
     -D, --debug                                                     enable verbose output
     --selfsigned                                                    allow connection to hosts using self-signed certificates
@@ -250,7 +249,6 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     -h, --help                                                      output usage information
 
   Commands:
-
     auth:login [options] [client] [secret]                          Authenticate a present user for interactive use
     auth:logout                                                     End the current sessions and clears the authentication
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
@@ -268,6 +266,9 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     sandbox:restart [options]                                       Restart a sandbox
     sandbox:reset [options]                                         Reset a sandbox
     sandbox:delete [options]                                        Delete a sandbox
+    sandbox:alias:add [options]                                     Registers a hostname alias for a sandbox.
+    sandbox:alias:list [options]                                    Lists all hostname aliases, which are registered for the given sandbox.
+    sandbox:alias:delete [options]                                  Removes a sandbox alias by its ID
     instance:add [options] <instance> [alias]                       Adds a new Commerce Cloud instance to the list of configured instances
     instance:set <alias_or_host>                                    Sets a Commerce Cloud instance as the default instance
     instance:clear                                                  Clears all configured Commerce Cloud instances
@@ -300,6 +301,15 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
   Detailed Help:
 
     Use sfcc-ci <sub:command> --help to get detailed help and example usage of sub:commands
+
+  Useful Resources:
+
+    Salesforce Commerce Cloud CLI Release Notes: https://sfdc.co/sfcc-cli-releasenotes
+    Salesforce Commerce Cloud CLI Readme: https://sfdc.co/sfcc-cli-readme
+    Salesforce Commerce Cloud CLI Cheatsheet: https://sfdc.co/sfcc-cli-cheatsheet
+    Salesforce Commerce Cloud Account Manager: https://account.demandware.com
+    Salesforce Commerce Cloud API Explorer: https://api-explorer.commercecloud.salesforce.com
+    Salesforce Commerce Cloud Documentation: https://documentation.b2c.commercecloud.salesforce.com
 ```
 
 Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a sub:command.

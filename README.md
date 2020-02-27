@@ -8,7 +8,7 @@ In addition to the CLI a basic JavaScript API is included which can be used to i
 
 # License #
 
-Licensed under the current NDA and licensing agreement in place with your organization. (This is explicitly not open source licensing.)
+As of version 2.3.0 this project is released under the BSD-3-Clause license. For full license text, see the [LICENSE](LICENSE.txt) file in the repo root or https://opensource.org/licenses/BSD-3-Clause.
 
 # Who do I talk to? #
 

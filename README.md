@@ -10,6 +10,10 @@ In addition to the CLI a basic JavaScript API is included which can be used to i
 
 As of version 2.3.0 this project is released under the BSD-3-Clause license. For full license text, see the [LICENSE](LICENSE.txt) file in the repo root or https://opensource.org/licenses/BSD-3-Clause.
 
+# Contributing #
+
+To contribute to this project, follow the [Contribution Guidelines](CONTRIBUTING.md). All external contributors must sign the [Contributor License Agreement (CLA)](https://cla.salesforce.com/sign-cla).
+
 # Who do I talk to? #
 
 Feel free to create issues and enhancement requests or discuss on the existing ones, this will help us understanding in which area the biggest need is. Please refer to documentation below before doing so.

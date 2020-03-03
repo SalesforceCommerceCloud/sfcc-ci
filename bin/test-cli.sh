@@ -121,10 +121,10 @@ else
 fi
 
 ###############################################################################
-###### Testing ´sfcc-ci client:renew´
+###### Testing ´sfcc-ci client:auth:renew´
 ###############################################################################
 
-echo "Testing command ´sfcc-ci client:renew´ (expected to fail):"
+echo "Testing command ´sfcc-ci client:auth:renew´ (expected to fail):"
 node ./cli.js client:auth:renew
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"

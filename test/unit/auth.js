@@ -16,14 +16,6 @@ var dwjsonMock = {};
 
 describe('Tests for lib/auth.js', function() {
 
-    var auth = proxyquire('../../lib/auth', {
-        'request': requestStub,
-        './dwjson': {
-            init : () => dwjsonMock,
-        },
-    });
-    var config = require('../../lib/config').obtain();
-
     const clientKey = 'ABCD-1234-EFGH',
         clientSecret = 'FooBar!!',
         clientKey2 = '7777-8888-9999',
@@ -32,6 +24,18 @@ describe('Tests for lib/auth.js', function() {
         password = 'abc123',
         AMURI1 = 'account-pod5.demandware.net',
         AMURI2 = 'account-pod99.demandware.edu';
+
+    var auth = proxyquire('../../lib/auth', {
+        'request': requestStub,
+        './dwjson': {
+            init : () => dwjsonMock,
+        },
+        './secrets': {
+            getClientID : () => clientKey2,
+            getClientSecret : () => clientSecret2
+        }
+    });
+    var config = require('../../lib/config').obtain();
 
     describe('cli.logout function', function() {
 
@@ -113,9 +117,7 @@ describe('Tests for lib/auth.js', function() {
                 expect(postArgs.uri).to.equal('https://account-pod5.demandware.net/dw/oauth2/access_token');
             });
 
-            it('will look up client/secret from dwjson if needed', function() {
-                dwjsonMock['client-id'] = clientKey2;
-                dwjsonMock['client-secret'] = clientSecret2;
+            it('will look up client/secret from secrets if needed', function() {
                 auth.auth();
                 const postArgs = requestStub.post.getCall(0).args[0];
                 expect(postArgs.form.grant_type).to.equal('client_credentials');

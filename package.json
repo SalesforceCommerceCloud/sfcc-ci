@@ -25,6 +25,7 @@
     "chalk": "^2.4.1",
     "commander": "^2.18.0",
     "conf": "^4.0.2",
+    "dotenv": "^8.2.0",
     "inquirer": "^6.2.0",
     "jsonwebtoken": "^8.3.0",
     "open": "^6.4.0",

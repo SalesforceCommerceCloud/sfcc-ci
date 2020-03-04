@@ -328,6 +328,8 @@ In addition the CLI can be configured by placing a `dw.json` file into the curre
 {
     "client-id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "client-secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "username": "user",
+    "password": "password",
     "hostname": "<dev-sandbox>.demandware.net"
 }
 ```
@@ -336,14 +338,40 @@ In addition the CLI can be configured by placing a `dw.json` file into the curre
 
 The use of environment variables is optional. `sfcc-ci` respects the following environment variables which you can use to control, how the CLI works:
 
-* `SFCC_LOGIN_URL` The login url used for authentication.
-* `SFCC_OAUTH_LOCAL_PORT` Oauth local port for authentication flow.
-* `SFCC_SANDBOX_API_HOST` Sandbox API host.
-* `DEBUG` Debugging mode.
+* `SFCC_LOGIN_URL` set login url used for authentication
+* `SFCC_OAUTH_LOCAL_PORT` set Oauth local port for authentication flow
+* `SFCC_OAUTH_CLIENT_ID` client id used for authentication
+* `SFCC_OAUTH_CLIENT_SECRET` client secret used for authentication
+* `SFCC_OAUTH_USER_NAME` user name used for authentication
+* `SFCC_OAUTH_USER_PASSWORD` user password used for authentication
+* `SFCC_SANDBOX_API_HOST` set sandbox API host
+* `DEBUG` enable verbose output
 
 If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
 
 ## Authentication ##
+
+### Oauth Credentials and Secrets ###
+
+Depending on how you use `sfcc-ci` you make use of command `sfcc-ci auth:login` or `sfcc-ci client:auth` to authenticate. These commands accept credentials being explicitly passed as arguments to these commands. Use `sfcc-ci auth:login --help` and `sfcc-ci client:auth --help` for more info. However, there are alternative ways on how to make credentials available to the CLI for authentication:
+
+* You can define credentials in a `dw.json` file. The CLI will attempt to read this file (if present) from the current working directory.
+* Alternatively you can use a set of well-known env vars (if set) which the CLI will use. Namely, these are `SFCC_OAUTH_CLIENT_ID` (client id), `SFCC_OAUTH_CLIENT_SECRET` (client secret), `SFCC_OAUTH_USER_NAME` (user name) and `SFCC_OAUTH_USER_PASSWORD` (user password). 
+```bash
+export SFCC_OAUTH_CLIENT_ID=<client-id>
+export SFCC_OAUTH_CLIENT_SECRET=<client-secret>
+export SFCC_OAUTH_USER_NAME=<user-name>
+export SFCC_OAUTH_USER_PASSWORD=<user-password>
+```
+* Lastly you can make use of a `.env` file, which holds the credentials in form of `NAME=VALUE` using the same set of well-known env vars as above. The CLI will attempt to make use of the env vars in this file (if present) from the current working directory. For example:
+```bash
+SFCC_OAUTH_CLIENT_ID=<client-id>
+SFCC_OAUTH_CLIENT_SECRET=<client-secret>
+SFCC_OAUTH_USER_NAME=<user-name>
+SFCC_OAUTH_USER_PASSWORD=<user-password>
+```
+
+### Authorization Server ###
 
 `sfcc-ci` uses a default authorization server. You can overwrite this authorization server and use an alternative login url using the env var `SFCC_LOGIN_URL`:
 
@@ -353,7 +381,7 @@ export SFCC_LOGIN_URL=<alternative-authorization-server>
 
 Removing the env var (`unset SFCC_LOGIN_URL`) will make the CLI use the default authorization server again.
 
-## Oauth Local Port ##
+### Oauth Local Port ###
 
 `sfcc-ci` uses a default Oauth local port for authentication flow via command `sfcc-ci auth:login`. You can overwrite this port and use an alternative port number (e.g. if the default port is used on your machine and you cannot use is) using the env var `SFCC_OAUTH_LOCAL_PORT`:
 

@@ -34,6 +34,9 @@ program
         console.log('  Authenticate a user (resource owner) for interactive use. The user must be present and must');
         console.log('  provide his login credentials as part of the authentication flow. The authentication requires');
         console.log('  an API key (client).');
+        console.log();
+        console.log('  If not passed the API key is being looked up in a dw.json file in the current working');
+        console.log('  You may use environment variable SFCC_OAUTH_CLIENT_ID to pass the API key alternatively.');
         if ( require('./lib/auth').OAUTH_AUTHORIZATION_CODE_GRANT_ALLOWED ) {
             console.log();
             console.log('  The client [secret] is optional. If the secret is not provided, the authentication is done');
@@ -48,6 +51,7 @@ program
             console.log('    $ sfcc-ci auth:login app-client-id app-client-secret');
         }
         console.log('    $ sfcc-ci auth:login app-client-id -a account.demandware.com');
+        console.log('    $ sfcc-ci auth:login');
         console.log();
     });
 
@@ -82,8 +86,12 @@ program
         console.log('  user specific resources.');
         console.log();
         console.log('  The client and the client secret are optional. If not provided, client and secret are read');
-        console.log('  from a dw.json file located in the current working directory. When reading credentials from');
-        console.log('  a dw.json file, the user credentials are ignored.');
+        console.log('  from a dw.json file located in the current working directory. You can make use of environment');
+        console.log('  variables SFCC_OAUTH_CLIENT_ID and SFCC_OAUTH_CLIENT_SECRET to pass the API key and secret.');
+        console.log();
+        console.log('  If user credentials are not provided, they are read from a dw.json file located in the')
+        console.log('  current working directory. You may use environment variables SFCC_OAUTH_USER_NAME and');
+        console.log('  SFCC_OAUTH_USER_PASSWORD to pass the user credentails alternatively.');
         console.log();
         console.log('  Examples:');
         console.log();
@@ -1546,10 +1554,14 @@ program.on('--help', function() {
     console.log('');
     console.log('  Environment:');
     console.log('');
-    console.log('    $SFCC_LOGIN_URL         set login url used for authentication');
-    console.log('    $SFCC_OAUTH_LOCAL_PORT  set Oauth local port for authentication flow');
-    console.log('    $SFCC_SANDBOX_API_HOST  set sandbox API host');
-    console.log('    $DEBUG                  enable verbose output');
+    console.log('    $SFCC_LOGIN_URL               set login url used for authentication');
+    console.log('    $SFCC_OAUTH_LOCAL_PORT        set Oauth local port for authentication flow');
+    console.log('    $SFCC_OAUTH_CLIENT_ID         client id used for authentication');
+    console.log('    $SFCC_OAUTH_CLIENT_SECRET     client secret used for authentication');
+    console.log('    $SFCC_OAUTH_USER_NAME         user name used for authentication');
+    console.log('    $SFCC_OAUTH_USER_PASSWORD     user password used for authentication');
+    console.log('    $SFCC_SANDBOX_API_HOST        set sandbox API host');
+    console.log('    $DEBUG                        enable verbose output');
     console.log('');
     console.log('  Detailed Help:');
     console.log('');

@@ -1,6 +1,6 @@
 # Salesforce Commerce Cloud CLI #
 
-The Salesforce Commerce Cloud CLI is a command line interface (CLI) for Salesforce Commerce Cloud. It can be used to facilitate deployment and continuous integration practices using Salesforce Commerce Cloud instances.
+The Salesforce Commerce Cloud CLI is a command line interface (CLI) for Salesforce Commerce Cloud. It can be used to facilitate deployment and continuous integration practices using Salesforce B2C Commerce.
 
 The CLI can be used from any machine either locally or from build tools, like Jenkins, Travis CI, Bitbucket Pipelines, Heroku CI etc.
 
@@ -18,10 +18,7 @@ To contribute to this project, follow the [Contribution Guidelines](CONTRIBUTING
 
 Feel free to create issues and enhancement requests or discuss on the existing ones, this will help us understanding in which area the biggest need is. Please refer to documentation below before doing so.
 
-For discussions please start a topic on the [Community Suite discussion board](https://xchange.demandware.com/community/developer/community-suite/content) or join the [Google Hangout Group](https://hangouts.google.com/group/BJgvcyxpkieawZUg2).
-
 * Maintainer: @tobiaslohr
-* [Google Hangout Group](https://hangouts.google.com/group/BJgvcyxpkieawZUg2)
 
 # What is this repository for? #
 
@@ -32,7 +29,7 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 * Interactive and headless authentication against Account Manager
 * Support for B2C On-Demand Developer Sandboxes 
 * Uses Open Commerce APIs completely
-* Authentication using Oauth2 only, no Business Manager user needed
+* Authentication using Oauth2
 * Configuration of multiple instances incl. aliasing
 * WebDAV connectivity
 * Code deployment and code version management
@@ -182,6 +179,8 @@ Use the following snippet as your client's permission set, replace `my_client_id
 ## Dependencies ##
 
 If you plan to integrate with the JavaScript API or if you want to download the sources and use the CLI through Node you need Node.js and npm to be installed. No other dependencies.
+
+Please check [this guide](https://docs.npmjs.com/files/package.json#git-urls-as-dependencies) on how to define dependency to the right version using a GIT url.
 
 If do not want to use the JavaScript API, but just the CLI you don't need Node.js and npm necessarily. See "Installation Instructions" for details below.
 

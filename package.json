@@ -19,7 +19,7 @@
     "url": "git+https://github.com/SalesforceCommerceCloud/sfcc-ci.git"
   },
   "author": "Tobias Lohr",
-  "license": "ISC",
+  "license": "BSD-3-Clause",
   "homepage": "https://github.com/SalesforceCommerceCloud/sfcc-ci#readme",
   "dependencies": {
     "chalk": "^2.4.1",

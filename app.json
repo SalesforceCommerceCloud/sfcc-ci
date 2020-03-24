@@ -1,9 +1,0 @@
-{
-  "environments": {
-    "test": {
-      "scripts": {
-        "test": "npm run test"
-      }
-    }
-  }
-}

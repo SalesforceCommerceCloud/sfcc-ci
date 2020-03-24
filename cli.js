@@ -975,6 +975,10 @@ program
         console.log('  Use the optional --activate flag to activate the deployed code version. This assumes');
         console.log('  that the deployed archive file has the same name as the enclosed code version.');
         console.log('');
+        console.log('  If you deploy to staging and make use of a certificate file the instance host name');
+        console.log('  (e.g. cert.staging.realm.org.demandware.net) will be modified for the subsequent activation');
+        console.log('  (e.g. staging.realm.org.demandware.net).');
+        console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci code:deploy code_version.zip');

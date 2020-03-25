@@ -290,7 +290,9 @@ program
         console.log('  the status of the sandbox.');
         console.log();
         console.log('  You can force the command to wait until the creation of the sandbox has been finished and the');
-        console.log('  is available to use (in "started" status) by using the --sync flag.');
+        console.log('  sandbox is available to use (in "started" status) by using the --sync flag. By default the');
+        console.log('  command will poll the status for 10 minutes. You can overwrite this by using the environment');
+        console.log('  variable SFCC_SANDBOX_API_POLLING_TIMEOUT to set another timeout in minutes.')
         console.log();
         console.log('  The created sandbox is being added to the list of instances with its host name. The optional');
         console.log('  --set-alias <alias> is used as alias for the new instance. If it is omitted, the host is used');
@@ -1558,14 +1560,15 @@ program.on('--help', function() {
     console.log('');
     console.log('  Environment:');
     console.log('');
-    console.log('    $SFCC_LOGIN_URL               set login url used for authentication');
-    console.log('    $SFCC_OAUTH_LOCAL_PORT        set Oauth local port for authentication flow');
-    console.log('    $SFCC_OAUTH_CLIENT_ID         client id used for authentication');
-    console.log('    $SFCC_OAUTH_CLIENT_SECRET     client secret used for authentication');
-    console.log('    $SFCC_OAUTH_USER_NAME         user name used for authentication');
-    console.log('    $SFCC_OAUTH_USER_PASSWORD     user password used for authentication');
-    console.log('    $SFCC_SANDBOX_API_HOST        set sandbox API host');
-    console.log('    $DEBUG                        enable verbose output');
+    console.log('    $SFCC_LOGIN_URL                    set login url used for authentication');
+    console.log('    $SFCC_OAUTH_LOCAL_PORT             set Oauth local port for authentication flow');
+    console.log('    $SFCC_OAUTH_CLIENT_ID              client id used for authentication');
+    console.log('    $SFCC_OAUTH_CLIENT_SECRET          client secret used for authentication');
+    console.log('    $SFCC_OAUTH_USER_NAME              user name used for authentication');
+    console.log('    $SFCC_OAUTH_USER_PASSWORD          user password used for authentication');
+    console.log('    $SFCC_SANDBOX_API_HOST             set sandbox API host');
+    console.log('    $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes')
+    console.log('    $DEBUG                             enable verbose output');
     console.log('');
     console.log('  Detailed Help:');
     console.log('');

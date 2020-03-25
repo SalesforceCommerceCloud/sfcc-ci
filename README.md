@@ -296,10 +296,11 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
 
   Environment:
 
-    $SFCC_LOGIN_URL         set login url used for authentication
-    $SFCC_OAUTH_LOCAL_PORT  set Oauth local port for authentication flow
-    $SFCC_SANDBOX_API_HOST  set sandbox API host
-    $DEBUG                  enable verbose output
+    $SFCC_LOGIN_URL                    set login url used for authentication
+    $SFCC_OAUTH_LOCAL_PORT             set Oauth local port for authentication flow
+    $SFCC_SANDBOX_API_HOST             set sandbox API host
+    $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes
+    $DEBUG                             enable verbose output
 
   Detailed Help:
 
@@ -344,6 +345,7 @@ The use of environment variables is optional. `sfcc-ci` respects the following e
 * `SFCC_OAUTH_USER_NAME` user name used for authentication
 * `SFCC_OAUTH_USER_PASSWORD` user password used for authentication
 * `SFCC_SANDBOX_API_HOST` set sandbox API host
+* `SFCC_SANDBOX_API_POLLING_TIMEOUT` set timeout for sandbox polling in minutes
 * `DEBUG` enable verbose output
 
 If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
@@ -392,10 +394,22 @@ Removing the env var (`unset SFCC_OAUTH_LOCAL_PORT`) will make the CLI use the d
 
 ## Sandbox API ##
 
+### API Server ###
+
 `sfcc-ci` uses a default host for the sandbox API. You can overwrite this host and use an alternative host using the env var `SFCC_SANDBOX_API_HOST`:
 
 ```bash
 export SFCC_SANDBOX_API_HOST=<alternative-sandbox-api-host>
+```
+
+Removing the env var (`unset SFCC_SANDBOX_API_HOST`) will make the CLI use the default host again.
+
+### API Polling Timeout ###
+
+`sfcc-ci` allows the creation of a sandbox in sync mode (see `sfcc-ci sandbox:create --help` for details). By default the polling of the sandbox status lasts for 10 minutes at maximum until the timeout is reached. You can overwrite this timeout and specify another timeout in minutes using the env var `SFCC_SANDBOX_API_POLLING_TIMEOUT`:
+
+```bash
+export SFCC_SANDBOX_API_POLLING_TIMEOUT=<alternative-sandbox-api-polling-timeout-in-minutes>
 ```
 
 Removing the env var (`unset SFCC_SANDBOX_API_HOST`) will make the CLI use the default host again.

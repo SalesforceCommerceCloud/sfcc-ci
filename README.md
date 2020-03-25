@@ -169,6 +169,30 @@ Use the following snippet as your client's permission set, replace `my_client_id
               "operations": [
                 "read_write"
               ]
+            },
+            {
+              "path": "/static",
+              "operations": [
+                "read_write"
+              ]
+            },
+            {
+              "path": "/catalogs/<your-catalog-id>",
+              "operations": [
+                "read_write"
+              ]
+            },
+            {
+              "path": "/libraries/<your-library-id>",
+              "operations": [
+                "read_write"
+              ]
+            },
+            {
+              "path": "/dynamic/<your-site-id>",
+              "operations": [
+                "read_write"
+              ]
             }
           ]
         }

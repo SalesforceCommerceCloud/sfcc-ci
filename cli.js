@@ -166,7 +166,9 @@ program
         console.log('  The file may include a path to the actual location where the file resides locally.');
         console.log('  The provided --target <target> is relative to /webdav/Sites/, e.g. "impex/src/upload".');
         console.log();
-        console.log('  Currently supported top level --target is "impex".');
+        console.log('  Supported top level --target are "impex", "static", "catalogs", "libraries" and "dynamic".');
+        console.log('  In order to use "catalogs", "libraries" and "dynamic" you have to set API permissions for');
+        console.log('  a specific catalog, library or dynamic folder in WebDAV Client Permissions.');
         console.log();
         console.log('  Examples:');
         console.log();

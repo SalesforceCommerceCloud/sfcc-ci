@@ -298,6 +298,10 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
 
     $SFCC_LOGIN_URL                    set login url used for authentication
     $SFCC_OAUTH_LOCAL_PORT             set Oauth local port for authentication flow
+    $SFCC_OAUTH_CLIENT_ID              client id used for authentication
+    $SFCC_OAUTH_CLIENT_SECRET          client secret used for authentication
+    $SFCC_OAUTH_USER_NAME              user name used for authentication
+    $SFCC_OAUTH_USER_PASSWORD          user password used for authentication
     $SFCC_SANDBOX_API_HOST             set sandbox API host
     $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes
     $DEBUG                             enable verbose output

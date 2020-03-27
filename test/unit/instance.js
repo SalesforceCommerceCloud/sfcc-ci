@@ -4,11 +4,9 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-var chai = require('chai');
 var sinon = require('sinon');
 
-var assert = chai.assert;
-var should = chai.should();
+var proxyquire = require('proxyquire');
 
 describe('Tests for lib/instance.js', function() {
 
@@ -26,6 +24,51 @@ describe('Tests for lib/instance.js', function() {
 
             get.restore();
             sinon.assert.calledWith(get, 'default_instance');
+        });
+    });
+
+    describe('export function', function() {
+
+        var jobStub = sinon.spy();
+        var instance = proxyquire('../../lib/instance', {
+            'request': {},
+            './job': jobStub
+        });
+
+        it('should call job.run with arguments passed', function() {
+            var run = sinon.spy(jobStub, 'run');
+
+            instance.export('my.instance', {"foo":{"bar":"something"},"something":false}, 'export.zip', true);
+
+            run.restore();
+            sinon.assert.calledOnceWithExactly(run,'my.instance', 'sfcc-site-archive-export', {
+                data_units : {"foo":{"bar":"something"},"something":false},
+                export_file : 'export.zip',
+                overwrite_export_file : false
+            }, true);
+        });
+    });
+
+    describe('exportSync function', function() {
+
+        var jobStub = sinon.spy();
+        var instance = proxyquire('../../lib/instance', {
+            'request': {},
+            './job': jobStub
+        });
+
+        it('should call job.runSync with arguments passed', function() {
+            var runSync = sinon.spy(jobStub, 'runSync');
+
+            instance.exportSync('my.instance', {"foo":{"bar":"something"},"something":false}, 'export.zip', true,
+                false);
+
+            runSync.restore();
+            sinon.assert.calledOnceWithExactly(runSync,'my.instance', 'sfcc-site-archive-export', {
+                data_units : {"foo":{"bar":"something"},"something":false},
+                export_file : 'export.zip',
+                overwrite_export_file : false
+            }, true, false);
         });
     });
 });

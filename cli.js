@@ -925,6 +925,152 @@ program
     });
 
 program
+    .command('instance:export')
+    .option('-i, --instance <instance>','Instance to run the export on. Can be an instance alias. ' +
+        'If not specified the currently configured instance will be used.')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-d, --data <data>', 'Set of data in JSON format to export')
+    .option('-f, --file <file>', 'File to store exported data to, relative to impex/src/instance')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
+    .option('-f, --failfast', 'Forces the command (if ran with --sync mode) to result in an error if the job ' +
+        'on the instance exits with an error.')
+    .description('Run an instance export')
+    .action(function(options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        var data = ( options.data ? JSON.parse(options.data) : null );
+        if (!data) {
+            this.missingArgument('data');
+            return;
+        }
+        var file = ( options.file ? options.file : null );
+        if (!file) {
+            this.missingArgument('file');
+            return;
+        }
+        var asJson = ( options.json ? options.json : false );
+        var sync = ( options.sync ? options.sync : false );
+        var failFast = ( options.failfast ? options.failfast : false );
+        if (sync) {
+            require('./lib/instance').exportSync(instance, data, file, asJson, failFast);
+        } else {
+            require('./lib/instance').export(instance, data, file, asJson);
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Performs an instance export of the data on an instance into a file for download. The data');
+        console.log('  units to export can be controlled via option --data in JSON format. The data may be:');
+        console.log();
+        console.log('   {');
+        console.log('        "catalog_static_resources": {');
+        console.log('            "<catalog-id>": true },');
+        console.log('            "all" : true');
+        console.log('        },');
+        console.log('        "catalogs": {');
+        console.log('            "<catalog-id>": true },');
+        console.log('            "all" : true');
+        console.log('        },');
+        console.log('        "customer_lists": {');
+        console.log('            "<customer-list-id>": true,,');
+        console.log('            "all" : true');
+        console.log('        },');
+        console.log('        "global_data" : {');
+        console.log('            "access_roles" : true,');
+        console.log('            "all" : true,');
+        console.log('            "csc_settings" : true,');
+        console.log('            "csrf_whitelists" : true,');
+        console.log('            "custom_preference_groups" : true,');
+        console.log('            "custom_quota_settings" : true,');
+        console.log('            "custom_types" : true,');
+        console.log('            "geolocations" : true,');
+        console.log('            "global_custom_objects" : true,');
+        console.log('            "job_schedules" : true,');
+        console.log('            "job_schedules_deprecated" : true,');
+        console.log('            "locales" : true,');
+        console.log('            "meta_data" : true,');
+        console.log('            "oauth_providers" : true,');
+        console.log('            "ocapi_settings" : true,');
+        console.log('            "page_meta_tags" : true,');
+        console.log('            "preferences" : true,');
+        console.log('            "price_adjustment_limits" : true,');
+        console.log('            "services" : true,');
+        console.log('            "sorting_rules" : true,');
+        console.log('            "system_type_definitions" : true,');
+        console.log('            "static_resources" : true,');
+        console.log('            "users" : true,');
+        console.log('            "webdav_client_permissions" : true');
+        console.log('       },');
+        console.log('        "inventory_lists": {');
+        console.log('            "<inventory-list-id>": true },');
+        console.log('            "all" : true');
+        console.log('        },');
+        console.log('       "libraries": {');
+        console.log('            "<library-id>": true },');
+        console.log('            "all" : true');
+        console.log('       },');
+        console.log('       "library_static_resources": {');
+        console.log('            "<library-id>": true },');
+        console.log('            "all" : true');
+        console.log('       },');
+        console.log('       "price_books": {');
+        console.log('            "<pricebook-id>": true },');
+        console.log('            "all" : true');
+        console.log('       },');
+        console.log('       "sites" : {');
+        console.log('           "<site-id>" : {');
+        console.log('               "ab_tests" : true,');
+        console.log('               "active_data_feeds" : true,');
+        console.log('               "all" : true');
+        console.log('               "cache_settings" : true,');
+        console.log('               "campaigns_and_promotions" : true,');
+        console.log('               "content" : true,');
+        console.log('               "coupons" : true,');
+        console.log('               "custom_objects" : true,');
+        console.log('               "customer_cdn_settings" : true,');
+        console.log('               "customer_groups" : true,');
+        console.log('               "distributed_commerce_extensions" : true,');
+        console.log('               "dynamic_file_resources" : true,');
+        console.log('               "gift_certificates" : true,');
+        console.log('               "ocapi_settings" : true,');
+        console.log('               "payment_methods" : true,');
+        console.log('               "payment_processors" : true,');
+        console.log('               "redirect_urls" : true,');
+        console.log('               "search_settings" : true,');
+        console.log('               "shipping" : true,');
+        console.log('               "site_descriptor" : true,');
+        console.log('               "site_preferences" : true,');
+        console.log('               "sitemap_settings" : true,');
+        console.log('               "slots" : true,');
+        console.log('               "sorting_rules" : true,');
+        console.log('               "source_codes" : true,');
+        console.log('               "static_dynamic_alias_mappings" : true,');
+        console.log('               "stores" : true,');
+        console.log('               "tax" : true,');
+        console.log('               "url_rules" : true');
+        console.log('           },');
+        console.log('           "all" : { ... }');
+        console.log('       }');
+        console.log('   }');
+        console.log();
+        console.log('  The keyword "all" can be used as wildcard to match all objects of a certain type or all');
+        console.log('  units respectively.');
+        console.log();
+        console.log('  The file name to save the exported data to must be provided as --file. If the file does');
+        console.log('  not have file extension *.zip it will be appended.');
+        console.log();
+        console.log('  If a file with the same name already exists on the instance, the export will not be done');
+        console.log('  and the existing file will not be overwritten.');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci instance:export -i my-instance.demandware.net -d \'{"sites":{"all":true}} ' +
+            '-f all_sites.xml\'');
+        console.log();
+    });
+
+program
     .command('code:list')
     .option('-i, --instance <instance>','Instance to get list of custom code versions from. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')

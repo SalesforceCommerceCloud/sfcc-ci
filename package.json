@@ -29,6 +29,7 @@
     "inquirer": "^6.2.0",
     "jsonwebtoken": "^8.3.0",
     "open": "^6.4.0",
+    "generate-password": "^1.5.1",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
     "table": "^5.0.2"

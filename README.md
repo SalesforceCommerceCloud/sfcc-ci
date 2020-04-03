@@ -281,6 +281,9 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                               Return the current authentication token
+    client:info [options]                                           Get details of an Oauth client
+    client:update [options]                                         Update an Oauth client
+    client:delete [options]                                         Delete an Oauth client
     data:upload [options]                                           Uploads a file onto a Commerce Cloud instance
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
     sandbox:realm:update [options]                                  Update realm settings

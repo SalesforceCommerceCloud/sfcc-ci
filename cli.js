@@ -131,6 +131,125 @@ program
     });
 
 program
+    .command('client:info')
+    .description('Get details of an Oauth client')
+    .option('-a, --clientid <clientid>','id of the Oauth client to get details for')
+    .option('-j, --json', 'Formats the output in json')
+    .action(function(options) {
+        var id = options.clientid;
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/client').cli.info(id, asJson);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  This requires permissions in Account Manager to manage API clients of the org,');
+        console.log('  the client belongs to.');
+        console.log();
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci client:info -a xxxx-yyyy-zzzz')
+        console.log('    $ sfcc-ci client:info -a xxxx-yyyy-zzzz --json')
+        console.log();
+    });
+
+program
+    .command('client:update')
+    .description('Update an Oauth client')
+    .option('-a, --clientid <clientid>','id of the Oauth client to update')
+    .option('-c, --changes <changes>', 'Changes to Oauth client details as json')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-N, --noprompt','No prompt to confirm update')
+    .action(function(options) {
+        var id = options.clientid;
+        var changes = ( options.changes ? JSON.parse(options.changes) : null );
+        var asJson = ( options.json ? options.json : false );
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+
+        if ( !id ) {
+            require('./lib/log').error('Missing required --clientid. Use -h,--help for help.');
+        } else if ( !changes ) {
+            require('./lib/log').error('Changes missing. Please specify changes using -c,--change.');
+        } else if ( noPrompt ) {
+            require('./lib/client').cli.update(id, changes, asJson);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : `Update Oauth client ${id}. Are you sure?`
+            }).then((answers) => {
+                if (answers['ok']) {
+                    require('./lib/client').cli.update(id, changes, asJson);
+                }
+            });
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Updates an existing Oauth client');
+        console.log('');
+        console.log('  This requires permissions in Account Manager to manage API clients of the org,');
+        console.log('  the client belongs to. You should pass changes to the user details in json')
+        console.log('  (option -c,--changes).');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci client:update -a xxxx-yyyy-zzzz --changes \'{"active": true}\'');
+        console.log();
+    });
+
+program
+    .command('client:delete')
+    .description('Delete an Oauth client')
+    .option('-a, --clientid <clientid>','id of the Oauth client to delete')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-N, --noprompt','No prompt to confirm deletion')
+    .action(function(options) {
+        var id = options.clientid;
+        var asJson = ( options.json ? options.json : false );
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+
+        var deleteClient = function(id, asJson) {
+            require('./lib/client').cli.delete(id, asJson);
+        };
+
+        if ( !id ) {
+            require('./lib/log').error('Missing required --clientid. Use -h,--help for help.');
+        } else if ( noPrompt ) {
+            deleteClient(id, asJson);
+        } else {
+            prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : 'Delete Oauth client ' + id + '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    deleteClient(id, asJson);
+                }
+            });
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Delete an Oauth client.');
+        console.log('');
+        console.log('  This requires permissions in Account Manager to manage API clients of the org,');
+        console.log('  the client belongs to.');
+        console.log('');
+        console.log('  NOTE: The Oauth client is not deactivated, but completely deleted by this operation.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci client:delete -a xxxx-yyyy-zzzz');
+        console.log();
+    });
+
+program
     .command('data:upload')
     .option('-i, --instance <instance>','Instance to upload the file to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')

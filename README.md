@@ -1,6 +1,6 @@
 # Salesforce Commerce Cloud CLI #
 
-The Salesforce Commerce Cloud CLI is a command line interface (CLI) for Salesforce Commerce Cloud. It can be used to facilitate deployment and continuous integration practices using Salesforce Commerce Cloud instances.
+The Salesforce Commerce Cloud CLI is a command line interface (CLI) for Salesforce Commerce Cloud. It can be used to facilitate deployment and continuous integration practices using Salesforce B2C Commerce.
 
 The CLI can be used from any machine either locally or from build tools, like Jenkins, Travis CI, Bitbucket Pipelines, Heroku CI etc.
 
@@ -8,16 +8,17 @@ In addition to the CLI a basic JavaScript API is included which can be used to i
 
 # License #
 
-Licensed under the current NDA and licensing agreement in place with your organization. (This is explicitly not open source licensing.)
+As of version 2.3.0 this project is released under the BSD-3-Clause license. For full license text, see the [LICENSE](LICENSE.txt) file in the repo root or https://opensource.org/licenses/BSD-3-Clause.
+
+# Contributing #
+
+To contribute to this project, follow the [Contribution Guidelines](CONTRIBUTING.md). All external contributors must sign the [Contributor License Agreement (CLA)](https://cla.salesforce.com/sign-cla).
 
 # Who do I talk to? #
 
 Feel free to create issues and enhancement requests or discuss on the existing ones, this will help us understanding in which area the biggest need is. Please refer to documentation below before doing so.
 
-For discussions please start a topic on the [Community Suite discussion board](https://xchange.demandware.com/community/developer/community-suite/content) or join the [Google Hangout Group](https://hangouts.google.com/group/BJgvcyxpkieawZUg2).
-
 * Maintainer: @tobiaslohr
-* [Google Hangout Group](https://hangouts.google.com/group/BJgvcyxpkieawZUg2)
 
 # What is this repository for? #
 
@@ -28,12 +29,14 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 * Interactive and headless authentication against Account Manager
 * Support for B2C On-Demand Developer Sandboxes 
 * Uses Open Commerce APIs completely
-* Authentication using Oauth2 only, no Business Manager user needed
+* Authentication using Oauth2
 * Configuration of multiple instances incl. aliasing
 * WebDAV connectivity
 * Code deployment and code version management
 * System job execution and monitoring (site import)
 * Custom job execution and monitoring
+* Add cartridges to site cartridge path
+* Exploring Account Manager orgs and management of users and roles
 * JavaScript API
 
 # How do I get set up? #
@@ -73,7 +76,7 @@ Use the following snippet as your client's permission set, replace `my_client_id
             },
             {
               "resource_id": "/code_versions/*",
-              "methods": ["patch"],
+              "methods": ["patch", "delete"],
               "read_attributes": "(**)",
               "write_attributes": "(**)"
             },
@@ -88,6 +91,54 @@ Use the following snippet as your client's permission set, replace `my_client_id
               "methods": ["get"],
               "read_attributes": "(**)",
               "write_attributes": "(**)"
+            },
+            { 
+              "resource_id": "/sites/*/cartridges", 
+              "methods": ["post"], 
+              "read_attributes": "(**)", 
+              "write_attributes": "(**)"
+            },
+            {
+              "resource_id":"/role_search",
+              "methods":["post"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/roles/*",
+              "methods":["get"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/roles/*/user_search",
+              "methods":["post"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/roles/*/users/*",
+              "methods":["put","delete"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/user_search",
+              "methods":["post"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/users",
+              "methods":["get"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
+            },
+            {
+              "resource_id":"/users/*",
+              "methods":["put","get","patch","delete"],
+              "read_attributes":"(**)",
+              "write_attributes":"(**)"
             }
           ]
         }
@@ -118,6 +169,30 @@ Use the following snippet as your client's permission set, replace `my_client_id
               "operations": [
                 "read_write"
               ]
+            },
+            {
+              "path": "/static",
+              "operations": [
+                "read_write"
+              ]
+            },
+            {
+              "path": "/catalogs/<your-catalog-id>",
+              "operations": [
+                "read_write"
+              ]
+            },
+            {
+              "path": "/libraries/<your-library-id>",
+              "operations": [
+                "read_write"
+              ]
+            },
+            {
+              "path": "/dynamic/<your-site-id>",
+              "operations": [
+                "read_write"
+              ]
             }
           ]
         }
@@ -128,6 +203,8 @@ Use the following snippet as your client's permission set, replace `my_client_id
 ## Dependencies ##
 
 If you plan to integrate with the JavaScript API or if you want to download the sources and use the CLI through Node you need Node.js and npm to be installed. No other dependencies.
+
+Please check [this guide](https://docs.npmjs.com/files/package.json#git-urls-as-dependencies) on how to define dependency to the right version using a GIT url.
 
 If do not want to use the JavaScript API, but just the CLI you don't need Node.js and npm necessarily. See "Installation Instructions" for details below.
 
@@ -186,24 +263,25 @@ You are now ready to use the tool by running the main command `sfcc-ci`.
 
 ## Commands ##
 
-Use `sfcc-ci --help` to get started and see the list of commands available:
+Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of commands available:
 
 ```bash
-  Usage: sfcc-ci [options] [command]
+    Usage: cli [options] [command]
 
   Options:
-
     -V, --version                                                   output the version number
     -D, --debug                                                     enable verbose output
+    --selfsigned                                                    allow connection to hosts using self-signed certificates
+    -I, --ignorewarnings                                            ignore any warnings logged to the console
     -h, --help                                                      output usage information
 
   Commands:
-
     auth:login [options] [client] [secret]                          Authenticate a present user for interactive use
     auth:logout                                                     End the current sessions and clears the authentication
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                               Return the current authentication token
+    data:upload [options]                                           Uploads a file onto a Commerce Cloud instance
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
     sandbox:realm:update [options]                                  Update realm settings
     sandbox:list [options]                                          List all available sandboxes
@@ -215,28 +293,56 @@ Use `sfcc-ci --help` to get started and see the list of commands available:
     sandbox:restart [options]                                       Restart a sandbox
     sandbox:reset [options]                                         Reset a sandbox
     sandbox:delete [options]                                        Delete a sandbox
+    sandbox:alias:add [options]                                     Registers a hostname alias for a sandbox.
+    sandbox:alias:list [options]                                    Lists all hostname aliases, which are registered for the given sandbox.
+    sandbox:alias:delete [options]                                  Removes a sandbox alias by its ID
     instance:add [options] <instance> [alias]                       Adds a new Commerce Cloud instance to the list of configured instances
     instance:set <alias_or_host>                                    Sets a Commerce Cloud instance as the default instance
     instance:clear                                                  Clears all configured Commerce Cloud instances
     instance:list [options]                                         List instance and client details currently configured
     instance:upload [options] <archive>                             Uploads an instance import file onto a Commerce Cloud instance
     instance:import [options] <archive>                             Perform a instance import (aka site import) on a Commerce Cloud instance
+    instance:export [options]                                       Run an instance export
     code:list [options]                                             List all custom code versions deployed on the Commerce Cloud instance
     code:deploy [options] <archive>                                 Deploys a custom code archive onto a Commerce Cloud instance
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
+    code:delete [options]                                           Delete a custom code version
     job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
+    cartridge:add [options] <cartridgename>                         Adds a cartridge-name to the site cartridge path
+    org:list [options]                                              List all orgs eligible to manage
+    role:list [options]                                             List roles
+    role:grant [options]                                            Grant a role to a user
+    role:revoke [options]                                           Revoke a role from a user
+    user:list [options]                                             List users eligible to manage
+    user:create [options]                                           Create a new user
+    user:update [options]                                           Update a user
+    user:delete [options]                                           Delete a user
 
   Environment:
 
-    $SFCC_LOGIN_URL         set login url used for authentication
-    $SFCC_OAUTH_LOCAL_PORT  set Oauth local port for authentication flow
-    $SFCC_SANDBOX_API_HOST  set sandbox API host
-    $DEBUG                  enable verbose output
+    $SFCC_LOGIN_URL                    set login url used for authentication
+    $SFCC_OAUTH_LOCAL_PORT             set Oauth local port for authentication flow
+    $SFCC_OAUTH_CLIENT_ID              client id used for authentication
+    $SFCC_OAUTH_CLIENT_SECRET          client secret used for authentication
+    $SFCC_OAUTH_USER_NAME              user name used for authentication
+    $SFCC_OAUTH_USER_PASSWORD          user password used for authentication
+    $SFCC_SANDBOX_API_HOST             set sandbox API host
+    $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes
+    $DEBUG                             enable verbose output
 
   Detailed Help:
 
     Use sfcc-ci <sub:command> --help to get detailed help and example usage of sub:commands
+
+  Useful Resources:
+
+    Salesforce Commerce Cloud CLI Release Notes: https://sfdc.co/sfcc-cli-releasenotes
+    Salesforce Commerce Cloud CLI Readme: https://sfdc.co/sfcc-cli-readme
+    Salesforce Commerce Cloud CLI Cheatsheet: https://sfdc.co/sfcc-cli-cheatsheet
+    Salesforce Commerce Cloud Account Manager: https://account.demandware.com
+    Salesforce Commerce Cloud API Explorer: https://api-explorer.commercecloud.salesforce.com
+    Salesforce Commerce Cloud Documentation: https://documentation.b2c.commercecloud.salesforce.com
 ```
 
 Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a sub:command.
@@ -251,6 +357,8 @@ In addition the CLI can be configured by placing a `dw.json` file into the curre
 {
     "client-id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "client-secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "username": "user",
+    "password": "password",
     "hostname": "<dev-sandbox>.demandware.net"
 }
 ```
@@ -259,14 +367,41 @@ In addition the CLI can be configured by placing a `dw.json` file into the curre
 
 The use of environment variables is optional. `sfcc-ci` respects the following environment variables which you can use to control, how the CLI works:
 
-* `SFCC_LOGIN_URL` The login url used for authentication.
-* `SFCC_OAUTH_LOCAL_PORT` Oauth local port for authentication flow.
-* `SFCC_SANDBOX_API_HOST` Sandbox API host.
-* `DEBUG` Debugging mode.
+* `SFCC_LOGIN_URL` set login url used for authentication
+* `SFCC_OAUTH_LOCAL_PORT` set Oauth local port for authentication flow
+* `SFCC_OAUTH_CLIENT_ID` client id used for authentication
+* `SFCC_OAUTH_CLIENT_SECRET` client secret used for authentication
+* `SFCC_OAUTH_USER_NAME` user name used for authentication
+* `SFCC_OAUTH_USER_PASSWORD` user password used for authentication
+* `SFCC_SANDBOX_API_HOST` set sandbox API host
+* `SFCC_SANDBOX_API_POLLING_TIMEOUT` set timeout for sandbox polling in minutes
+* `DEBUG` enable verbose output
 
 If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
 
 ## Authentication ##
+
+### Oauth Credentials and Secrets ###
+
+Depending on how you use `sfcc-ci` you make use of command `sfcc-ci auth:login` or `sfcc-ci client:auth` to authenticate. These commands accept credentials being explicitly passed as arguments to these commands. Use `sfcc-ci auth:login --help` and `sfcc-ci client:auth --help` for more info. However, there are alternative ways on how to make credentials available to the CLI for authentication:
+
+* You can define credentials in a `dw.json` file. The CLI will attempt to read this file (if present) from the current working directory.
+* Alternatively you can use a set of well-known env vars (if set) which the CLI will use. Namely, these are `SFCC_OAUTH_CLIENT_ID` (client id), `SFCC_OAUTH_CLIENT_SECRET` (client secret), `SFCC_OAUTH_USER_NAME` (user name) and `SFCC_OAUTH_USER_PASSWORD` (user password). 
+```bash
+export SFCC_OAUTH_CLIENT_ID=<client-id>
+export SFCC_OAUTH_CLIENT_SECRET=<client-secret>
+export SFCC_OAUTH_USER_NAME=<user-name>
+export SFCC_OAUTH_USER_PASSWORD=<user-password>
+```
+* Lastly you can make use of a `.env` file, which holds the credentials in form of `NAME=VALUE` using the same set of well-known env vars as above. The CLI will attempt to make use of the env vars in this file (if present) from the current working directory. For example:
+```bash
+SFCC_OAUTH_CLIENT_ID=<client-id>
+SFCC_OAUTH_CLIENT_SECRET=<client-secret>
+SFCC_OAUTH_USER_NAME=<user-name>
+SFCC_OAUTH_USER_PASSWORD=<user-password>
+```
+
+### Authorization Server ###
 
 `sfcc-ci` uses a default authorization server. You can overwrite this authorization server and use an alternative login url using the env var `SFCC_LOGIN_URL`:
 
@@ -276,7 +411,7 @@ export SFCC_LOGIN_URL=<alternative-authorization-server>
 
 Removing the env var (`unset SFCC_LOGIN_URL`) will make the CLI use the default authorization server again.
 
-## Oauth Local Port ##
+### Oauth Local Port ###
 
 `sfcc-ci` uses a default Oauth local port for authentication flow via command `sfcc-ci auth:login`. You can overwrite this port and use an alternative port number (e.g. if the default port is used on your machine and you cannot use is) using the env var `SFCC_OAUTH_LOCAL_PORT`:
 
@@ -288,10 +423,22 @@ Removing the env var (`unset SFCC_OAUTH_LOCAL_PORT`) will make the CLI use the d
 
 ## Sandbox API ##
 
+### API Server ###
+
 `sfcc-ci` uses a default host for the sandbox API. You can overwrite this host and use an alternative host using the env var `SFCC_SANDBOX_API_HOST`:
 
 ```bash
 export SFCC_SANDBOX_API_HOST=<alternative-sandbox-api-host>
+```
+
+Removing the env var (`unset SFCC_SANDBOX_API_HOST`) will make the CLI use the default host again.
+
+### API Polling Timeout ###
+
+`sfcc-ci` allows the creation of a sandbox in sync mode (see `sfcc-ci sandbox:create --help` for details). By default the polling of the sandbox status lasts for 10 minutes at maximum until the timeout is reached. You can overwrite this timeout and specify another timeout in minutes using the env var `SFCC_SANDBOX_API_POLLING_TIMEOUT`:
+
+```bash
+export SFCC_SANDBOX_API_POLLING_TIMEOUT=<alternative-sandbox-api-polling-timeout-in-minutes>
 ```
 
 Removing the env var (`unset SFCC_SANDBOX_API_HOST`) will make the CLI use the default host again.
@@ -395,6 +542,14 @@ SANDBOX_HOST=`$SANDBOX | jq '.instance.host' -r`
 sfcc-ci code:deploy <path/to/code.zip> -i $SANDBOX_HOST
 sfcc-ci instance:upload <path/to/data.zip> -i $SANDBOX_HOST -s
 sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
+```
+### Cartridges ###
+Handles the cartridge path of your Site. Very useful for plugin installation.
+You can put the cartridge on top or at the bottom of the cartridge path. Or if given an anchor cartridge at the before or after a cartridge.
+
+```bash
+sfcc-ci cartridge:add <cartridgename> -p [first|last] -S <siteid>
+sfcc-ci cartridge:add <cartridgename> -p [before|after] -t [targetcartidge] -S <siteid>
 ```
 
 # Using the JavaScript API #

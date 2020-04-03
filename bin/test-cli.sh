@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# Copyright (c) 2020, salesforce.com, inc.
+# All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
 
 ###############################################################################
 ###### Bootstrap
@@ -121,10 +125,10 @@ else
 fi
 
 ###############################################################################
-###### Testing ´sfcc-ci client:renew´
+###### Testing ´sfcc-ci client:auth:renew´
 ###############################################################################
 
-echo "Testing command ´sfcc-ci client:renew´ (expected to fail):"
+echo "Testing command ´sfcc-ci client:auth:renew´ (expected to fail):"
 node ./cli.js client:auth:renew
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
@@ -241,6 +245,15 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci sandbox:realm:list --realm <realm> --show-usage´:"
+node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --show-usage
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:realm:update´
 ###############################################################################
@@ -264,8 +277,8 @@ else
 fi
 
 # memorize realm settings before tests
-TEST_REALM_MAX_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.sandbox.sandboxTTL.maximum' -r`
-TEST_REALM_DEFAULT_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.sandbox.sandboxTTL.defaultValue' -r`
+TEST_REALM_MAX_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.configuration.sandbox.sandboxTTL.maximum' -r`
+TEST_REALM_DEFAULT_SANDBOX_TTL=`node ./cli.js sandbox:realm:list --realm $ARG_SANDBOX_REALM --json | jq '.configuration.sandbox.sandboxTTL.defaultValue' -r`
 
 echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --max-sandbox-ttl 144´:"
 node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --max-sandbox-ttl 144
@@ -284,8 +297,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --default-sandbox-ttl 48´:"
-node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --default-sandbox-ttl 48
+echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --default-sandbox-ttl 12´:"
+node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --default-sandbox-ttl 12
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -343,6 +356,15 @@ fi
 
 echo "Testing command ´sfcc-ci sandbox:list --sortby createdAt --json´:"
 node ./cli.js sandbox:list --sortby createdAt --json
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:list --show-deleted´:"
+node ./cli.js sandbox:list --show-deleted
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -474,6 +496,15 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci sandbox:get --sandbox <sandbox> --show-storage´:"
+node ./cli.js sandbox:get --sandbox $TEST_NEW_SANDBOX_ID --show-storage
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:update´
 ###############################################################################
@@ -507,6 +538,84 @@ fi
 
 echo "Testing command ´sfcc-ci sandbox:update <sandbox> --ttl 2´:"
 node ./cli.js sandbox:update --sandbox $TEST_NEW_SANDBOX_ID --ttl 1
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci sandbox:alias:*´
+###############################################################################
+
+echo "Testing command ´sfcc-ci sandbox:alias:list´ invalid alias (expected to fail):"
+node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID -a invalidId
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:add´ without sbx and alias (expected to fail):"
+node ./cli.js sandbox:alias:add
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:add´ without alias (expected to fail):"
+node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:add´:"
+ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.newalias.com --json`
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+TEST_NEW_ALIAS_ID=`echo $ALIAS_RESULT | jq '.id' -r`
+echo "Testing command ´sfcc-ci sandbox:alias:list´ with sbx and alias:"
+node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID -a $TEST_NEW_ALIAS_ID --json
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:list´ without sbx (expected to fail)):"
+node ./cli.js sandbox:alias:list
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+
+echo "Testing command ´sfcc-ci sandbox:alias:list:´ with sbx"
+node ./cli.js sandbox:alias:list --sandbox $TEST_NEW_SANDBOX_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:alias:delete´ (invalid alias):"
+node ./cli.js sandbox:alias:delete --sandbox $TEST_NEW_SANDBOX_ID -a $TEST_NEW_ALIAS_ID --noprompt
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -624,35 +733,8 @@ fi
 ###### Testing ´sfcc-ci instance:import´
 ###############################################################################
 
-echo "Testing command ´sfcc-ci instance:import´ without options:"
-node ./cli.js instance:import site_import.zip
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:import´ with --instance option:"
-node ./cli.js instance:import site_import.zip --instance $ARG_HOST
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
 echo "Testing command ´sfcc-ci instance:import´ with --sync option:"
 node ./cli.js instance:import site_import.zip --sync
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci instance:import´ with --json option:"
-node ./cli.js instance:import site_import.zip --json
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -670,12 +752,21 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci instance:import´ with --instance option:"
+node ./cli.js instance:import site_import.zip --instance $ARG_HOST
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 ###############################################################################
 ###### Testing ´sfcc-ci code:deploy´
 ###############################################################################
 
 echo "Testing command ´sfcc-ci code:deploy´ without option:"
-node ./cli.js code:deploy ./test/cli/custom_code.zip
+node ./cli.js code:deploy ./test/cli/code_version.zip
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -684,7 +775,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci code:deploy´ with non-existing file (expected to fail):"
-node ./cli.js code:deploy ./test/does/not/exist/custom_code.zip
+node ./cli.js code:deploy ./test/does/not/exist/code_version.zip
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -693,7 +784,16 @@ else
 fi
 
 echo "Testing command ´sfcc-ci code:deploy´ with --instance option:"
-node ./cli.js code:deploy ./test/cli/custom_code.zip --instance $ARG_HOST
+node ./cli.js code:deploy ./test/cli/code_version.zip --instance $ARG_HOST
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci code:deploy´ with --instance and --activate option:"
+node ./cli.js code:deploy ./test/cli/code_version.zip --instance $ARG_HOST --activate
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -720,7 +820,7 @@ fi
 ###############################################################################
 
 echo "Testing command ´sfcc-ci code:activate´ without option:"
-node ./cli.js code:activate modules
+node ./cli.js code:activate version1
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -729,7 +829,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci code:activate´ with --instance option:"
-node ./cli.js code:activate modules --instance $ARG_HOST
+node ./cli.js code:activate code_version --instance $ARG_HOST
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -739,6 +839,72 @@ fi
 
 echo "Testing command ´sfcc-ci code:activate´ with invalid version (expected to fail):"
 node ./cli.js code:activate does_not_exist
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci code:delete´
+###############################################################################
+
+echo "Testing command ´sfcc-ci code:delete´ with invalid code version (expected to fail):"
+node ./cli.js code:delete --code does_not_exists --instance $ARG_HOST --noprompt
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci code:delete´:"
+node ./cli.js code:delete --code version1 --instance $ARG_HOST --noprompt
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci data:upload´
+###############################################################################
+
+echo "Testing command ´sfcc-ci data:upload´:"
+node ./cli.js data:upload --instance $ARG_HOST --target impex/src/upload --file ./test/cli/site_import.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci instance:export´
+###############################################################################
+
+echo "Testing command ´sfcc-ci instance:export´:"
+node ./cli.js instance:export --instance $ARG_HOST --data '{"global_data":{"meta_data":true}}' --file test_export_async.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:export´ with --sync flag:"
+node ./cli.js instance:export --instance $ARG_HOST --data '{"global_data":{"meta_data":true}}' --file test_export_sync.zip --sync
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci instance:export´ with --failfast flag (expected to fail):"
+node ./cli.js instance:export --instance $ARG_HOST --data '{"global_data":{"meta_data":true}}' --file test_export_sync.zip --failfast
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
@@ -757,6 +923,28 @@ fi
 ###############################################################################
 
 # TODO
+
+###############################################################################
+###### Testing ´sfcc-ci cartridge:add´
+###############################################################################
+
+echo "Testing command ´sfcc-ci cartridge:add without --siteid (expected to fail)"
+node ./cli.js cartridge:add my_plugin -p first
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci cartridge:add"
+node ./cli.js cartridge:add my_plugin -p first --siteid MySite
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
 
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:delete´
@@ -783,6 +971,28 @@ fi
 echo "Testing command ´sfcc-ci sandbox:delete --sandbox <sandbox> --noprompt´:"
 node ./cli.js sandbox:delete --sandbox $TEST_NEW_SANDBOX_ID --noprompt
 if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci org:list´
+###############################################################################
+
+echo "Testing command ´sfcc-ci org:list´ without option:"
+node ./cli.js org:list
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci org:list --org <org>´ with invalid org (expected to fail):"
+node ./cli.js org:list --org does_not_exist
+if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
 	echo -e "\t> FAILED"

@@ -1,6 +1,6 @@
 {
   "name": "sfcc-ci",
-  "version": "2.0.0",
+  "version": "2.4.1",
   "description": "Command line tool to allow Continuous Integration practices with Salesforce Commerce Cloud instances",
   "main": "index.js",
   "bin": {
@@ -9,25 +9,26 @@
   "scripts": {
     "lint": "eslint --ignore-path .gitignore ./",
     "test": "npm run lint && npm run test:unit",
-    "test:unit": "node_modules/.bin/_mocha test/unit --recursive",
-    "test:unit:coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha test/unit --recursive",
+    "test:unit": "mocha test/unit --recursive",
+    "test:unit:coverage": "istanbul cover _mocha test/unit --recursive",
     "test:functional:cli": "bin/test-cli.sh",
-    "dist": "node_modules/.bin/pkg . --out-path dist/"
+    "dist": "pkg . --out-path dist/"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SalesforceCommerceCloud/sfcc-ci.git"
   },
   "author": "Tobias Lohr",
-  "license": "ISC",
+  "license": "BSD-3-Clause",
   "homepage": "https://github.com/SalesforceCommerceCloud/sfcc-ci#readme",
   "dependencies": {
     "chalk": "^2.4.1",
     "commander": "^2.18.0",
-    "conf": "^2.0.0",
+    "conf": "^4.0.2",
+    "dotenv": "^8.2.0",
     "inquirer": "^6.2.0",
     "jsonwebtoken": "^8.3.0",
-    "opn": "^5.3.0",
+    "open": "^6.4.0",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
     "table": "^5.0.2"

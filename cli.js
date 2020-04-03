@@ -312,8 +312,8 @@ program
         console.log('  If the sandbox age reaches its TTL, it will be deleted automatically.');
         console.log();
         console.log('  Use --ocapi-settings and --webdav-settings to pass additional OCAPI and/or WebDAV settings to');
-        console.log('  the created sandbox as JSON. You may not overwrite the settings for the CLI client but amend');
-        console.log('  with settings for other clients. The passed JSON must be valid.');
+        console.log('  the created sandbox as JSON. You may not overwrite the permissions for the CLI client but');
+        console.log('  amend its permissions or add permissions for other clients. The passed JSON must be valid.');
         console.log('');
         console.log('  Examples:');
         console.log();

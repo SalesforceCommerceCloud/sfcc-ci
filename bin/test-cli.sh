@@ -905,7 +905,7 @@ fi
 
 echo "Testing command ´sfcc-ci instance:export´ without --sync flag:"
 node ./cli.js instance:export --instance $ARG_HOST --data '{"global_data":{"meta_data":true}}' --file test_export_async.zip
-if [ $? -eq 1 ]; then
+if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
 	echo -e "\t> FAILED"

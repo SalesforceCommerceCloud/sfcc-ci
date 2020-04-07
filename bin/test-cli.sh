@@ -895,7 +895,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci instance:export´ with --sync and --failfast flag (expected to fail):"
-node ./cli.js instance:export --instance $ARG_HOST --data '{"global_data":{"meta_data":true},"does_not_exis":true}}' --file test_export_sync.zip --sync --failfast
+node ./cli.js instance:export --instance $ARG_HOST --data '{"global_data":{"meta_data":true},"does_not_exis":true}' --file test_export_sync.zip --sync --failfast
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else

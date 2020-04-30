@@ -429,6 +429,8 @@ program
     .command('sandbox:create')
     .option('-r, --realm <realm>','Realm to create the sandbox for')
     .option('-t, --ttl <hours>','Number of hours the sandbox will live')
+    .option('--ocapi-settings <json>','Additional OCAPI settings applied to the sandbox')
+    .option('--webdav-settings <json>','Additional WebDAV permissions applied to the sandbox')
     .option('-j, --json','Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
     .option('-d, --default', 'Sets the created sandbox as default instance.')
@@ -441,7 +443,10 @@ program
         var sync = ( options.sync ? options.sync : false );
         var setAsDefault = ( options.default ? options.default : false );
         var alias = ( options.setAlias ? options.setAlias : null );
-        require('./lib/sandbox').cli.create(realm, alias, ttl, asJson, sync, setAsDefault);
+        var ocapiSettings = ( options.ocapiSettings ? options.ocapiSettings : null );
+        var webdavSettings = ( options.webdavSettings ? options.webdavSettings : null );
+        require('./lib/sandbox').cli.create(realm, alias, ttl, ocapiSettings, webdavSettings, asJson, sync,
+            setAsDefault);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -466,6 +471,10 @@ program
         console.log('  The TTL (time to live) in hours of the sandbox can be modified via the --ttl flag. The value');
         console.log('  must adhere to the maximum TTL quotas) If absent the realms default sandbox TTL is used.');
         console.log('  If the sandbox age reaches its TTL, it will be deleted automatically.');
+        console.log();
+        console.log('  Use --ocapi-settings and --webdav-settings to pass additional OCAPI and/or WebDAV settings to');
+        console.log('  the created sandbox as JSON. You may not overwrite the permissions for the CLI client but');
+        console.log('  amend its permissions or add permissions for other clients. The passed JSON must be valid.');
         console.log('');
         console.log('  Examples:');
         console.log();

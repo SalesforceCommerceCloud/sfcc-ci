@@ -638,7 +638,8 @@ cartridgename | (String)    | The given cartride name.
 position      | (String)    | Either first, last, before or after.
 target        | (String)    | When position is 'before' or 'after', need to specify the target cartridge.
 siteid        | (String)    | ID of the site, where the cartrdige should be added.
-token         | (Function)  | The Oauth token to use for authentication.
+token         | (String)    | The Oauth token to use for authentication.
+verbose       | (Boolean)   | Wether or not to use logging capabilities.
 callback      | (Function)  | Callback function executed as a result. The error and the token will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
@@ -648,16 +649,16 @@ Example:
 ```javascript
 const sfcc = require('sfcc-ci');
 
-var client_id = 'my_client_id';
-var client_secret = 'my_client_id';
+var instance = '"*.sandbox.us01.dx.commercecloud.salesforce.com';
+var cartridgename = 'app_custom';
+var position = 'before';
+var target = 'app_storefront_base';
+var siteid = 'RefArch';
+var verbose = false;
+var token = 1234;
 
-sfcc.auth.auth(client_id, client_secret, function(err, token) {
-    if(token) {
-        console.log('Authentication succeeded. Token is %s', token);
-    }
-    if(err) {
-        console.error('Authentication error: %s', err);
-    }
+sfcc.cartridge.add(instance, cartridgename, position, target, siteid, verbose, token, function(err, token) {
+  // ...
 });
 
 ```

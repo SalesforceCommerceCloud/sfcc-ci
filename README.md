@@ -629,7 +629,7 @@ APIs available in `require('sfcc-ci').cartridge`:
 
 `add(instance, cartridgename, position, target, siteid, verbose, token, callback)`
 
-Allows to add a cartridge to the cartridge path for a given site at a specific positions
+Allows to add a cartridge to the cartridge path for a given site at a specific position.
 
 Param         | Type        | Description
 ------------- | ------------| --------------------------------

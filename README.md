@@ -566,6 +566,7 @@ The API is structured into sub modules. You may require sub modules directly, e.
 
 ```javascript
   const sfcc_auth = require('sfcc-ci').auth;
+  const sfcc_cartridge = require('sfcc-ci').cartridge;
   const sfcc_code = require('sfcc-ci').code;
   const sfcc_instance = require('sfcc-ci').instance;
   const sfcc_job = require('sfcc-ci').job;
@@ -576,6 +577,7 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
 
 ```javascript
   sfcc.auth.auth(client_id, client_secret, callback);
+  sfcc.cartridge.add(instance, cartridgename, position, target, siteid, verbose, token, callback);
   sfcc.code.activate(instance, code_version, token, callback);
   sfcc.code.deploy(instance, archive, token, options, callback);
   sfcc.code.list(instance, token, callback);
@@ -621,6 +623,46 @@ sfcc.auth.auth(client_id, client_secret, function(err, token) {
 
 ```
 
+### Cartridge ###
+
+APIs available in `require('sfcc-ci').cartridge`:
+
+`add(instance, cartridgename, position, target, siteid, verbose, token, callback)`
+
+Allows to add a cartridge to the cartridge path for a given site at a specific position.
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to add the cartridge.
+cartridgename | (String)    | The given cartride name.
+position      | (String)    | Either first, last, before or after.
+target        | (String)    | When position is 'before' or 'after', need to specify the target cartridge.
+siteid        | (String)    | ID of the site, where the cartrdige should be added.
+token         | (String)    | The Oauth token to use for authentication.
+verbose       | (Boolean)   | Wether or not to use logging capabilities.
+callback      | (Function)  | Callback function executed as a result. The error and the token will be passed as parameters to the callback function.
+
+**Returns:** (void) Function has no return value
+
+Example:
+
+```javascript
+const sfcc = require('sfcc-ci');
+
+var instance = '"*.sandbox.us01.dx.commercecloud.salesforce.com';
+var cartridgename = 'app_custom';
+var position = 'before';
+var target = 'app_storefront_base';
+var siteid = 'RefArch';
+var verbose = false;
+var token = 1234;
+
+sfcc.cartridge.add(instance, cartridgename, position, target, siteid, verbose, token, function(err, token) {
+  // ...
+});
+
+```
+
 ***
 
 ### Code ###
@@ -650,7 +692,7 @@ Get all custom code versions deployed on a Commerce Cloud instance.
 Param         | Type        | Description
 ------------- | ------------| --------------------------------
 instance      | (String)    | The instance to activate the code on
-token         | (String)    | The Oauth token to use use for authentication
+token         | (String)    | The Oauth token to use for authentication
 callback      | (Function)  | Callback function executed as a result. The error and the code versions will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value

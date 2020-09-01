@@ -200,11 +200,11 @@ program
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:realm');
-        console.log('    $ sfcc-ci sandbox:realm --json');
-        console.log('    $ sfcc-ci sandbox:realm --realm zzzz');
-        console.log('    $ sfcc-ci sandbox:realm --realm zzzz --json');
-        console.log('    $ sfcc-ci sandbox:realm --realm zzzz --show-usage');
+        console.log('    $ sfcc-ci sandbox:realm:list');
+        console.log('    $ sfcc-ci sandbox:realm:list --json');
+        console.log('    $ sfcc-ci sandbox:realm:list --realm zzzz');
+        console.log('    $ sfcc-ci sandbox:realm:list --realm zzzz --json');
+        console.log('    $ sfcc-ci sandbox:realm:list --realm zzzz --show-usage');
         console.log();
     });
 

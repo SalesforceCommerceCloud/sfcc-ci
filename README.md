@@ -6,6 +6,29 @@ The CLI can be used from any machine either locally or from build tools, like Je
 
 In addition to the CLI a basic JavaScript API is included which can be used to integrate with higher level applications on Node.js.
 
+# IMPORTANT NOTE #
+With the command
+
+`sfcc-ci client:auth [client] [secret] [user] [user_password]`
+
+one will authenticate with a "password" grant and with the command
+
+`sfcc-ci client:auth [client] [secret]`.
+
+one will authenticate with a "client_credentials" grant.
+The "password" grant will be deprecated soon. Instead please use the second statement, which uses the "client_credentials" grant.
+As of now, when a user triggers the first statement a warn message will be printed out, which says that the user is using a deprecated
+grant. After that, the user will already be authenticated, using the "client_credentials" grant.
+
+This means the warn message won't abort
+the execution or something like that. Please have a look at the following console output to see what the warn message will look like:
+
+_Warning: The Oauth "password" grant is about to be deprecated, please use the "client_credentials" grant instead. To execute a "client_credentials" grant, please use the command: $ sfcc-ci client:auth [client] [secret]._
+
+_Warning: We're now already using "client_credentials" grant for authentication!_
+
+_Authentication succeeded_
+
 # License #
 
 As of version 2.3.0 this project is released under the BSD-3-Clause license. For full license text, see the [LICENSE](LICENSE.txt) file in the repo root or https://opensource.org/licenses/BSD-3-Clause.

@@ -16,7 +16,10 @@ one will authenticate with a "password" grant and with the command
 `sfcc-ci client:auth [client] [secret]`.
 
 one will authenticate with a "client_credentials" grant.
-The "password" grant will be deprecated soon. Instead please use the second statement, which uses the "client_credentials" grant.
+
+**The "password" grant will be deprecated soon**.
+
+Instead please use the second statement, which uses the "client_credentials" grant.
 As of now, when a user triggers the first statement a warn message will be printed out, which says that the user is using a deprecated
 grant. After that, the user will already be authenticated, using the "client_credentials" grant.
 
@@ -28,6 +31,8 @@ _Warning: The Oauth "password" grant is about to be deprecated, please use the "
 _Warning: We're now already using "client_credentials" grant for authentication!_
 
 _Authentication succeeded_
+
+**To successfully use the second command the client must become Account Administrator!** 
 
 # License #
 

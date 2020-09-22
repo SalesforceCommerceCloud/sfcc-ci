@@ -32,7 +32,7 @@ _Warning: We're now already using "client_credentials" grant for authentication!
 
 _Authentication succeeded_
 
-**To successfully use the second command the client must become Account Administrator!** 
+**To successfully use the second command the client must have the role "Account Administrator"!** 
 
 # License #
 

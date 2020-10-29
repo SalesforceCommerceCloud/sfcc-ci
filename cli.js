@@ -947,7 +947,7 @@ program
     .description('Run an instance export')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        var data = ( options.data ? JSON.parse(options.data) : null );
+        var data = require('./lib/export').readExportJson(options.data);
         if (!data) {
             this.missingArgument('data');
             return;

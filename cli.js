@@ -938,7 +938,7 @@ program
     .option('-i, --instance <instance>','Instance to run the export on. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
     .option('-j, --json', 'Formats the output in json')
-    .option('-d, --data <data>', 'Set of data in JSON format to export')
+    .option('-d, --data <data>', 'Set of data as parameter or file specified in JSON format for what to export')
     .option('-f, --file <file>', 'File to store exported data to, relative to impex/src/instance')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')

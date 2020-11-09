@@ -441,7 +441,7 @@ Removing the env var (`unset SFCC_SANDBOX_API_HOST`) will make the CLI use the d
 export SFCC_SANDBOX_API_POLLING_TIMEOUT=<alternative-sandbox-api-polling-timeout-in-minutes>
 ```
 
-Removing the env var (`unset SFCC_SANDBOX_API_HOST`) will make the CLI use the default host again.
+Removing the env var (`unset SFCC_SANDBOX_API_POLLING_TIMEOUT`) will make the CLI use the default timeout again.
 
 ## Debugging ##
 

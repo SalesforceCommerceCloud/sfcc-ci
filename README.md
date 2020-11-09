@@ -379,6 +379,15 @@ The use of environment variables is optional. `sfcc-ci` respects the following e
 
 If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
 
+## Parameter Precendence ##
+
+The parameters are used with the following precendence
+
+1. Passing explicit params to the commandline (e.g `sfcc-ci client:auth client_id client_secret`)
+2. Credentials in a `dw.json`
+3. Creating an `.env` file 
+4. Setting `env vars` on your  machine
+
 ## Authentication ##
 
 ### Oauth Credentials and Secrets ###

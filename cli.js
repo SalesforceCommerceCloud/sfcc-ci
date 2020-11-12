@@ -266,7 +266,7 @@ program
 
 program
     .command('sandbox:ips')
-    .description('List inbound and outbound ips for sandboxes')
+    .description('List inbound and outbound IP addresses for sandboxes')
     .option('-j, --json','Formats the output in json')
     .action(function(options) {
         var asJson = ( options.json ? options.json : false );

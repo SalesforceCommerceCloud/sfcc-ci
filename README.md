@@ -285,7 +285,7 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
     sandbox:realm:update [options]                                  Update realm settings
     sandbox:list [options]                                          List all available sandboxes
-    sandbox:ips [options]                                           List inbound and outbound ips for sandboxes
+    sandbox:ips [options]                                           List inbound and outbound IP addresses for sandboxes
     sandbox:create [options]                                        Create a new sandbox
     sandbox:get [options]                                           Get detailed information about a sandbox
     sandbox:update [options]                                        Update a sandbox

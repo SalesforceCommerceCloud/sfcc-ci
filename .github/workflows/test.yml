@@ -20,13 +20,28 @@ jobs:
       name: Check out
       uses: actions/checkout@v2
 
-    - id: help
-      name: Help
+    - id: cache
+      name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          **/node_modules
+        key: node-modules-${{ hashFiles('package.json') }}
+
+    - id: install-dependencies
+      name: Install dependencies
+      uses: actions/setup-node@v1
+      if: steps.cache.outputs.cache-hit != 'true'
+    - run: |
+        npm install
+
+    - id: version
+      name: Version
       uses: ./
       with:
         command: 'sfcc-ci --version'
-    
-    - id: help-result
-      name: Help result
+
+    - id: version-result
+      name: Version result
       run: |
         echo "${{ steps.help.outputs.result }}"

@@ -1,0 +1,32 @@
+name: sfcc-ci
+
+on:
+  push:
+  pull_request:
+
+env:
+  GITHUB: ${{ toJson(github) }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  workflow:
+    name: Workflow
+    runs-on: ubuntu-latest
+    steps:
+    - id: check-out
+      name: Check out
+      uses: actions/checkout@v2
+
+    - id: help
+      name: Help
+      uses: ./
+      with:
+        command: 'sfcc-ci --version'
+    
+    - id: help-result
+      name: Help result
+      run: |
+        echo "${{ steps.help.outputs.result }}"

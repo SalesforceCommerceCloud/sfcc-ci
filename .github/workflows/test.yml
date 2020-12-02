@@ -13,7 +13,7 @@ defaults:
 
 jobs:
   workflow:
-    name: Workflow
+    name: workflow
     runs-on: ubuntu-latest
     steps:
     - id: check-out
@@ -35,6 +35,11 @@ jobs:
     - run: |
         npm install
 
+    - id: lint
+      name: Lint
+      run: |
+        npm run lint
+
     - id: version
       name: Version
       uses: ./
@@ -44,4 +49,4 @@ jobs:
     - id: version-result
       name: Version result
       run: |
-        echo "${{ steps.help.outputs.result }}"
+        echo "${{ steps.version.outputs.result }}"

@@ -1,0 +1,21 @@
+name: 'sfcc-ci'
+
+description: 'Command line tool to allow Continuous Integration practices with Salesforce Commerce Cloud instances'
+
+author: 'Salesforce'
+
+branding:
+  icon: 'cloud'
+  color: 'blue'
+
+inputs:
+  command:
+    description: 'Command'
+    required: false
+outputs:
+  result:
+    description: 'Result'
+
+runs:
+  using: 'node12'
+  main: './action.js'

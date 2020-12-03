@@ -1,0 +1,52 @@
+name: sfcc-ci
+
+on:
+  push:
+  pull_request:
+
+env:
+  GITHUB: ${{ toJson(github) }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  workflow:
+    name: workflow
+    runs-on: ubuntu-latest
+    steps:
+    - id: check-out
+      name: Check out
+      uses: actions/checkout@v2
+
+    - id: cache
+      name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          **/node_modules
+        key: node-modules-${{ hashFiles('package.json') }}
+
+    - id: install-dependencies
+      name: Install dependencies
+      uses: actions/setup-node@v1
+      if: steps.cache.outputs.cache-hit != 'true'
+    - run: |
+        npm install
+
+    - id: lint
+      name: Lint
+      run: |
+        npm run lint
+
+    - id: version
+      name: Version
+      uses: ./
+      with:
+        command: 'sfcc-ci --version'
+
+    - id: version-result
+      name: Version result
+      run: |
+        echo "${{ steps.version.outputs.result }}"

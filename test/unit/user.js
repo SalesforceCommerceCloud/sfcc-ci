@@ -27,7 +27,7 @@ describe('Tests for lib/user.js', function() {
             'getAMHost' : () => 'am.host'
         },
         './org': {
-            'getOrg' : function (id, callback) {
+            'getOrg' : function (id, undefined, callback) {
                 callback(undefined, { id : 'myorg' });
             }
         }
@@ -91,7 +91,7 @@ describe('Tests for lib/user.js', function() {
                     'json' : jsonStub
                 },
                 './org': {
-                    'getOrg' : function (id, callback) {
+                    'getOrg' : function (id, undefined, callback) {
                         callback(undefined, { id : 'myorg' });
                     }
                 }
@@ -121,7 +121,7 @@ describe('Tests for lib/user.js', function() {
                     'json' : jsonStub
                 },
                 './org': {
-                    'getOrg' : function (id, callback) {
+                    'getOrg' : function (id, undefined, callback) {
                         callback(undefined, { id : 'myorg' });
                     }
                 }
@@ -146,7 +146,7 @@ describe('Tests for lib/user.js', function() {
                     'json' : jsonStub
                 },
                 './org': {
-                    'getOrg' : function (id, callback) {
+                    'getOrg' : function (id, undefined, callback) {
                         callback(undefined, { id : 'myorg' });
                     }
                 }
@@ -170,7 +170,7 @@ describe('Tests for lib/user.js', function() {
                     'json' : jsonStub
                 },
                 './org': {
-                    'getOrg' : function (id, callback) {
+                    'getOrg' : function (id, undefined, callback) {
                         callback(undefined, { id : 'myorg' });
                     }
                 }
@@ -210,7 +210,7 @@ describe('Tests for lib/user.js', function() {
                     'json' : jsonStub
                 },
                 './org': {
-                    'getOrg' : function (id, callback) {
+                    'getOrg' : function (id, undefined, callback) {
                         callback(undefined, { id : 'myorg' });
                     }
                 }

@@ -284,8 +284,7 @@ program
         var alias = ( options.setAlias ? options.setAlias : null );
         var ocapiSettings = ( options.ocapiSettings ? options.ocapiSettings : null );
         var webdavSettings = ( options.webdavSettings ? options.webdavSettings : null );
-        require('./lib/sandbox').cli.create(realm, alias, ttl, ocapiSettings, webdavSettings, asJson, sync,
-            setAsDefault);
+        require('./lib/sandbox').cli.create(realm, alias, ttl, ocapiSettings, webdavSettings, asJson, sync, setAsDefault);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');

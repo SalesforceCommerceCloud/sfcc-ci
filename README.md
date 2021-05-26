@@ -514,11 +514,19 @@ In an interactive mode you usually authenticate as follows:
 sfcc-ci auth:login $API_KEY
 ```
 
-In an automation scenario (where no user is physically present) authentication is done as follows:
+In an automation scenario (where no user is present) authentication is done as follows:
 
 ```bash
 sfcc-ci client:auth $API_KEY $API_SECRET
 ```
+
+In an automation scenario where you want to manage sandboxes you still need a service user (with role Sandbox API User assigned). In this case authentication is done as follows:
+
+```bash
+sfcc-ci client:auth $API_KEY $API_SECRET
+```
+
+Note, that the service user must not be doing MFA. You may accomplish this by only assigning role Sandbox API User and deactivating MFA for only exactly this role.
 
 Logging out (and removing any traces of secrets from the machine):
 

@@ -611,6 +611,7 @@ The API is structured into sub modules. You may require sub modules directly, e.
   const sfcc_code = require('sfcc-ci').code;
   const sfcc_instance = require('sfcc-ci').instance;
   const sfcc_job = require('sfcc-ci').job;
+  const sfcc_user = require('sfcc-ci').user;
   const sfcc_webdav = require('sfcc-ci').webdav;
 ```
 
@@ -629,6 +630,18 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
   sfcc.job.run(instance, job_id, job_params, token, callback);
   sfcc.job.status(instance, job_id, job_execution_id, token, callback);
   sfcc.manifest.generate(directories, ignorePatterns, targetDirectory, fileName);
+  sfcc.user.create(org, user, mail, firstName, lastName, token).then(result => ...).catch(err => ...);
+  sfcc.user.list(org, role, login, count, sortBy, token).then(result => ...).catch(err => ...);
+  sfcc.user.update(login, changes, token).then(result => ...).catch(err => ...);
+  sfcc.user.grant(login, role, scope, token).then(result => ...).catch(err => ...);
+  sfcc.user.revoke(login, role, scope, token).then(result => ...).catch(err => ...);
+  sfcc.user.delete(login, purge, token).then(result => ...).catch(err => ...);
+  sfcc.user.createLocal(instance, login, user, token).then(result => ...).catch(err => ...);
+  sfcc.user.searchLocal(instance, login, query, role, sortBy, count, start, token).then(result => ...).catch(err => ...);
+  sfcc.user.updateLocal(instance, login, changes, token).then(result => ...).catch(err => ...);
+  sfcc.user.grantLocal(instance, login, role, token).then(result => ...).catch(err => ...);
+  sfcc.user.revokeLocal(instance, login, role, token).then(result => ...).catch(err => ...);
+  sfcc.user.deleteLocal(instance, login, token).then(result => ...).catch(err => ...);
   sfcc.webdav.upload(instance, path, file, token, options, callback);
 ```
 
@@ -928,6 +941,195 @@ token            | (String)    | The Oauth token to use use for authentication
 callback         | (Function)  | Callback function executed as a result. The error and the job execution details will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
+
+***
+
+### User ###
+
+APIs available in `require('sfcc').user`:
+
+`create(org, user, mail, firstName, lastName, token)`
+
+Creates a new user into Account Manager
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+org           | (String)    | The org ID where to create the user
+user          | (Object)    | The user object with all the required data in it
+mail          | (String)    | The email of the user
+firstName     | (String)    | The firstname of the user
+lastName      | (String)    | The lastname of the user
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the newly created user object.
+
+***
+
+`list(org, role, login, count, sortBy, token)`
+
+Lists all users eligible to manage from the Account Manager, based on the given filters (if any provided)
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+org           | (String)    | The org ID or null, if all users should be retrieved
+role          | (String)    | The role or null, if all users should be retrieved
+login         | (String)    | The login or null, if all users should be retrieved
+count         | (Number)    | The max count of list items
+sortBy        | (String)    | (Optional) field to sort the list of users by
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the results array.
+
+***
+
+`update(login, changes, token)`
+
+Update a user into Account Manager
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+login         | (String)    | The login of the user to update
+changes       | (Object)    | The changes to the user details
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the updated user.
+
+***
+
+`grant(login, role, scope, token)`
+
+Grant a role to a user into Account Manager
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+login         | (String)    | The login (email) of the user
+role          | (String)    | The role to grant
+scope         | (String)    | The scope of the role to revoke
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the changed user.
+
+***
+
+`revoke(login, role, scope, token)`
+
+Revoke a role to a user from Account Manager
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+login         | (String)    | The login (email) of the user
+role          | (String)    | The role to grant
+scope         | (String)    | The scope of the role to revoke
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the changed user.
+
+***
+
+`delete(login, purge, token)`
+
+Delete a user from Account Manager
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+login         | (String)    | The user to delete
+purge         | (Boolean)   | Whether to purge the user completely
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is a boolean value that confirms if the user has been deleted or not.
+
+***
+
+`createLocal(instance, login, user, token)`
+
+Creates a new local user on an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to create the user on
+login         | (String)    | The user to delete
+user          | (Object)    | The user details
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the created user.
+
+***
+
+`searchLocal(instance, login, query, role, sortBy, count, start, token)`
+
+Search for local users on an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to create the user on
+login         | (String)    | The login or null, if all users should be retrieved
+query         | (String)    | The query to search users for
+role          | (String)    | The role to search users for
+sortBy        | (String)    | (Optional) field to sort users by
+count         | (Number)    | (Optional) number of items per page
+start         | (Number)    | (Optional) zero-based index of the first search hit to include
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the results of the search.
+
+***
+
+`updateLocal(instance, login, changes, token)`
+
+Update a local user on an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to update the user on
+login         | (String)    | The login of the local user to update
+changes       | (Object)    | The changes to the user details
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the updated user.
+
+***
+
+`grantLocal(instance, login, role, token)`
+
+Grant a role to a local user on an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to apply the role on the user on
+login         | (String)    | The login of the local user to grant
+role          | (String)    | The role to grant
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the changed user.
+
+***
+
+`revokeLocal(instance, login, role, token)`
+
+Revoke a role from a local user on an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to apply the role on the user on
+login         | (String)    | The login of the local user to revoke
+role          | (String)    | The role to revoke
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the changed user.
+
+***
+
+`deleteLocal(instance, login, token)`
+
+Delete a local user from an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to delete the user on
+login         | (String)    | The login of the local user to delete
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is a boolean value that confirms if the user has been deleted or not.
 
 ***
 

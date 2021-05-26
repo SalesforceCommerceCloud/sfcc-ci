@@ -11,4 +11,5 @@ exports.code = require('./lib/code').api;
 exports.instance = require('./lib/instance').api;
 exports.job = require('./lib/job').api;
 exports.manifest = require('./lib/manifest').api;
+exports.user = require('./lib/user').api;
 exports.webdav = require('./lib/webdav').api;

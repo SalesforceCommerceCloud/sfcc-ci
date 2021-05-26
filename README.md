@@ -286,6 +286,7 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
     sandbox:realm:update [options]                                  Update realm settings
     sandbox:list [options]                                          List all available sandboxes
+    sandbox:ips [options]                                           List inbound and outbound IP addresses for sandboxes
     sandbox:create [options]                                        Create a new sandbox
     sandbox:get [options]                                           Get detailed information about a sandbox
     sandbox:update [options]                                        Update a sandbox
@@ -573,11 +574,12 @@ sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
 
 ### Sandboxes ###
 
-Provision a new sandbox, uploading code and running an instance import:
+Provision a new sandbox, outputting the inbound and outbound IP addresses, uploading code and running an instance import:
 
 ```bash
 SANDBOX=`sfcc-ci sandbox:create <a-realm> -s -j`
 SANDBOX_HOST=`$SANDBOX | jq '.instance.host' -r`
+sfcc-ci sandbox:ips
 sfcc-ci code:deploy <path/to/code.zip> -i $SANDBOX_HOST
 sfcc-ci instance:upload <path/to/data.zip> -i $SANDBOX_HOST -s
 sfcc-ci instance:import <data.zip> -i your-instance.demandware.net

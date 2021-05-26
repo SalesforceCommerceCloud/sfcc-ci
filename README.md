@@ -421,6 +421,24 @@ export SFCC_OAUTH_LOCAL_PORT=<alternative-port>
 
 Removing the env var (`unset SFCC_OAUTH_LOCAL_PORT`) will make the CLI use the default port again.
 
+## Authorization ##
+
+Depending on which activities you want to want to perform, you have to ensure proper permissions have been granted beforehand. The required permissions and where to grant them to depend on the command and whether you want to execute commands interactively (user present) or implement automations (no user present).
+
+Consult the table below to set permissions depending on the activity desired:
+
+Commands | Interactive Use | Automation Use
+------------ | ------------ | -------------
+data:* | OCAPI Data API Settings | OCAPI Data API Settings
+sandbox:* | Sandbox API User role assigned to user | Sandbox API User role assigned to API client
+instance:* | OCAPI Data API Settings | OCAPI Data API Settings
+code:* | OCAPI Data API Settings | OCAPI Data API Settings
+job:* | OCAPI Data API Settings | OCAPI Data API Settings
+cartridge:* | OCAPI Data API Settings | OCAPI Data API Settings
+org:* | Account Administrator role assigned to user | Account Administrator role assigned to API client
+role:* | Account Administrator role assigned to user _or_ OCAPI Data API Settings | Account Administrator role assigned to API client _or_ OCAPI Data API Settings 
+users:* | Account Administrator role assigned to user _or_ OCAPI Data API Settings | Account Administrator role assigned to API client _or_ OCAPI Data API Settings 
+
 ## Sandbox API ##
 
 ### API Server ###
@@ -505,7 +523,7 @@ sfcc-ci client:auth $API_KEY $API_SECRET
 In an automation scenario where you want to manage sandboxes you still need a service user (with role Sandbox API User assigned). In this case authentication is done as follows:
 
 ```bash
-sfcc-ci client:auth $API_KEY $API_SECRET $API_USER $API_USER_PW
+sfcc-ci client:auth $API_KEY $API_SECRET
 ```
 
 Note, that the service user must not be doing MFA. You may accomplish this by only assigning role Sandbox API User and deactivating MFA for only exactly this role.

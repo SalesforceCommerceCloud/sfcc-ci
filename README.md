@@ -274,6 +274,7 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     --selfsigned                                                    allow connection to hosts using self-signed certificates
     -I, --ignorewarnings                                            ignore any warnings logged to the console
     -h, --help                                                      output usage information
+    -j, --json                                                      print output as JSON instead of plain text
 
   Commands:
     auth:login [options] [client] [secret]                          Authenticate a present user for interactive use

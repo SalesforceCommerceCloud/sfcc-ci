@@ -285,6 +285,7 @@ program
     .command('sandbox:create')
     .option('-r, --realm <realm>','Realm to create the sandbox for')
     .option('-t, --ttl <hours>','Number of hours the sandbox will live')
+    .option('-p, --profile <profile>','Resource profile used for the sandbox, "medium" is the default')
     .option('--ocapi-settings <json>','Additional OCAPI settings applied to the sandbox')
     .option('--webdav-settings <json>','Additional WebDAV permissions applied to the sandbox')
     .option('-j, --json','Formats the output in json')
@@ -295,13 +296,14 @@ program
     .action(function(options) {
         var realm = ( options.realm ? options.realm : null );
         var ttl = ( options.ttl ? parseInt(options.ttl) : null );
+        var profile = ( options.profile ? options.profile : null );
         var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
         var setAsDefault = ( options.default ? options.default : false );
         var alias = ( options.setAlias ? options.setAlias : null );
         var ocapiSettings = ( options.ocapiSettings ? options.ocapiSettings : null );
         var webdavSettings = ( options.webdavSettings ? options.webdavSettings : null );
-        require('./lib/sandbox').cli.create(realm, alias, ttl, ocapiSettings, webdavSettings, asJson, sync,
+        require('./lib/sandbox').cli.create(realm, alias, ttl, profile, ocapiSettings, webdavSettings, asJson, sync,
             setAsDefault);
     }).on('--help', function() {
         console.log('');
@@ -312,6 +314,10 @@ program
         console.log('  sandboxes allowed to create is limited. The command only trigger the creation and does not');
         console.log('  wait until the sandbox is fully up and running. Use may use `sfcc-ci sandbox:list` to check');
         console.log('  the status of the sandbox.');
+        console.log();
+        console.log('  Use the optional --profile <profile> to set the resource allocation for the sandbox, "medium"');
+        console.log('  is the default. Be careful, more powerful profiles consume more credits. Supported values');
+        console.log('  are: medium, large, xlarge.');
         console.log();
         console.log('  You can force the command to wait until the creation of the sandbox has been finished and the');
         console.log('  sandbox is available to use (in "started" status) by using the --sync flag. By default the');
@@ -343,6 +349,7 @@ program
         console.log('    $ sfcc-ci sandbox:create -r my-realm -a an-alias -s -d');
         console.log('    $ sfcc-ci sandbox:create -r my-realm -s -j');
         console.log('    $ sfcc-ci sandbox:create -r my-realm --ttl 6');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -p large');
         console.log();
     });
 

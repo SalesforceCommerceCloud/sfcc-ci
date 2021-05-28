@@ -36,7 +36,7 @@ describe('Tests for lib/org.js', function() {
 
         it('makes a get request', function() {
 
-            org.getOrg('myorg', function(){});
+            org.getOrg('myorg', undefined, function(){});
 
             const getArgs = requestStub.getCall(0).args[0];
             expect(getArgs.uri).to.equal('https://am.host/dw/rest/v1/organizations/search/findByName' +
@@ -55,7 +55,7 @@ describe('Tests for lib/org.js', function() {
                 }
             });
 
-            org.getOrg('myorg', function(err, found) {
+            org.getOrg('myorg', undefined, function(err, found) {
                 expect(err.message).to.equal('The operation could not be performed properly. ');
                 done();
             });
@@ -72,7 +72,7 @@ describe('Tests for lib/org.js', function() {
                 }
             });
 
-            org.getOrg('myorg', function(err, found) {
+            org.getOrg('myorg', undefined, function(err, found) {
                 expect(err.message).to.equal('Authentication invalid. Please (re-)authenticate by running ' +
                     '´sfcc-ci auth:login´ or ´sfcc-ci client:auth´');
                 done();
@@ -90,7 +90,7 @@ describe('Tests for lib/org.js', function() {
                 }
             });
 
-            org.getOrg('myorg', function(err, found) {
+            org.getOrg('myorg', undefined, function(err, found) {
                 expect(err.message).to.equal('Getting org failed: Permission error');
                 done();
             });
@@ -107,7 +107,7 @@ describe('Tests for lib/org.js', function() {
                 }
             });
 
-            org.getOrg('myorg', function(err, found) {
+            org.getOrg('myorg', undefined, function(err, found) {
                 expect(err.message).to.equal('Getting org failed: 500');
                 done();
             });
@@ -124,7 +124,7 @@ describe('Tests for lib/org.js', function() {
                 }
             });
 
-            org.getOrg('myorg', function(err, found) {
+            org.getOrg('myorg', undefined, function(err, found) {
                 expect(err.message).to.equal('Unknown org myorg');
                 expect(found).to.be.undefined;
                 done();
@@ -142,7 +142,7 @@ describe('Tests for lib/org.js', function() {
                 }
             });
 
-            org.getOrg('myorg', function(err, found) {
+            org.getOrg('myorg', undefined, function(err, found) {
                 expect(err.message).to.equal('Org myorg is ambiguous');
                 expect(found).to.be.undefined;
                 done();
@@ -160,7 +160,7 @@ describe('Tests for lib/org.js', function() {
                 }
             });
 
-            org.getOrg('myorg', function(err, found) {
+            org.getOrg('myorg', undefined, function(err, found) {
                 expect(err).to.be.undefined;
                 expect(found).to.eql({ id: 1, name: 'myorg' });
                 done();
@@ -178,7 +178,7 @@ describe('Tests for lib/org.js', function() {
                 }
             });
 
-            org.getOrg('myorg', function(err, found){
+            org.getOrg('myorg', undefined, function(err, found){
                 expect(err).to.be.undefined;
                 expect(found).to.eql({ id: 1, name: 'myorg' });
                 done();
@@ -196,7 +196,7 @@ describe('Tests for lib/org.js', function() {
                 }
             });
 
-            org.getOrg('myorg', function(err, found){
+            org.getOrg('myorg', undefined, function(err, found){
                 expect(err).to.be.undefined;
                 expect(found).to.eql({ id: 1, name: 'myorg' });
                 done();

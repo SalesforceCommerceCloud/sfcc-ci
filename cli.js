@@ -285,6 +285,7 @@ program
     .command('sandbox:create')
     .option('-r, --realm <realm>','Realm to create the sandbox for')
     .option('-t, --ttl <hours>','Number of hours the sandbox will live')
+    .option('--auto-scheduled', 'Sets the sandbox as being auto scheduled')
     .option('--ocapi-settings <json>','Additional OCAPI settings applied to the sandbox')
     .option('--webdav-settings <json>','Additional WebDAV permissions applied to the sandbox')
     .option('-j, --json','Formats the output in json')
@@ -295,14 +296,15 @@ program
     .action(function(options) {
         var realm = ( options.realm ? options.realm : null );
         var ttl = ( options.ttl ? parseInt(options.ttl) : null );
+        var autoScheduled = ( options.autoScheduled ? options.autoScheduled : false );
         var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
         var setAsDefault = ( options.default ? options.default : false );
         var alias = ( options.setAlias ? options.setAlias : null );
         var ocapiSettings = ( options.ocapiSettings ? options.ocapiSettings : null );
         var webdavSettings = ( options.webdavSettings ? options.webdavSettings : null );
-        require('./lib/sandbox').cli.create(realm, alias, ttl, ocapiSettings, webdavSettings, asJson, sync,
-            setAsDefault);
+        require('./lib/sandbox').cli.create(realm, alias, ttl, autoScheduled, ocapiSettings, webdavSettings, asJson,
+            sync, setAsDefault);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -312,6 +314,10 @@ program
         console.log('  sandboxes allowed to create is limited. The command only trigger the creation and does not');
         console.log('  wait until the sandbox is fully up and running. Use may use `sfcc-ci sandbox:list` to check');
         console.log('  the status of the sandbox.');
+        console.log();
+        console.log('  The --auto-scheduled flag controls if the sandbox is being auto scheduled according to the');
+        console.log('  schedule configured at sandbox realm level. By default or if omitted the sandbox is not auto');
+        console.log('  scheduled.');
         console.log();
         console.log('  You can force the command to wait until the creation of the sandbox has been finished and the');
         console.log('  sandbox is available to use (in "started" status) by using the --sync flag. By default the');
@@ -343,6 +349,7 @@ program
         console.log('    $ sfcc-ci sandbox:create -r my-realm -a an-alias -s -d');
         console.log('    $ sfcc-ci sandbox:create -r my-realm -s -j');
         console.log('    $ sfcc-ci sandbox:create -r my-realm --ttl 6');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm --auto-scheduled');
         console.log();
     });
 
@@ -416,6 +423,7 @@ program
     .command('sandbox:update')
     .option('-s, --sandbox <id>','sandbox to update')
     .option('-t, --ttl <hours>','number of hours to add to the sandbox lifetime')
+    .option('--auto-scheduled <flag>','Sets the sandbox as being auto scheduled')
     .description('Update a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
@@ -432,7 +440,9 @@ program
             spec['instance'] = split[1];
         }
         var ttl = ( options.ttl ? parseInt(options.ttl) : null );
-        require('./lib/sandbox').cli.update(spec, ttl, false);
+        var autoScheduled = ( options.autoScheduled !== null ?
+            ( options.autoScheduled === 'true' ? true : false ) : null );
+        require('./lib/sandbox').cli.update(spec, ttl, autoScheduled, false);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -440,6 +450,9 @@ program
         console.log('  The TTL (time to live) in hours of the sandbox can be prolonged via the --ttl flag. The value');
         console.log('  must, together with previous prolongiations, adhere to the maximum TTL quotas). If set to 0 or');
         console.log('  less the sandbox will have an infinite lifetime.');
+        console.log();
+        console.log('  The --auto-scheduled flag controls if the sandbox is being autoscheduled according to the');
+        console.log('  schedule configured at sandbox realm level.');
         console.log();
         console.log('  The sandbox to update must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes.');
@@ -449,6 +462,8 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --ttl 8');
+        console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --auto-scheduled true');
+        console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --auto-scheduled false');
         console.log();
     });
 

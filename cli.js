@@ -286,6 +286,7 @@ program
     .option('-r, --realm <realm>','Realm to create the sandbox for')
     .option('-t, --ttl <hours>','Number of hours the sandbox will live')
     .option('--auto-scheduled', 'Sets the sandbox as being auto scheduled')
+    .option('-p, --profile <profile>','Resource profile used for the sandbox, "medium" is the default')
     .option('--ocapi-settings <json>','Additional OCAPI settings applied to the sandbox')
     .option('--webdav-settings <json>','Additional WebDAV permissions applied to the sandbox')
     .option('-j, --json','Formats the output in json')
@@ -297,14 +298,15 @@ program
         var realm = ( options.realm ? options.realm : null );
         var ttl = ( options.ttl ? parseInt(options.ttl) : null );
         var autoScheduled = ( options.autoScheduled ? options.autoScheduled : false );
+        var profile = ( options.profile ? options.profile : null );
         var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
         var setAsDefault = ( options.default ? options.default : false );
         var alias = ( options.setAlias ? options.setAlias : null );
         var ocapiSettings = ( options.ocapiSettings ? options.ocapiSettings : null );
         var webdavSettings = ( options.webdavSettings ? options.webdavSettings : null );
-        require('./lib/sandbox').cli.create(realm, alias, ttl, autoScheduled, ocapiSettings, webdavSettings, asJson,
-            sync, setAsDefault);
+        require('./lib/sandbox').cli.create(realm, alias, ttl, profile, autoScheduled, ocapiSettings, webdavSettings,
+            asJson, sync, setAsDefault);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -318,6 +320,10 @@ program
         console.log('  The --auto-scheduled flag controls if the sandbox is being auto scheduled according to the');
         console.log('  schedule configured at sandbox realm level. By default or if omitted the sandbox is not auto');
         console.log('  scheduled.');
+        console.log();
+        console.log('  Use the optional --profile <profile> to set the resource allocation for the sandbox, "medium"');
+        console.log('  is the default. Be careful, more powerful profiles consume more credits. Supported values');
+        console.log('  are: medium, large, xlarge.');
         console.log();
         console.log('  You can force the command to wait until the creation of the sandbox has been finished and the');
         console.log('  sandbox is available to use (in "started" status) by using the --sync flag. By default the');
@@ -350,6 +356,7 @@ program
         console.log('    $ sfcc-ci sandbox:create -r my-realm -s -j');
         console.log('    $ sfcc-ci sandbox:create -r my-realm --ttl 6');
         console.log('    $ sfcc-ci sandbox:create -r my-realm --auto-scheduled');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -p large');
         console.log();
     });
 

@@ -29,7 +29,7 @@
     "commander": "^2.18.0",
     "conf": "^4.0.2",
     "del": "^5.1.0",
-    "dotenv": "^8.2.0",
+    "dotenv": "^8.6.0",
     "globby": "^11.0.1",
     "inquirer": "^6.2.0",
     "jsondiffpatch": "^0.4.1",

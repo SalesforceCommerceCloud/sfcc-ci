@@ -27,7 +27,7 @@ The focus of the tool is to streamline and easy the communication with Commerce 
 **Features:**
 
 * Interactive and headless authentication against Account Manager
-* Support for B2C On-Demand Developer Sandboxes 
+* Support for B2C On-Demand Developer Sandboxes
 * Uses Open Commerce APIs completely
 * Authentication using Oauth2
 * Configuration of multiple instances incl. aliasing
@@ -56,7 +56,7 @@ In order to perform CLI commands, you have to permit API calls to the Commerce C
 1. Log into the Business Manager
 2. Navigate to _Administration > Site Development > Open Commerce API Settings_
 3. Make sure, that you select _Data API_ and _Global_ from the select boxes
-4. Add the permission set for your client ID to the settings. 
+4. Add the permission set for your client ID to the settings.
 
 Use the following snippet as your client's permission set, replace `my_client_id` with your own client ID. Note, if you already have Open Commerce API Settings configured on your instance, e.g. for other API keys, you have to merge this permission set into the existing list of permission sets for the other clients.
 ```JSON
@@ -254,7 +254,7 @@ You are now ready to use the tool by running the main command `sfcc-ci`.
 
 * Make sure Node.js and npm are installed.
 * Clone or download the sources.
-* * If you choose to clone, it best done through ssh along with an ssh key which you have to create with your Github account. 
+* * If you choose to clone, it best done through ssh along with an ssh key which you have to create with your Github account.
 * * If you choose to download the latest sources, you can do so from [Releases](https://github.com/SalesforceCommerceCloud/sfcc-ci/releases/latest), after which you have to unzip the archive.
 * `cd` into the directory and run `npm install`. You may choose to install globally, by running `npm install -g` instead.
 * Check if installation was successful by running `sfcc-ci --help`. In case you encouter any issues with running `sfcc-ci`, you may run `npm link` to create a symbolic link explicitly. The symbolic link enables you to run `sfcc-ci` from any location on your machine.
@@ -286,6 +286,7 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
     sandbox:realm:update [options]                                  Update realm settings
     sandbox:list [options]                                          List all available sandboxes
+    sandbox:ips [options]                                           List inbound and outbound IP addresses for sandboxes
     sandbox:create [options]                                        Create a new sandbox
     sandbox:get [options]                                           Get detailed information about a sandbox
     sandbox:update [options]                                        Update a sandbox
@@ -308,6 +309,9 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     code:deploy [options] <archive>                                 Deploys a custom code archive onto a Commerce Cloud instance
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
     code:delete [options]                                           Delete a custom code version
+    code:manifest:generate <localdirectorypaths>                    Generates the manifest file based on the given local directories
+    code:compare <localdirectorypaths>                              Compares the given local directories with the given code version (or the active one if none specified) of the Commerce Cloud instance and provide a diff between the two
+    code:deploy:diff <codeversion> <localdirectorypaths>            Deploys only the local changes to the instance and not a full new code version
     job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
     cartridge:add [options] <cartridgename>                         Adds a cartridge-name to the site cartridge path
@@ -570,11 +574,12 @@ sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
 
 ### Sandboxes ###
 
-Provision a new sandbox, uploading code and running an instance import:
+Provision a new sandbox, outputting the inbound and outbound IP addresses, uploading code and running an instance import:
 
 ```bash
 SANDBOX=`sfcc-ci sandbox:create <a-realm> -s -j`
 SANDBOX_HOST=`$SANDBOX | jq '.instance.host' -r`
+sfcc-ci sandbox:ips
 sfcc-ci code:deploy <path/to/code.zip> -i $SANDBOX_HOST
 sfcc-ci instance:upload <path/to/data.zip> -i $SANDBOX_HOST -s
 sfcc-ci instance:import <data.zip> -i your-instance.demandware.net
@@ -606,6 +611,7 @@ The API is structured into sub modules. You may require sub modules directly, e.
   const sfcc_code = require('sfcc-ci').code;
   const sfcc_instance = require('sfcc-ci').instance;
   const sfcc_job = require('sfcc-ci').job;
+  const sfcc_user = require('sfcc-ci').user;
   const sfcc_webdav = require('sfcc-ci').webdav;
 ```
 
@@ -617,10 +623,25 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
   sfcc.code.activate(instance, code_version, token, callback);
   sfcc.code.deploy(instance, archive, token, options, callback);
   sfcc.code.list(instance, token, callback);
+  sfcc.code.compare(instance, localDirectories, options);
+  sfcc.code.diffdeploy(instance, localDirectories, codeVersionName, options, activate);
   sfcc.instance.upload(instance, file, token, options, callback);
   sfcc.instance.import(instance, file_name, token, callback);
   sfcc.job.run(instance, job_id, job_params, token, callback);
   sfcc.job.status(instance, job_id, job_execution_id, token, callback);
+  sfcc.manifest.generate(directories, ignorePatterns, targetDirectory, fileName);
+  sfcc.user.create(org, user, mail, firstName, lastName, token).then(result => ...).catch(err => ...);
+  sfcc.user.list(org, role, login, count, sortBy, token).then(result => ...).catch(err => ...);
+  sfcc.user.update(login, changes, token).then(result => ...).catch(err => ...);
+  sfcc.user.grant(login, role, scope, token).then(result => ...).catch(err => ...);
+  sfcc.user.revoke(login, role, scope, token).then(result => ...).catch(err => ...);
+  sfcc.user.delete(login, purge, token).then(result => ...).catch(err => ...);
+  sfcc.user.createLocal(instance, login, user, token).then(result => ...).catch(err => ...);
+  sfcc.user.searchLocal(instance, login, query, role, sortBy, count, start, token).then(result => ...).catch(err => ...);
+  sfcc.user.updateLocal(instance, login, changes, token).then(result => ...).catch(err => ...);
+  sfcc.user.grantLocal(instance, login, role, token).then(result => ...).catch(err => ...);
+  sfcc.user.revokeLocal(instance, login, role, token).then(result => ...).catch(err => ...);
+  sfcc.user.deleteLocal(instance, login, token).then(result => ...).catch(err => ...);
   sfcc.webdav.upload(instance, path, file, token, options, callback);
 ```
 
@@ -750,6 +771,108 @@ callback      | (Function)  | Callback function executed as a result. The error 
 
 ***
 
+`compare(instance, localDirectories, options)`
+
+Compare the given local directories with the given code version (or the active one if none specified) of the Commerce Cloud instance and provide a diff between the two
+
+Param                     | Type        | Description
+------------------------- | ------------| --------------------------------
+instance                  | (String)    | The instance to activate the code on
+localDirectories          | (Array)     | The list of local directories to compare with the remote instance
+options                   | (Object)    | The object that contain all the possible options.
+options.sourceCodeVersion | (String)    | This is the name of the code version from the instance to use as source of comparison. If not specified, the active code version is used.
+options.manifestFileName  | (String)    | The name of the remote manifest file. If not provided, the `manifest.FILENAME` constant is used.
+options.pfx               | (String)    | The path to the certificate to authenticate to the instance.
+options.passphrase        | (String)    | The passphrase associated with the given certificate.
+options.overrideLocalFile | (Boolean)   | If not provided, the process won't override any existing manifest previously downloaded, and will abort the process. If provided, then any existing downloaded manifest file will be overridden
+options.ignorePatterns    | (Array)     | A list of [glob](https://www.npmjs.com/package/glob) patterns to use to ignore files while listing local files and generating the local manifest. If not provided, the default patterns are used: `['test/**/*', 'coverage/**/*', 'documentation/**/*', 'docs/**/*', '*.md']`
+options.outputFile        | (Boolean)   | If provided, a file will be generated with the resuts in the comparison in the `process.cwd()` folder. Its path is then passed in the `resolve` method of the returned promise. If not provided, then the comparison results are passed in the `resolve` method of the returned promise.
+options.removeFilesAfter  | (Boolean)   | If provided, the downloaded manifest and generated one (for local files) are removed. Only the output file will remain (if the option `outputFile` is provided). If not provided, any manifest used for the comparison will remain in the `process.cwd()` folder.
+options.verbose           | (Object)    | Asks the process to log each stage of the comparison task.
+
+**Returns:** (Promise) Returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+The `resolve` method is called with either:
+- The path of the output file which contain the comparison results, if the `outputFile` option is passed
+- The JSON representation of the comparison results, if the `outputFile` option is **not** passed
+The `reject` method is called with any error message if an error occurs during the comparison process
+
+Example:
+
+```javascript
+const sfcc = require('sfcc-ci');
+
+const instance = '"*.sandbox.us01.dx.commercecloud.salesforce.com';
+const localDirectories = ['path/to/repo1', 'path/to/repo2'];
+const options = {
+    ignorePatterns: ['test/**/*', 'docs/**/*'],
+    outputFile: true,
+    removeFilesAfter: true,
+    overrideLocalFile: true
+};
+
+sfcc.code.compare(instance, localDirectories, options)
+    .then(deltaResult => {
+        // do something with the delta result, which contains the difference between the local directories and the remote code version
+    })
+    .catch(err => console.log(err));
+
+```
+
+***
+
+`diffdeploy(instance, localDirectories, codeVersionName, options, activate)`
+
+Generate a manifest for the given local directories. Compare this manifest with the one within the active code version of the instance. Deploy only the files which have been updated locally comparing to the remote, within a newly created code version. Activate this newly generated code version if required in the options
+
+Param                       | Type        | Description
+--------------------------- | ------------| --------------------------------
+instance                    | (String)    | The instance to activate the code on
+localDirectories            | (Array)     | The list of local directories to compare with the remote instance
+codeVersionName             | (String)    | The name of the new code version to use for the newly deployed code version
+options                     | (Object)    | The object that contain all the possible options.
+options.sourceCodeVersion   | (String)    | This is the name of the code version from the instance to use as source of comparison. If not specified, the active code version is used.
+options.manifestFileName    | (String)    | The name of the remote manifest file. If not provided, the `manifest.FILENAME` constant is used.
+options.pfx                 | (String)    | The path to the certificate to authenticate to the instance.
+options.passphrase          | (String)    | The passphrase associated with the given certificate.
+options.overrideLocalFile   | (Boolean)   | If not provided, the process won't override any existing manifest previously downloaded, and will abort the process. If provided, then any existing downloaded manifest file will be overridden
+options.ignorePatterns      | (Array )    | A list of [glob](https://www.npmjs.com/package/glob) patterns to use to ignore files while listing local files and generating the local manifest. If not provided, the default patterns are used: `['test/**/*', 'coverage/**/*', 'documentation/**/*', 'docs/**/*', '*.md']`
+options.forceDeployPatterns | (Array )    | A list of [glob](https://www.npmjs.com/package/glob) patterns to use to force the deployment for those files. The deploy will **ALWAYS** include these files within the deployment, regardless if these files were not changed or were ignored by the previous ignore patterns list.
+options.removeFilesAfter    | (Boolean)   | If provided, the downloaded manifest and generated one (for local files) are removed. Only the output file will remain (if the option `outputFile` is provided). If not provided, any manifest used for the comparison will remain in the `process.cwd()` folder.
+options.verbose             | (Object)    | Asks the process to log each stage of the comparison task.
+activate                    | (Boolean)   | Asks the process to activate the newly deployed code version. If not provided, then the code version will remain on the instance deactivated.
+
+**Returns:** (Promise) Returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+The `resolve` method is called with `undefined` as parameter, meaning that the process finished successfully
+The `reject` method is called with any error message if an error occurs during the comparison process
+
+Example:
+
+```javascript
+const sfcc = require('sfcc-ci');
+
+const instance = '"*.sandbox.us01.dx.commercecloud.salesforce.com';
+const localDirectories = ['path/to/repo1', 'path/to/repo2'];
+const codeVersionName = 'new_code_version';
+const activate = true;
+const options = {
+    sourceCodeVersion: 'code_version_to_use_as_source',
+    ignorePatterns: ['test/**/*', 'docs/**/*'],
+    forceDeployPatterns: ['**/config/**/*'],
+    outputFile: true,
+    removeFilesAfter: true,
+    overrideLocalFile: true
+};
+
+sfcc.code.diffdeploy(instance, localDirectories, codeVersionName, options, activate)
+    .then(() => {
+        // do something, now that the code has been deployed and activated successfully
+    })
+    .catch(err => console.log(err));
+
+```
+
+***
+
 ### Instance ###
 
 APIs available in `require('sfcc').instance`:
@@ -818,6 +941,234 @@ token            | (String)    | The Oauth token to use use for authentication
 callback         | (Function)  | Callback function executed as a result. The error and the job execution details will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
+
+***
+
+### User ###
+
+APIs available in `require('sfcc').user`:
+
+`create(org, user, mail, firstName, lastName, token)`
+
+Creates a new user into Account Manager
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+org           | (String)    | The org ID where to create the user
+user          | (Object)    | The user object with all the required data in it
+mail          | (String)    | The email of the user
+firstName     | (String)    | The firstname of the user
+lastName      | (String)    | The lastname of the user
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the newly created user object.
+
+***
+
+`list(org, role, login, count, sortBy, token)`
+
+Lists all users eligible to manage from the Account Manager, based on the given filters (if any provided)
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+org           | (String)    | The org ID or null, if all users should be retrieved
+role          | (String)    | The role or null, if all users should be retrieved
+login         | (String)    | The login or null, if all users should be retrieved
+count         | (Number)    | The max count of list items
+sortBy        | (String)    | (Optional) field to sort the list of users by
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the results array.
+
+***
+
+`update(login, changes, token)`
+
+Update a user into Account Manager
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+login         | (String)    | The login of the user to update
+changes       | (Object)    | The changes to the user details
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the updated user.
+
+***
+
+`grant(login, role, scope, token)`
+
+Grant a role to a user into Account Manager
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+login         | (String)    | The login (email) of the user
+role          | (String)    | The role to grant
+scope         | (String)    | The scope of the role to revoke
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the changed user.
+
+***
+
+`revoke(login, role, scope, token)`
+
+Revoke a role to a user from Account Manager
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+login         | (String)    | The login (email) of the user
+role          | (String)    | The role to grant
+scope         | (String)    | The scope of the role to revoke
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the changed user.
+
+***
+
+`delete(login, purge, token)`
+
+Delete a user from Account Manager
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+login         | (String)    | The user to delete
+purge         | (Boolean)   | Whether to purge the user completely
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is a boolean value that confirms if the user has been deleted or not.
+
+***
+
+`createLocal(instance, login, user, token)`
+
+Creates a new local user on an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to create the user on
+login         | (String)    | The user to delete
+user          | (Object)    | The user details
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the created user.
+
+***
+
+`searchLocal(instance, login, query, role, sortBy, count, start, token)`
+
+Search for local users on an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to create the user on
+login         | (String)    | The login or null, if all users should be retrieved
+query         | (String)    | The query to search users for
+role          | (String)    | The role to search users for
+sortBy        | (String)    | (Optional) field to sort users by
+count         | (Number)    | (Optional) number of items per page
+start         | (Number)    | (Optional) zero-based index of the first search hit to include
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the results of the search.
+
+***
+
+`updateLocal(instance, login, changes, token)`
+
+Update a local user on an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to update the user on
+login         | (String)    | The login of the local user to update
+changes       | (Object)    | The changes to the user details
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the updated user.
+
+***
+
+`grantLocal(instance, login, role, token)`
+
+Grant a role to a local user on an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to apply the role on the user on
+login         | (String)    | The login of the local user to grant
+role          | (String)    | The role to grant
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the changed user.
+
+***
+
+`revokeLocal(instance, login, role, token)`
+
+Revoke a role from a local user on an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to apply the role on the user on
+login         | (String)    | The login of the local user to revoke
+role          | (String)    | The role to revoke
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the changed user.
+
+***
+
+`deleteLocal(instance, login, token)`
+
+Delete a local user from an instance
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to delete the user on
+login         | (String)    | The login of the local user to delete
+token         | (String)    | The Oauth token to use use for authentication
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is a boolean value that confirms if the user has been deleted or not.
+
+***
+
+### Manifest ###
+
+APIs available in `require('sfcc-ci').manifest`:
+
+`generate(directories, ignorePatterns, targetDirectory, fileName)`
+
+Generates the manifest file based on the given local directories.
+
+Param                      | Type        | Description
+-------------------------- | ------------| --------------------------------
+directories                | (Array)     | The list of directories for which to generate a manifest. These directories has to contain a `cartridges` folder at their root level
+ignorePatterns (Optional)  | (String)    | A list of [glob](https://www.npmjs.com/package/glob) patterns to use to ignore files while listing local files and generating the local manifest. If not provided, the default patterns are used: `['test/**/*', 'coverage/**/*', 'documentation/**/*', 'docs/**/*', '*.md']`
+targetDirectory (Optional) | (Boolean)   | The directory where to store the generated manifest. If not provided, `process.cwd()` is used.
+fileName (Optional)        | (Boolean)   | The file name to use while generating the manifest file. If not provided, the `require('sfcc-ci').manifest.FILENAME` constant is used.
+
+**Returns:** (Promise) Returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+The `resolve` method is called with newly generated manifest file path as parameter
+The `reject` method is called with any error message if an error occurs during the comparison process
+
+Example:
+
+```javascript
+const sfcc = require('sfcc-ci');
+
+const directories = ['/path/to/repo1', '/path/to/repo2'];
+const ignorePatterns = ['test/**/*', 'docs/**/*'];
+const targetDirectory = 'path/to/target/directory';
+const fileName = 'my_manifest.json';
+
+sfcc.manifest.generate(directories, ignorePatterns, targetDirectory, fileName)
+    .then(manifestPath => {
+        // do something with the manifest path
+    })
+    .catch(err => console.log(err));
+
+```
 
 ***
 

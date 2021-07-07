@@ -40,7 +40,7 @@
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
     "table": "^5.0.2",
-    "snyk": "^1.630.0"
+    "snyk": "^1.631.0"
   },
   "devDependencies": {
     "archiver": "^5.0.0",

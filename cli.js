@@ -1926,6 +1926,23 @@ program
         console.log();
     });
 
+
+program
+    .command('slas:tenant:list')
+    .description('Gets a all tenants accesible to authorization')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.list(options.shortcode, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
 program
     .command('slas:tenant:add')
     .description('Adds a SLAS tenant to given organisation')
@@ -1941,7 +1958,7 @@ program
         var asJson = ( options.json ? options.json : false );
 
         const slas = require('./lib/slas');
-        await slas.cli.tenant.add(options.tenant, options.shortcode, options.tenantdescription, options.merchantname, options.contact, options.email);
+        await slas.cli.tenant.add(options.tenant, options.shortcode, options.tenantdescription, options.merchantname, options.contact, options.email, asJson);
 
     }).on('--help', function() {
         console.log();
@@ -1950,15 +1967,15 @@ program
 program
     .command('slas:tenant:get')
     .description('Gets a SLAS tenant from given organisation')
-    .requiredOption('--tenant <tenant>', 'the tenant id to add')
-    .requiredOption('--shortcode <shortcode>', 'the organizations short code')
+    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--shortcode <shortcode>', 'the organizations short code')
     .option('-j, --json', 'Formats the output in json')
     .action(async function(options) {
 
         var asJson = ( options.json ? options.json : false );
 
         const slas = require('./lib/slas');
-        await slas.cli.tenant.get(options.tenant, options.shortcode);
+        await slas.cli.tenant.get(options.tenant, options.shortcode, asJson);
 
     }).on('--help', function() {
         console.log();
@@ -1967,15 +1984,86 @@ program
 program
     .command('slas:tenant:delete')
     .description('deletes a SLAS tenant from given organisation')
-    .requiredOption('--tenant <tenant>', 'the tenant id to add')
-    .requiredOption('--shortcode <shortcode>', 'the organizations short code')
+    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--shortcode <shortcode>', 'the organizations short code')
     .option('-j, --json', 'Formats the output in json')
     .action(async function(options) {
 
         var asJson = ( options.json ? options.json : false );
 
         const slas = require('./lib/slas');
-        await slas.cli.tenant.get(options.tenant, options.shortcode);
+        await slas.cli.tenant.get(options.tenant, options.shortcode, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:add')
+    .description('Adds a SLAS client to given tenant')
+    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--file <file>', 'The JSON File used to set up the slas client')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.add(options.tenant, options.shortcode, options.file, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:get')
+    .description('Get a SLAS client to given tenant')
+    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--clientid <clientid>', 'The JSON File used to set up the slas client')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:list')
+    .description('Get a SLAS client to given tenant')
+    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.list(options.tenant, options.shortcode, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:delete')
+    .description('Get a SLAS client to given tenant')
+    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--clientid <clientid>', 'The JSON File used to set up the slas client')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
 
     }).on('--help', function() {
         console.log();
@@ -1993,6 +2081,8 @@ program.on('--help', function() {
     console.log('    $SFCC_OAUTH_USER_PASSWORD          user password used for authentication');
     console.log('    $SFCC_SANDBOX_API_HOST             set sandbox API host');
     console.log('    $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes')
+    console.log('    $SFCC_SCAPI_SHORTCODE              the Salesforce Commerce (Headless) API Shortcode');
+    console.log('    $SFCC_SCAPI_TENANTID               the Salesforce Commerce (Headless) API TenantId')
     console.log('    $DEBUG                             enable verbose output');
     console.log('');
     console.log('  Detailed Help:');

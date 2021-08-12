@@ -1926,6 +1926,60 @@ program
         console.log();
     });
 
+program
+    .command('slas:tenant:add')
+    .description('Adds a SLAS tenant to given organisation')
+    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--merchantname <merchantame>', 'the name given for the tenant')
+    .option('--tenantdescription <tenantdescription>', 'the tenant descriptions')
+    .option('--contact <contact>', 'Contact person to manage tenants')
+    .option('--email <email>', 'Email to contact')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.add(options.tenant, options.shortcode, options.tenantdescription, options.merchantname, options.contact, options.email);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:tenant:get')
+    .description('Gets a SLAS tenant from given organisation')
+    .requiredOption('--tenant <tenant>', 'the tenant id to add')
+    .requiredOption('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.get(options.tenant, options.shortcode);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:tenant:delete')
+    .description('deletes a SLAS tenant from given organisation')
+    .requiredOption('--tenant <tenant>', 'the tenant id to add')
+    .requiredOption('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.get(options.tenant, options.shortcode);
+
+    }).on('--help', function() {
+        console.log();
+    });
 
 program.on('--help', function() {
     console.log('');

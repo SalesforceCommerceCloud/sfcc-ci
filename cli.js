@@ -1946,7 +1946,7 @@ program
 program
     .command('slas:tenant:add')
     .description('Adds a SLAS tenant to given organisation')
-    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
     .option('--shortcode <shortcode>', 'the organizations short code')
     .option('--merchantname <merchantame>', 'the name given for the tenant')
     .option('--tenantdescription <tenantdescription>', 'the tenant descriptions')
@@ -1967,7 +1967,7 @@ program
 program
     .command('slas:tenant:get')
     .description('Gets a SLAS tenant from given organisation')
-    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
     .option('--shortcode <shortcode>', 'the organizations short code')
     .option('-j, --json', 'Formats the output in json')
     .action(async function(options) {
@@ -1984,7 +1984,7 @@ program
 program
     .command('slas:tenant:delete')
     .description('deletes a SLAS tenant from given organisation')
-    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
     .option('--shortcode <shortcode>', 'the organizations short code')
     .option('-j, --json', 'Formats the output in json')
     .action(async function(options) {
@@ -2001,7 +2001,7 @@ program
 program
     .command('slas:client:add')
     .description('Adds a SLAS client to given tenant')
-    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
     .option('--shortcode <shortcode>', 'the organizations short code')
     .option('--file <file>', 'The JSON File used to set up the slas client')
     .option('-j, --json', 'Formats the output in json')
@@ -2019,7 +2019,7 @@ program
 program
     .command('slas:client:get')
     .description('Get a SLAS client to given tenant')
-    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
     .option('--shortcode <shortcode>', 'the organizations short code')
     .option('--clientid <clientid>', 'The JSON File used to set up the slas client')
     .option('-j, --json', 'Formats the output in json')
@@ -2037,7 +2037,7 @@ program
 program
     .command('slas:client:list')
     .description('Get a SLAS client to given tenant')
-    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
     .option('--shortcode <shortcode>', 'the organizations short code')
     .option('-j, --json', 'Formats the output in json')
     .action(async function(options) {
@@ -2054,7 +2054,7 @@ program
 program
     .command('slas:client:delete')
     .description('Get a SLAS client to given tenant')
-    .option('--tenant <tenant>', 'the tenant id to add')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
     .option('--shortcode <shortcode>', 'the organizations short code')
     .option('--clientid <clientid>', 'The JSON File used to set up the slas client')
     .option('-j, --json', 'Formats the output in json')

@@ -334,6 +334,14 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     user:create [options]                                           Create a new user
     user:update [options]                                           Update a user
     user:delete [options]                                           Delete a user
+    slas:tenant:list [options]                                      Gets a all tenants accesible to authorization
+    slas:tenant:add [options]                                       Adds a SLAS tenant to given organisation
+    slas:tenant:get [options]                                       Gets a SLAS tenant from given organisation
+    slas:tenant:delete [options]                                    deletes a SLAS tenant from given organisation
+    slas:client:add [options]                                       Adds a SLAS client to given tenant
+    slas:client:get [options]                                       Get a SLAS client to given tenant
+    slas:client:list [options]                                      Get a SLAS client to given tenant
+    slas:client:delete [options]                                    Get a SLAS client to given tenant
 
   Environment:
 
@@ -345,6 +353,8 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     $SFCC_OAUTH_USER_PASSWORD          user password used for authentication
     $SFCC_SANDBOX_API_HOST             set sandbox API host
     $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes
+    $SFCC_SCAPI_SHORTCODE              the Salesforce Commerce (Headless) API Shortcode
+    $SFCC_SCAPI_TENANTID               the Salesforce Commerce (Headless) API TenantId
     $DEBUG                             enable verbose output
 
   Detailed Help:

@@ -1948,6 +1948,7 @@ program
     .description('Adds a SLAS tenant to given organisation')
     .option('--tenant <tenant>', 'the tenant id used for slas')
     .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--file <file>', 'JSON file with tenant details')
     .option('--merchantname <merchantame>', 'the name given for the tenant')
     .option('--tenantdescription <tenantdescription>', 'the tenant descriptions')
     .option('--contact <contact>', 'Contact person to manage tenants')
@@ -1958,7 +1959,7 @@ program
         var asJson = ( options.json ? options.json : false );
 
         const slas = require('./lib/slas');
-        await slas.cli.tenant.add(options.tenant, options.shortcode, options.tenantdescription, options.merchantname, options.contact, options.email, asJson);
+        await slas.cli.tenant.add(options.tenant, options.shortcode, options.tenantdescription, options.merchantname, options.contact, options.email, options.file, asJson);
 
     }).on('--help', function() {
         console.log();
@@ -2004,13 +2005,33 @@ program
     .option('--tenant <tenant>', 'the tenant id used for slas')
     .option('--shortcode <shortcode>', 'the organizations short code')
     .option('--file <file>', 'The JSON File used to set up the slas client')
+    .option('--clientid <clientid>', 'The client ID to add')
+    .option('--clientname <clientname>', 'The name of the client ID')
+    .option('--privateclient <privateclient>', 'true the client is private')
+    .option('--ecomtenant <ecomtenant>', 'the ecom tenant')
+    .option('--ecomsite <ecomsite>', 'the ecom site')
+    .option('--secret <secret>', 'the slas secret, can be different then the secret in \
+        account manager, but shouldnt be')
+    .option('--channels <channels>', 'comma separated list of site IDs this API client should support')
+    .option('--scopes <scopes>', 'comma separated list of auth z scopes this API client should support')
+    .option('--redirecturis <redirecturis>', 'comma separated list of redirect uris this API client should support')
+
     .option('-j, --json', 'Formats the output in json')
     .action(async function(options) {
 
         var asJson = ( options.json ? options.json : false );
+        const clientid = options.clientid;
+        const clientname = options.clientname;
+        const privateclient = options.privateclient;
+        const ecomtenant = options.ecomtenant;
+        const ecomsite = options.ecomsite;
+        const secret = options.secret;
+        const channels = !options.channels || options.channels.split(',').map(item => item.trim());
+        const scopes = !options.scopes || options.scopes.split(',').map(item => item.trim());
+        const redirecturis = !options.redirecturis || options.redirecturis.split(',').map(item => item.trim());
 
         const slas = require('./lib/slas');
-        await slas.cli.client.add(options.tenant, options.shortcode, options.file, asJson);
+        await slas.cli.client.add(options.tenant, options.shortcode, options.file, clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, asJson);
 
     }).on('--help', function() {
         console.log();
@@ -2021,7 +2042,7 @@ program
     .description('Get a SLAS client to given tenant')
     .option('--tenant <tenant>', 'the tenant id used for slas')
     .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('--clientid <clientid>', 'The JSON File used to set up the slas client')
+    .option('--clientid <clientid>', 'The client ID to get information for')
     .option('-j, --json', 'Formats the output in json')
     .action(async function(options) {
 

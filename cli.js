@@ -1959,7 +1959,8 @@ program
         var asJson = ( options.json ? options.json : false );
 
         const slas = require('./lib/slas');
-        await slas.cli.tenant.add(options.tenant, options.shortcode, options.tenantdescription, options.merchantname, options.contact, options.email, options.file, asJson);
+        await slas.cli.tenant.add(options.tenant, options.shortcode,
+            options.tenantdescription, options.merchantname, options.contact, options.email, options.file, asJson);
 
     }).on('--help', function() {
         console.log();
@@ -2031,7 +2032,8 @@ program
         const redirecturis = !options.redirecturis || options.redirecturis.split(',').map(item => item.trim());
 
         const slas = require('./lib/slas');
-        await slas.cli.client.add(options.tenant, options.shortcode, options.file, clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, asJson);
+        await slas.cli.client.add(options.tenant, options.shortcode, options.file,
+            clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, asJson);
 
     }).on('--help', function() {
         console.log();

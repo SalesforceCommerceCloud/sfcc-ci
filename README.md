@@ -210,7 +210,18 @@ If do not want to use the JavaScript API, but just the CLI you don't need Node.j
 
 ## Installation Instructions ##
 
-You can install the CLI using a pre-built binary or from source using Node.js.
+You can install the CLI from `npm`, using a pre-built binary or from source using Node.js.
+
+### Install from `npm` ###
+
+If you already have [Node.js](https://nodejs.org/en/download/) installed, you can install globally using `npm` or run using [`npx`](https://docs.npmjs.com/cli/v7/commands/npx):
+
+```sh
+npm install -g sfcc-ci
+
+# Or alternatively, using npx:
+npx sfcc-ci
+```
 
 ### Install Prebuilt Binary ###
 

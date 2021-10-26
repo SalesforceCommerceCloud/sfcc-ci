@@ -1985,7 +1985,7 @@ program
 
 program
     .command('slas:tenant:delete')
-    .description('Deletes a SLAS tenant from a given organization)
+    .description('Deletes a SLAS tenant from a given organization')
     .option('--tenant <tenant>', 'the tenant id used for slas')
     .option('--shortcode <shortcode>', 'the organizations short code')
     .option('-j, --json', 'Formats the output in json')

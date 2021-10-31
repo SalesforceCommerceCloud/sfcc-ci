@@ -687,6 +687,7 @@ program
     .option('-s, --sandbox <id>','sandbox to create alias for')
     .option('-h, --host <host>','hostname alias to register')
     .option('-j, --json', 'Optional, formats the output in json')
+    .option('-u, --unique', 'Optional, define alias as unique, false by default')
     .description('Registers a hostname alias for a sandbox.')
     .action(function(options) {
         var sandbox = options.sandbox;
@@ -710,7 +711,8 @@ program
             return;
         }
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.alias.create(spec, aliasName, asJson);
+        var unique = ( options.unique ? options.unique : false );
+        require('./lib/sandbox').cli.alias.create(spec, aliasName, unique, asJson);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -719,6 +721,10 @@ program
         console.log('  as soon as you have inserted the domain and a given target IP in your etc/hosts file. ');
         console.log('  Note that you also have to include the hostname in your site alias configuration in Business');
         console.log('  Manager to make the following redirect to your storefront working.');
+        console.log('');
+        console.log('  Use the --unique flag allows you to configure the alias to be unique across all aliases');
+        console.log('  registered. This requires that you have to proof ownership of the host on a DNS level.');
+        console.log('  By default the alias is not unique.');
         console.log('');
         console.log('  Use --json to only print the created alias incl. the registration link.');
         console.log('');

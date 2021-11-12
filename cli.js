@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+var colors = require('colors');
 var program = require('commander');
 var { prompt } = require('inquirer');
 
@@ -361,11 +362,11 @@ program
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:realm');
-        console.log('    $ sfcc-ci sandbox:realm --json');
-        console.log('    $ sfcc-ci sandbox:realm --realm zzzz');
-        console.log('    $ sfcc-ci sandbox:realm --realm zzzz --json');
-        console.log('    $ sfcc-ci sandbox:realm --realm zzzz --show-usage');
+        console.log('    $ sfcc-ci sandbox:realm:list');
+        console.log('    $ sfcc-ci sandbox:realm:list --json');
+        console.log('    $ sfcc-ci sandbox:realm:list --realm zzzz');
+        console.log('    $ sfcc-ci sandbox:realm:list --realm zzzz --json');
+        console.log('    $ sfcc-ci sandbox:realm:list --realm zzzz --show-usage');
         console.log();
     });
 
@@ -426,9 +427,27 @@ program
     });
 
 program
+    .command('sandbox:ips')
+    .description('List inbound and outbound IP addresses for sandboxes')
+    .option('-j, --json','Formats the output in json')
+    .action(function(options) {
+        var asJson = ( options.json ? options.json : false );
+        require('./lib/sandbox').cli.ips(asJson);
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci sandbox:ips');
+        console.log('    $ sfcc-ci sandbox:ips --json');
+        console.log();
+    });
+
+program
     .command('sandbox:create')
     .option('-r, --realm <realm>','Realm to create the sandbox for')
     .option('-t, --ttl <hours>','Number of hours the sandbox will live')
+    .option('--auto-scheduled', 'Sets the sandbox as being auto scheduled')
+    .option('-p, --profile <profile>','Resource profile used for the sandbox, "medium" is the default')
     .option('--ocapi-settings <json>','Additional OCAPI settings applied to the sandbox')
     .option('--webdav-settings <json>','Additional WebDAV permissions applied to the sandbox')
     .option('-j, --json','Formats the output in json')
@@ -439,14 +458,16 @@ program
     .action(function(options) {
         var realm = ( options.realm ? options.realm : null );
         var ttl = ( options.ttl ? parseInt(options.ttl) : null );
+        var autoScheduled = ( options.autoScheduled ? options.autoScheduled : false );
+        var profile = ( options.profile ? options.profile : null );
         var asJson = ( options.json ? options.json : false );
         var sync = ( options.sync ? options.sync : false );
         var setAsDefault = ( options.default ? options.default : false );
         var alias = ( options.setAlias ? options.setAlias : null );
         var ocapiSettings = ( options.ocapiSettings ? options.ocapiSettings : null );
         var webdavSettings = ( options.webdavSettings ? options.webdavSettings : null );
-        require('./lib/sandbox').cli.create(realm, alias, ttl, ocapiSettings, webdavSettings, asJson, sync,
-            setAsDefault);
+        require('./lib/sandbox').cli.create(realm, alias, ttl, profile, autoScheduled, ocapiSettings, webdavSettings,
+            asJson, sync, setAsDefault);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -456,6 +477,14 @@ program
         console.log('  sandboxes allowed to create is limited. The command only trigger the creation and does not');
         console.log('  wait until the sandbox is fully up and running. Use may use `sfcc-ci sandbox:list` to check');
         console.log('  the status of the sandbox.');
+        console.log();
+        console.log('  The --auto-scheduled flag controls if the sandbox is being auto scheduled according to the');
+        console.log('  schedule configured at sandbox realm level. By default or if omitted the sandbox is not auto');
+        console.log('  scheduled.');
+        console.log();
+        console.log('  Use the optional --profile <profile> to set the resource allocation for the sandbox, "medium"');
+        console.log('  is the default. Be careful, more powerful profiles consume more credits. Supported values');
+        console.log('  are: medium, large, xlarge.');
         console.log();
         console.log('  You can force the command to wait until the creation of the sandbox has been finished and the');
         console.log('  sandbox is available to use (in "started" status) by using the --sync flag. By default the');
@@ -487,6 +516,8 @@ program
         console.log('    $ sfcc-ci sandbox:create -r my-realm -a an-alias -s -d');
         console.log('    $ sfcc-ci sandbox:create -r my-realm -s -j');
         console.log('    $ sfcc-ci sandbox:create -r my-realm --ttl 6');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm --auto-scheduled');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm -p large');
         console.log();
     });
 
@@ -560,6 +591,7 @@ program
     .command('sandbox:update')
     .option('-s, --sandbox <id>','sandbox to update')
     .option('-t, --ttl <hours>','number of hours to add to the sandbox lifetime')
+    .option('--auto-scheduled <flag>','Sets the sandbox as being auto scheduled')
     .description('Update a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
@@ -576,7 +608,9 @@ program
             spec['instance'] = split[1];
         }
         var ttl = ( options.ttl ? parseInt(options.ttl) : null );
-        require('./lib/sandbox').cli.update(spec, ttl, false);
+        var autoScheduled = ( options.autoScheduled !== null ?
+            ( options.autoScheduled === 'true' ? true : false ) : null );
+        require('./lib/sandbox').cli.update(spec, ttl, autoScheduled, false);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -584,6 +618,9 @@ program
         console.log('  The TTL (time to live) in hours of the sandbox can be prolonged via the --ttl flag. The value');
         console.log('  must, together with previous prolongiations, adhere to the maximum TTL quotas). If set to 0 or');
         console.log('  less the sandbox will have an infinite lifetime.');
+        console.log();
+        console.log('  The --auto-scheduled flag controls if the sandbox is being autoscheduled according to the');
+        console.log('  schedule configured at sandbox realm level.');
         console.log();
         console.log('  The sandbox to update must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes.');
@@ -593,6 +630,8 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --ttl 8');
+        console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --auto-scheduled true');
+        console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --auto-scheduled false');
         console.log();
     });
 
@@ -809,6 +848,7 @@ program
     .option('-s, --sandbox <id>','sandbox to create alias for')
     .option('-h, --host <host>','hostname alias to register')
     .option('-j, --json', 'Optional, formats the output in json')
+    .option('-u, --unique', 'Optional, define alias as unique, false by default')
     .description('Registers a hostname alias for a sandbox.')
     .action(function(options) {
         var sandbox = options.sandbox;
@@ -832,7 +872,8 @@ program
             return;
         }
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.alias.create(spec, aliasName, asJson);
+        var unique = ( options.unique ? options.unique : false );
+        require('./lib/sandbox').cli.alias.create(spec, aliasName, unique, asJson);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -842,7 +883,13 @@ program
         console.log('  Note that you also have to include the hostname in your site alias configuration in Business');
         console.log('  Manager to make the following redirect to your storefront working.');
         console.log('');
-        console.log('  Use --json to only print the created alias incl. the registration link.');
+        console.log('  Use the --unique flag allows you to configure the alias to be unique across all aliases');
+        console.log('  registered. This requires that you have to proof ownership of the host on a DNS level.');
+        console.log('  The domain verification record value is generated and returned. By default the alias is not');
+        console.log('  unique.');
+        console.log('');
+        console.log('  Use --json to only print the created alias incl. either the registration link or the');
+        console.log('  the domain verification record.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -1031,8 +1078,8 @@ program
     .command('instance:upload <archive>')
     .option('-i, --instance [instance]','Instance to upload the import file to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
-    .option('-c, --certificate [certificate]','Path to the certificate to use for two factor authentication.')
-    .option('-p, --passphrase [passphrase]','Passphrase to be used to read the given certificate.')
+    .option('-c, --certificate <certificate>','Path to the certificate to use for two factor authentication.')
+    .option('-p, --passphrase <passphrase>','Passphrase to be used to read the given certificate.')
     .description('Uploads an instance import file onto a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
@@ -1099,7 +1146,7 @@ program
     .option('-i, --instance <instance>','Instance to run the export on. Can be an instance alias. ' +
         'If not specified the currently configured instance will be used.')
     .option('-j, --json', 'Formats the output in json')
-    .option('-d, --data <data>', 'Set of data in JSON format to export')
+    .option('-d, --data <data>', 'Set of data as parameter or file specified in JSON format for what to export')
     .option('-f, --file <file>', 'File to store exported data to, relative to impex/src/instance')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
@@ -1108,7 +1155,7 @@ program
     .description('Run an instance export')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
-        var data = ( options.data ? JSON.parse(options.data) : null );
+        var data = require('./lib/export').readExportJson(options.data);
         if (!data) {
             this.missingArgument('data');
             return;
@@ -1269,8 +1316,8 @@ program
     .option('-i, --instance <instance>','Instance to deploy the custom code archive to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
     .option('-a, --activate', 'Whether to activate the deployed code version, false by default')
-    .option('-c, --certificate [certificate]','Path to the certificate to use for two factor authentication.')
-    .option('-p, --passphrase [passphrase]','Passphrase to be used to read the given certificate.')
+    .option('-c, --certificate <certificate>','Path to the certificate to use for two factor authentication.')
+    .option('-p, --passphrase <passphrase>','Passphrase to be used to read the given certificate.')
     .description('Deploys a custom code archive onto a Commerce Cloud instance')
     .action(function(archive, options) {
         var instance = require('./lib/instance').getInstance(options.instance);
@@ -1368,6 +1415,181 @@ program
         console.log('    $ sfcc-ci code:delete --code version1');
         console.log('    $ sfcc-ci code:delete --code version1 -i my-instance.demandware.net');
         console.log('    $ sfcc-ci code:delete --code version1 -i my-instance.demandware.net --noprompt');
+        console.log();
+    });
+
+program
+    .command('code:manifest:generate <localdirectorypaths>')
+    .option('-g, --ignore <ignore>', 'Ignore patterns for files which should not be part of the ' +
+        'generated manifest (i.e. unit tests, code coverage...). Comma-separated list of patterns')
+    .option('-o, --output <output>', 'Directory path to where to generate the manifest file. ' +
+        'If not specified, process.cwd() is used.')
+    .description('Generates the manifest file based on the given local directories. ')
+    .action((localdirectorypaths, options) => {
+        const ignorePatterns = options.ignore ? options.ignore.split(',') : [];
+        require('./lib/manifest').generate(
+            localdirectorypaths.split(','),
+            ignorePatterns,
+            options.output
+        ).catch(err => {
+            console.log(colors.red(err))
+            process.exit(-1);
+        });
+    }).on('--help', () => {
+        console.log();
+        console.log('  Details:');
+        console.log();
+        console.log('  This command will generate a new manifest file based on the given local directories.');
+        console.log('  You can specify where to generate this file so that store it at the root level ' +
+            'of your cartridges folder, prior to zip all these files and deploy them.');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci code:manifest:generate "/path/to/repo1,/path/to/repo2"');
+        console.log('    $ sfcc-ci code:manifest:generate "/path/to/repo1,/path/to/repo2" -g "tests/**/*"');
+        console.log('    $ sfcc-ci code:manifest:generate "/path/to/repo1,/path/to/repo2" ' +
+            '-g "tests/**/*" -o "/path/to/destination/file"');
+        console.log();
+    });
+
+program
+    .command('code:compare <localdirectorypaths>')
+    .option('-i, --instance <instance>','Instance to activate the custom code version on. Can be an ' +
+        'instance alias. If not specified the currently configured instance will be used.')
+    .option('-s, --sourcecodeversion <sourcecodeversion>', 'Code version on the instance which should be used ' +
+        'as source for the deployment.')
+    .option('-m, --manifestfilename <manifestfilename>', 'The name of the remote manifest file. If not provided, ' +
+        'the manifest.FILENAME constant is used.')
+    .option('-g, --ignore <ignore>', 'Ignore patterns for files which should not be compared (i.e. unit tests ' +
+        ', code coverage...). Comma-separated list of glob patterns')
+    .option('-f, --file', 'Generate results into an HTML file instead of writing those in the console')
+    .option('-o, --override', 'Override the remote manifest with the new version from the instance ' +
+        'in case one exists if specified')
+    .option('-r, --removeafter', 'Remove the generated manifest files once completed')
+    .option('-c, --certificate <certificate>','Path to the certificate to use for two factor authentication.')
+    .option('-p, --passphrase <passphrase>','Passphrase to be used to read the given certificate.')
+    .option('-v, --verbose', 'Verbose mode')
+    .description('Compare the given local directories with the given code version ' +
+        '(or the active one if none specified) of the Commerce Cloud instance and provide a diff between the two.')
+    .action((localdirectorypaths, options) => {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        require('./lib/code').cli.compare(instance, localdirectorypaths, {
+            sourceCodeVersion: options.sourcecodeversion,
+            manifestFileName: options.manifestfilename,
+            pfx: options.certificate,
+            passphrase: options.passphrase,
+            overrideLocalFile: options.override,
+            ignorePatterns: options.ignore,
+            outputFile: options.file,
+            removeFilesAfter: options.removeafter,
+            verbose: options.verbose
+        }).catch(err => {
+            console.log(colors.red(err))
+            process.exit(-1);
+        });
+    }).on('--help', () => {
+        console.log();
+        console.log('  Details:');
+        console.log();
+        console.log('  This command will compare the content of the cartridges within the local directories ' +
+            'sent as parameter with the active code version on the instance.');
+        console.log('  This comparison is based on a manifest files, generated at deployment stage ' +
+            '(this manifest is stored at root level of the archive deployed to the instance).');
+        console.log('  This command generates a download the remote manifest, ' +
+            'generates a local one, and compare the two.');
+        console.log('  Here are the exact steps executed in the following order:');
+        console.log('  1. Get the active code version (if it does not exist or ' +
+            'there is an issue while connecting, abort)');
+        console.log('  2. Download the manifest file from the code version (if it does not exist, abort)');
+        console.log('  3. Generate a local manifest (if there is any issue finding files, abort)');
+        console.log('  4. Compare the remove and local manifests and display data into the console');
+        console.log('  5. Remove the manifests files (if --removeafter option is passed)');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci code:compare "/path/to/repo1,/path/to/repo2"');
+        console.log('    $ sfcc-ci code:compare "/path/to/repo1,/path/to/repo2" -i my-instance-alias');
+        console.log('    $ sfcc-ci code:compare "/path/to/repo1,/path/to/repo2" -i my-instance.demandware.net');
+        console.log('    $ sfcc-ci code:compare "/path/to/repo1,/path/to/repo2" ' +
+            '-i my-instance.demandware.net -f -r -v');
+        console.log('    $ sfcc-ci code:compare "/path/to/repo1,/path/to/repo2" ' +
+            '-i my-instance.demandware.net -c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
+        console.log();
+    });
+
+program
+    .command('code:deploy:diff <codeversion> <localdirectorypaths>')
+    .option('-i, --instance <instance>', 'Instance to activate the custom code version on. Can be an ' +
+        'instance alias. If not specified the currently configured instance will be used.')
+    .option('-s, --sourcecodeversion <sourcecodeversion>', 'Code version on the instance which should be used ' +
+        'as source for the deployment.')
+    .option('-m, --manifestfilename <manifestfilename>', 'The name of the remote manifest file. If not provided, ' +
+        'the manifest.FILENAME constant is used.')
+    .option('-g, --ignore <ignore>', 'Ignore patterns for files which should not be part of ' +
+        'the diff-deployment (i.e. unit tests, code coverage...). Comma-separated list of glob patterns')
+    .option('-f, --forcedeploy <forcedeploy>', 'Patterns of files which should always be deployed, ' +
+        'even if these have not been changed. The deploy will ALWAYS include these files within the deployment, ' +
+        'regardless if these files were not changed or were ignored by the previous ignore patterns list.')
+    .option('-a, --activate', 'Whether to activate the deployed code version, false by default')
+    .option('-o, --override', 'Override the remote manifest with the new version from the instance ' +
+        'in case one exists if specified')
+    .option('-r, --removeafter', 'Remove the generated manifest files once completed')
+    .option('-c, --certificate <certificate>','Path to the certificate to use for two factor authentication.')
+    .option('-p, --passphrase <passphrase>','Passphrase to be used to read the given certificate.')
+    .option('-v, --verbose', 'Verbose mode')
+    .description('Generate a manifest for the given local directories. ' +
+        'Compare this manifest with the one within the active code version of the instance. ' +
+        'Deploy only the files which have been updated locally comparing to the remote, ' +
+        'within a newly created code version.' +
+        'Activate this newly generated code version if required in the options')
+    .action((codeversion, localdirectorypaths, options) => {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        require('./lib/code').cli.diffdeploy(instance, localdirectorypaths, codeversion, {
+            sourceCodeVersion: options.sourcecodeversion,
+            manifestFileName: options.manifestfilename,
+            pfx: options.certificate,
+            passphrase: options.passphrase,
+            overrideLocalFile: options.override,
+            removeFilesAfter: options.removeafter,
+            ignorePatterns: options.ignore,
+            forceDeployPatterns: options.forcedeploy,
+            verbose: options.verbose
+        }, options.activate || false).catch(err => {
+            console.log(colors.red(err))
+            process.exit(-1);
+        });
+    }).on('--help', () => {
+        console.log();
+        console.log('  Details:');
+        console.log();
+        console.log('  This command performs a differential deployment by following these steps:');
+        console.log('  1. Get the active code version (if it does not exist or ' +
+            'there is an issue while connecting, abort)');
+        console.log('  2. Download the manifest file from the code version (if it does not exist, abort)');
+        console.log('  3. Generate a local manifest, which represents the state of the local files ' +
+            '(if there is any issue finding files, abort)');
+        console.log('  4. Compare both manifests, and keep track of the changed files. ' +
+            'If no files are changed, end the process');
+        console.log('  5. Copy the remote code version in a new folder, named with the codeversion parameter.');
+        console.log('  6. Upload files through a partial ZIP archive which contains the added and changed files, ' +
+            'based on the comparison done at step#4. The new manifest is also part of this archive. ' +
+            'For removed files, perform a DELETE request, one file at a time.');
+        console.log('  7. Activate the newly generated code version on the instance, ' +
+            'if the activate option is passed.');
+        console.log('  8. Remote the manifest and archive files locally after the process '
+            + 'if the removeafter option is passed.');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2"');
+        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+            '-i my-instance-alias');
+        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+            '-i my-instance.demandware.net');
+        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+            '-i my-instance.demandware.net -a');
+        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+            '-i my-instance.demandware.net -a -c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
         console.log();
     });
 
@@ -1874,6 +2096,171 @@ program
     });
 
 
+program
+    .command('slas:tenant:list')
+    .description('Lists all tenants that belong to a given organization')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.list(options.shortcode, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:tenant:add')
+    .description('Adds a SLAS tenant to a given organization or updates an existing one')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--file <file>', 'JSON file with tenant details')
+    .option('--merchantname <merchantame>', 'the name given for the tenant')
+    .option('--tenantdescription <tenantdescription>', 'the tenant descriptions')
+    .option('--contact <contact>', 'Contact person to manage tenants')
+    .option('--email <email>', 'Email to contact')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.add(options.tenant, options.shortcode,
+            options.tenantdescription, options.merchantname, options.contact, options.email, options.file, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:tenant:get')
+    .description('Gets a SLAS tenant from a given organization')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.get(options.tenant, options.shortcode, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:tenant:delete')
+    .description('Deletes a SLAS tenant from a given organization')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.get(options.tenant, options.shortcode, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:add')
+    .description('Adds a SLAS client to a given tenant or updates an existing one')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--file <file>', 'The JSON File used to set up the slas client')
+    .option('--clientid <clientid>', 'The client ID to add')
+    .option('--clientname <clientname>', 'The name of the client ID')
+    .option('--privateclient <privateclient>', 'true the client is private')
+    .option('--ecomtenant <ecomtenant>', 'the ecom tenant')
+    .option('--ecomsite <ecomsite>', 'the ecom site')
+    .option('--secret <secret>', 'the slas secret, can be different then the secret in \
+        account manager, but shouldnt be')
+    .option('--channels <channels>', 'comma separated list of site IDs this API client should support')
+    .option('--scopes <scopes>', 'comma separated list of auth z scopes this API client should support')
+    .option('--redirecturis <redirecturis>', 'comma separated list of redirect uris this API client should support')
+
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+        const clientid = options.clientid;
+        const clientname = options.clientname;
+        const privateclient = options.privateclient;
+        const ecomtenant = options.ecomtenant;
+        const ecomsite = options.ecomsite;
+        const secret = options.secret;
+        const channels = !options.channels || options.channels.split(',').map(item => item.trim());
+        const scopes = !options.scopes || options.scopes.split(',').map(item => item.trim());
+        const redirecturis = !options.redirecturis || options.redirecturis.split(',').map(item => item.trim());
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.add(options.tenant, options.shortcode, options.file,
+            clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:get')
+    .description('Gets a SLAS client from a given tenant')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--clientid <clientid>', 'The client ID to get information for')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:list')
+    .description('Lists all SLAS clients that belong to a given tenant')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.list(options.tenant, options.shortcode, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:delete')
+    .description('Deletes a SLAS client from a given tenant')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--clientid <clientid>', 'The Client ID to delete')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
 program.on('--help', function() {
     console.log('');
     console.log('  Environment:');
@@ -1886,6 +2273,8 @@ program.on('--help', function() {
     console.log('    $SFCC_OAUTH_USER_PASSWORD          user password used for authentication');
     console.log('    $SFCC_SANDBOX_API_HOST             set sandbox API host');
     console.log('    $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes')
+    console.log('    $SFCC_SCAPI_SHORTCODE              the Salesforce Commerce (Headless) API Shortcode');
+    console.log('    $SFCC_SCAPI_TENANTID               the Salesforce Commerce (Headless) API TenantId')
     console.log('    $DEBUG                             enable verbose output');
     console.log('');
     console.log('  Detailed Help:');

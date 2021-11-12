@@ -385,6 +385,33 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci sandbox:create --realm <realm> --ttl 1 --auto-scheduled´:"
+node ./cli.js sandbox:create --realm $ARG_SANDBOX_REALM --ttl 1  --auto-scheduled
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:create --realm <realm> --profile <INVALID_PROFILE>´ (expected to fail):"
+node ./cli.js sandbox:create --realm $ARG_SANDBOX_REALM --profile INVALID_PROFILE
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:create --realm <realm> --profile large´ --ttl 3:"
+node ./cli.js sandbox:create --realm $ARG_SANDBOX_REALM --profile large --ttl 3
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 echo "Testing command ´sfcc-ci sandbox:create --realm <realm> --ttl 1 --sync´:"
 node ./cli.js sandbox:create --realm $ARG_SANDBOX_REALM --ttl 1 --sync
 if [ $? -eq 0 ]; then

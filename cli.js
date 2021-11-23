@@ -156,6 +156,33 @@ program
     });
 
 program
+    .command('client:list')
+    .description('Lists a Oauth clients you have access to')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-p, --page <page>', 'Optional Page')
+    .option('-s, --size <size>', 'Optional Page Size')
+    .action(function(options) {
+        var asJson = ( options.json ? options.json : false );
+        var page = ( options.page ? options.page : 0 );
+        var size = ( options.size ? options.size : 30 );
+        require('./lib/client').cli.list(page, size, asJson);
+
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Lists Oauth clients you have access to');
+        console.log('');
+        console.log('  This requires permissions in Account Manager to manage API clients of the org,');
+        console.log('  the client belongs to. You should pass changes to the user details in json')
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci client:list');
+        console.log();
+    });
+
+program
     .command('client:update')
     .description('Update an Oauth client')
     .option('-a, --clientid <clientid>','id of the Oauth client to update')
@@ -172,7 +199,7 @@ program
         console.info(file)
         if ( !id ) {
             require('./lib/log').error('Missing required --clientid. Use -h,--help for help.');
-    } else if ( !changes && !file ) {
+        } else if ( !changes && !file ) {
             require('./lib/log').error('Changes missing. Please specify changes using -c,--change or -f, --file.');
         } else if ( noPrompt ) {
             require('./lib/client').cli.update(id, changes, file, asJson);
@@ -205,7 +232,7 @@ program
     });
 
 program
-    .command('client:add')
+    .command('client:create')
     .description('Adds an Oauth client')
     .option('-c, --configuration <configuration>', 'configuration to Oauth client details as json')
     .option('-f, --file <file>', 'Changes to Oauth client details as utf encoded text file containing json')
@@ -214,7 +241,6 @@ program
         var configuration = ( options.configuration ? JSON.parse(options.configuration) : null );
         var asJson = ( options.json ? options.json : false );
         var file = ( options.file ? options.file : null );
-        var noPrompt = ( options.noprompt ? options.noprompt : false );
         if ( !configuration && !file) {
             require('./lib/log').error('Changes missing. Please specify changes using -c,--configuration. or -f, --file');
         } else {
@@ -224,15 +250,15 @@ program
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  Updates an existing Oauth client');
+        console.log('  Adds an Oauth client');
         console.log('');
         console.log('  This requires permissions in Account Manager to manage API clients of the org,');
         console.log('  the client belongs to. You should pass changes to the user details in json')
-        console.log('  (option -c,--changes).');
+        console.log('  (option -c,--configuration).');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci client:update -a xxxx-yyyy-zzzz --changes \'{"active": true}\'');
+        console.log('    $ sfcc-ci client:create --configuration \'{"active": true}\'');
         console.log();
     });
 

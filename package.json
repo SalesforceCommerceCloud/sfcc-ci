@@ -26,7 +26,7 @@
   "dependencies": {
     "archiver": "^5.0.0",
     "chalk": "^2.4.1",
-    "colors": "^1.4.0",
+    "colors": "1.4.0",
     "commander": "^2.18.0",
     "conf": "^4.0.2",
     "del": "^5.1.0",

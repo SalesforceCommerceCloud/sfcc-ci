@@ -477,12 +477,11 @@ program
 program
     .command('sandbox:start')
     .option('-s, --sandbox <id>','sandbox to start')
-    .option('-w, --sync', 'Operates in synchronous mode and waits until the operation has been finished.')
+    .option('-w, --sync','Operates in synchronous mode and waits until the operation has finished.')
     .description('Start a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
         var sync = ( options.sync ? options.sync : false );
-
         if (!sandbox_id) {
             this.missingArgument('sandbox');
             return;
@@ -505,7 +504,7 @@ program
         console.log();
         console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
         console.log();
-        console.log('  Use the --sync flag to wait for the sandbox to return a status of `started`.');
+        console.log('  Use the --sync flag to wait for the sandbox to have `started` status.');
         console.log();
         console.log('  Examples:');
         console.log();

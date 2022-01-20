@@ -543,7 +543,7 @@ program
         console.log();
         console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
         console.log();
-        console.log('  Use the --sync flag to wait for the sandbox to have `started` status.');
+        console.log('  Use the --sync flag to wait for the sandbox to have `stopped` status.');
         console.log();
         console.log('  Examples:');
         console.log();

@@ -477,7 +477,7 @@ program
 program
     .command('sandbox:start')
     .option('-s, --sandbox <id>','sandbox to start')
-    .option('-w, --sync','Operates in synchronous mode and waits until the operation has finished.')
+    .option('--sync','Operates in synchronous mode and waits until the operation has finished.')
     .description('Start a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
@@ -516,7 +516,7 @@ program
 program
     .command('sandbox:stop')
     .option('-s, --sandbox <id>','sandbox to stop')
-    .option('-w, --sync','Operates in synchronous mode and waits until the operation has finished.')
+    .option('--sync','Operates in synchronous mode and waits until the operation has finished.')
     .description('Stop a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );

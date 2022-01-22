@@ -621,6 +621,54 @@ else
 	exit 1
 fi
 
+###############################################################################
+###### Testing ´sfcc-ci sandbox:stop´
+###############################################################################
+
+echo "Testing command ´sfcc-ci sandbox:stop (expected to fail):"
+node ./cli.js sandbox:stop
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <INVALID_ID>´ (expected to fail):"
+node ./cli.js sandbox:stop --sandbox INVALID_ID
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox>´:"
+node ./cli.js sandbox:stop --sandbox $TEST_NEW_SANDBOX_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox>´ (using <realm>-<instance> as id):"
+node ./cli.js sandbox:stop --sandbox $ARG_SANDBOX_REALM"_"$TEST_NEW_SANDBOX_INSTANCE
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox> --sync´:"
+node ./cli.js sandbox:stop --sandbox $TEST_NEW_SANDBOX_ID --sync
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
 
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:alias:*´

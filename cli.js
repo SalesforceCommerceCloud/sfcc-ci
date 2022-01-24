@@ -1847,7 +1847,7 @@ program
             require('./lib/log').error('Login missing. Please pass a login using -l,--login.');
         } else if ( !changes ) {
             require('./lib/log').error('Changes missing. Please specify changes using -c,--change.');
-        } else if ( noPrompt && !instance ) {
+        } else if ( noPrompt ) {
             updateUser(instance, login, changes, asJson);
         } else {
             prompt({

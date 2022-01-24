@@ -40,8 +40,8 @@
     "open": "^6.4.0",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
-    "snyk": "^1.667.0",
-    "table": "^6.7.2"
+    "snyk": "^1.835.0",
+    "table": "^6.7.5"
   },
   "devDependencies": {
     "archiver": "^5.0.0",

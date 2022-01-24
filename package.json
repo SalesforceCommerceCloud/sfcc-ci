@@ -50,7 +50,6 @@
     "del": "^5.1.0",
     "eslint": "^5.5.0",
     "globby": "^11.0.4",
-    "istanbul": "^0.4.5",
     "jsondiffpatch": "^0.4.1",
     "mocha": "^6.2.3",
     "node-sha1": "^1.0.1",

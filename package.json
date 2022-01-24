@@ -12,7 +12,7 @@
     "test:unit": "mocha test/unit --recursive",
     "test:unit:coverage": "npx nyc@15.1.0 mocha test/unit",
     "test:functional:cli": "bin/test-cli.sh",
-    "dist": "pkg . --out-path dist/",
+    "dist": "npx pkg@5.5.2 . --out-path dist/",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
   },
@@ -53,7 +53,6 @@
     "jsondiffpatch": "^0.4.1",
     "mocha": "^6.2.3",
     "node-sha1": "^1.0.1",
-    "pkg": "^4.3.4",
     "proxyquire": "^2.1.0",
     "sinon": "^7.2.2"
   },

@@ -201,11 +201,11 @@ program
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci sandbox:realm');
-        console.log('    $ sfcc-ci sandbox:realm --json');
-        console.log('    $ sfcc-ci sandbox:realm --realm zzzz');
-        console.log('    $ sfcc-ci sandbox:realm --realm zzzz --json');
-        console.log('    $ sfcc-ci sandbox:realm --realm zzzz --show-usage');
+        console.log('    $ sfcc-ci sandbox:realm:list');
+        console.log('    $ sfcc-ci sandbox:realm:list --json');
+        console.log('    $ sfcc-ci sandbox:realm:list --realm zzzz');
+        console.log('    $ sfcc-ci sandbox:realm:list --realm zzzz --json');
+        console.log('    $ sfcc-ci sandbox:realm:list --realm zzzz --show-usage');
         console.log();
     });
 
@@ -477,9 +477,11 @@ program
 program
     .command('sandbox:start')
     .option('-s, --sandbox <id>','sandbox to start')
+    .option('--sync','Operates in synchronous mode and waits until the operation has finished.')
     .description('Start a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        var sync = ( options.sync ? options.sync : false );
         if (!sandbox_id) {
             this.missingArgument('sandbox');
             return;
@@ -492,7 +494,7 @@ program
             spec['realm'] = split[0];
             spec['instance'] = split[1];
         }
-        require('./lib/sandbox').cli.start(spec, false);
+        require('./lib/sandbox').cli.start(spec, false, sync);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -501,19 +503,24 @@ program
         console.log('  identify the id of your sandboxes.');
         console.log();
         console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
-        console.log('');
+        console.log();
+        console.log('  Use the --sync flag to wait for the sandbox to have `started` status.');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:start --sandbox my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:start --sandbox my-sandbox-id --sync');
         console.log();
     });
 
 program
     .command('sandbox:stop')
     .option('-s, --sandbox <id>','sandbox to stop')
+    .option('--sync','Operates in synchronous mode and waits until the operation has finished.')
     .description('Stop a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        var sync = ( options.sync ? options.sync : false );
         if (!sandbox_id) {
             this.missingArgument('sandbox');
             return;
@@ -526,7 +533,7 @@ program
             spec['realm'] = split[0];
             spec['instance'] = split[1];
         }
-        require('./lib/sandbox').cli.stop(spec, false);
+        require('./lib/sandbox').cli.stop(spec, false, sync);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -535,10 +542,13 @@ program
         console.log('  identify the id of your sandboxes.');
         console.log();
         console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
-        console.log('');
+        console.log();
+        console.log('  Use the --sync flag to wait for the sandbox to have `stopped` status.');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:stop --sandbox my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:stop --sandbox my-sandbox-id --sync');
         console.log();
     });
 
@@ -687,6 +697,7 @@ program
     .option('-s, --sandbox <id>','sandbox to create alias for')
     .option('-h, --host <host>','hostname alias to register')
     .option('-j, --json', 'Optional, formats the output in json')
+    .option('-u, --unique', 'Optional, define alias as unique, false by default')
     .description('Registers a hostname alias for a sandbox.')
     .action(function(options) {
         var sandbox = options.sandbox;
@@ -710,7 +721,8 @@ program
             return;
         }
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.alias.create(spec, aliasName, asJson);
+        var unique = ( options.unique ? options.unique : false );
+        require('./lib/sandbox').cli.alias.create(spec, aliasName, unique, asJson);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -720,7 +732,13 @@ program
         console.log('  Note that you also have to include the hostname in your site alias configuration in Business');
         console.log('  Manager to make the following redirect to your storefront working.');
         console.log('');
-        console.log('  Use --json to only print the created alias incl. the registration link.');
+        console.log('  Use the --unique flag allows you to configure the alias to be unique across all aliases');
+        console.log('  registered. This requires that you have to proof ownership of the host on a DNS level.');
+        console.log('  The domain verification record value is generated and returned. By default the alias is not');
+        console.log('  unique.');
+        console.log('');
+        console.log('  Use --json to only print the created alias incl. either the registration link or the');
+        console.log('  the domain verification record.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -1927,6 +1945,171 @@ program
     });
 
 
+program
+    .command('slas:tenant:list')
+    .description('Lists all tenants that belong to a given organization')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.list(options.shortcode, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:tenant:add')
+    .description('Adds a SLAS tenant to a given organization or updates an existing one')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--file <file>', 'JSON file with tenant details')
+    .option('--merchantname <merchantame>', 'the name given for the tenant')
+    .option('--tenantdescription <tenantdescription>', 'the tenant descriptions')
+    .option('--contact <contact>', 'Contact person to manage tenants')
+    .option('--email <email>', 'Email to contact')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.add(options.tenant, options.shortcode,
+            options.tenantdescription, options.merchantname, options.contact, options.email, options.file, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:tenant:get')
+    .description('Gets a SLAS tenant from a given organization')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.get(options.tenant, options.shortcode, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:tenant:delete')
+    .description('Deletes a SLAS tenant from a given organization')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.tenant.get(options.tenant, options.shortcode, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:add')
+    .description('Adds a SLAS client to a given tenant or updates an existing one')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--file <file>', 'The JSON File used to set up the slas client')
+    .option('--clientid <clientid>', 'The client ID to add')
+    .option('--clientname <clientname>', 'The name of the client ID')
+    .option('--privateclient <privateclient>', 'true the client is private')
+    .option('--ecomtenant <ecomtenant>', 'the ecom tenant')
+    .option('--ecomsite <ecomsite>', 'the ecom site')
+    .option('--secret <secret>', 'the slas secret, can be different then the secret in \
+        account manager, but shouldnt be')
+    .option('--channels <channels>', 'comma separated list of site IDs this API client should support')
+    .option('--scopes <scopes>', 'comma separated list of auth z scopes this API client should support')
+    .option('--redirecturis <redirecturis>', 'comma separated list of redirect uris this API client should support')
+
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+        const clientid = options.clientid;
+        const clientname = options.clientname;
+        const privateclient = options.privateclient;
+        const ecomtenant = options.ecomtenant;
+        const ecomsite = options.ecomsite;
+        const secret = options.secret;
+        const channels = !options.channels || options.channels.split(',').map(item => item.trim());
+        const scopes = !options.scopes || options.scopes.split(',').map(item => item.trim());
+        const redirecturis = !options.redirecturis || options.redirecturis.split(',').map(item => item.trim());
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.add(options.tenant, options.shortcode, options.file,
+            clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:get')
+    .description('Gets a SLAS client from a given tenant')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--clientid <clientid>', 'The client ID to get information for')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:list')
+    .description('Lists all SLAS clients that belong to a given tenant')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.list(options.tenant, options.shortcode, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
+program
+    .command('slas:client:delete')
+    .description('Deletes a SLAS client from a given tenant')
+    .option('--tenant <tenant>', 'the tenant id used for slas')
+    .option('--shortcode <shortcode>', 'the organizations short code')
+    .option('--clientid <clientid>', 'The Client ID to delete')
+    .option('-j, --json', 'Formats the output in json')
+    .action(async function(options) {
+
+        var asJson = ( options.json ? options.json : false );
+
+        const slas = require('./lib/slas');
+        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
+
+    }).on('--help', function() {
+        console.log();
+    });
+
 program.on('--help', function() {
     console.log('');
     console.log('  Environment:');
@@ -1939,6 +2122,8 @@ program.on('--help', function() {
     console.log('    $SFCC_OAUTH_USER_PASSWORD          user password used for authentication');
     console.log('    $SFCC_SANDBOX_API_HOST             set sandbox API host');
     console.log('    $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes')
+    console.log('    $SFCC_SCAPI_SHORTCODE              the Salesforce Commerce (Headless) API Shortcode');
+    console.log('    $SFCC_SCAPI_TENANTID               the Salesforce Commerce (Headless) API TenantId')
     console.log('    $DEBUG                             enable verbose output');
     console.log('');
     console.log('  Detailed Help:');

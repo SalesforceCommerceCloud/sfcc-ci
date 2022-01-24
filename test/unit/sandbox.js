@@ -38,7 +38,16 @@ describe('Alias Tests for lib/sandbox.js', function() {
             id: "a1",
             name: "www.example.com",
             sandboxId: "s1",
-            registration: "link"
+            status: "pending",
+            registration: "link",
+            domainVerificationRecord: null
+        },{
+            id: "a2",
+            name: "www2.example.com",
+            sandboxId: "s1",
+            status: "success",
+            registration: null,
+            domainVerificationRecord: "verify=yes"
         }]
     };
     var sandbox = proxyquire('../../lib/sandbox', {
@@ -128,21 +137,21 @@ describe('Alias Tests for lib/sandbox.js', function() {
 
     describe('Create Alias', function() {
         it('Create alias', () => {
-            sandbox.cli.alias.create({id: "s1"},"alias", true);
+            sandbox.cli.alias.create({id: "s1"},"alias", false, true);
             sinon.assert.calledWith(consJson, existingAlias.data);
-            sandbox.cli.alias.create({id: "s1"},"alias", false);
+            sandbox.cli.alias.create({id: "s1"},"alias", false, false);
             sinon.assert.calledWith(consPretty, existingAlias.data);
         });
         it('Create SBX alias, invalid sandbox', () => {
-            sandbox.cli.alias.create({id: "invalidSandboxId"},"alias", true);
+            sandbox.cli.alias.create({id: "invalidSandboxId"},"alias", false, true);
             sinon.assert.calledWith(consJson, {error: "Creating sandbox alias failed: Invalid sandbox ID."});
-            sandbox.cli.alias.create({id: "invalidSandboxId"},"alias", false);
+            sandbox.cli.alias.create({id: "invalidSandboxId"},"alias", false, false);
             sinon.assert.calledWith(consError, "Creating sandbox alias failed: Invalid sandbox ID.");
         });
         it('Create SBX alias, sandbox not found', () => {
-            sandbox.cli.alias.create({id: "unknownSandboxId"},"alias", true);
+            sandbox.cli.alias.create({id: "unknownSandboxId"},"alias", false, true);
             sinon.assert.calledWith(consJson, {error: "Creating sandbox alias failed: Sandbox not found."});
-            sandbox.cli.alias.create({id: "unknownSandboxId"},"alias", false);
+            sandbox.cli.alias.create({id: "unknownSandboxId"},"alias", false, false);
             sinon.assert.calledWith(consError, "Creating sandbox alias failed: Sandbox not found.");
         });
     })
@@ -152,8 +161,10 @@ describe('Alias Tests for lib/sandbox.js', function() {
             sandbox.cli.alias.list({id: "s1"}, true);
             sinon.assert.calledWith(consJson, aliasList.data);
             sandbox.cli.alias.list({id: "s1"}, false);
-            sinon.assert.calledWith(consTable, [['id','name','sandbox','register'],
-                ["a1","www.example.com","s1","link"]]);
+            sinon.assert.calledWith(consTable, [
+                ['id','name','status','registration','domainVerificationRecord'],
+                ["a1","www.example.com","pending","link",null],
+                ["a2","www2.example.com","success",null,"verify=yes"]]);
         });
         it('List aliases, invalid sandbox ID', () => {
             sandbox.cli.alias.list({id: "invalidSandboxId"}, true);

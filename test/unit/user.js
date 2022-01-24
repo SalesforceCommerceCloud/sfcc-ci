@@ -43,8 +43,8 @@ describe('Tests for lib/user.js', function() {
         primaryOrganization : 'doe org',
         mail : 'john@doe.org',
         organizations : ['doe org','other org'],
-        unsupported : 'foo',
-        hobby : 'coding'
+        externalNames : 'foo',
+        links : 'coding'
     };
     var cleanUserObj = {
         firstName : 'John',

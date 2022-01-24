@@ -15,6 +15,9 @@ if [ $? -eq 1 ]; then
 	exit 1
 fi
 
+# reset to track the time elapsed 
+SECONDS=0
+
 # pass parameters in the following order: 
 # $ bin/test-cli.sh <CLIENT_ID> <CLIENT_SECRET> <USER> <USER_PW> <HOST> <SANDBOX_REALM>
 
@@ -1123,3 +1126,7 @@ else
 	echo -e "\t> FAILED"
 	exit 1
 fi
+
+# log time elapsed
+duration=$SECONDS
+echo -e "SUCCESS! Tests finished after $(($duration / 60)) minutes and $(($duration % 60)) seconds."

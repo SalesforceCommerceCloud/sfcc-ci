@@ -1944,23 +1944,6 @@ program
         console.log();
     });
 
-
-program
-    .command('slas:tenant:list')
-    .description('Lists all tenants that belong to a given organization')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.tenant.list(options.shortcode, asJson);
-
-    }).on('--help', function() {
-        console.log();
-    });
-
 program
     .command('slas:tenant:add')
     .description('Adds a SLAS tenant to a given organization or updates an existing one')

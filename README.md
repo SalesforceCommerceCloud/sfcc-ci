@@ -334,7 +334,6 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     user:create [options]                                           Create a new user
     user:update [options]                                           Update a user
     user:delete [options]                                           Delete a user
-    slas:tenant:list [options]                                      Lists all tenants that belong to a given organization
     slas:tenant:add [options]                                       Adds a SLAS tenant to a given organization or updates an existing one
     slas:tenant:get [options]                                       Gets a SLAS tenant from a given organization
     slas:tenant:delete [options]                                    Deletes a SLAS tenant from a given organization

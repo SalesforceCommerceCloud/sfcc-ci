@@ -276,7 +276,7 @@ You are now ready to use the tool by running the main command `sfcc-ci`.
 
 Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of commands available:
 
-```bash
+```txt
     Usage: cli [options] [command]
 
   Options:
@@ -334,15 +334,13 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     user:create [options]                                           Create a new user
     user:update [options]                                           Update a user
     user:delete [options]                                           Delete a user
-    slas:tenant:add [options]                                       Adds a SLAS tenant to a given organization or updates an existing one
-    slas:tenant:get [options]                                       Gets a SLAS tenant from a given organization
-    slas:tenant:delete [options]                                    Deletes a SLAS tenant from a given organization
-    slas:client:add [options]                                       Adds a SLAS client to a given tenant or updates an existing one
-    slas:client:get [options]                                       Gets a SLAS client from a given tenant
-    slas:client:list [options]                                      Lists all SLAS clients that belong to a given tenant
-    slas:client:delete [options]                                    Deletes a SLAS client from a given tenant
-
-  Environment:
+    slas:tenant:add [options]                                       Add or update SLAS a tenant.
+    slas:tenant:get [options]                                       Get a SLAS tenant.
+    slas:client:add [options]                                       Add or update a SLAS client for a tenant
+    slas:client:get [options]                                       Get a SLAS client for a tenant.
+    slas:client:list [options]                                      List SLAS clients for a tenant.
+    slas:client:delete [options]                                    Delete a SLAS client for a tenant.
+    Environment:
 
     $SFCC_LOGIN_URL                    set login url used for authentication
     $SFCC_OAUTH_LOCAL_PORT             set Oauth local port for authentication flow
@@ -400,6 +398,8 @@ The use of environment variables is optional. `sfcc-ci` respects the following e
 * `SFCC_OAUTH_USER_PASSWORD` user password used for authentication
 * `SFCC_SANDBOX_API_HOST` set sandbox API host
 * `SFCC_SANDBOX_API_POLLING_TIMEOUT` set timeout for sandbox polling in minutes
+* `SFCC_SCAPI_SHORTCODE` the Salesforce Commerce (Headless) API Shortcode
+* `SFCC_SCAPI_TENANTID` the Salesforce Commerce (Headless) API TenantId
 * `DEBUG` enable verbose output
 
 If you only want a single CLI command to write debug messages prepend the command using, e.g. `DEBUG=* sfcc-ci <sub:command>`.
@@ -977,107 +977,70 @@ callback         | (Function)  | Callback function executed as a result. The err
 
 APIs available in `require('sfcc').slas`:
 
-`tenant.add(tenantId, shortcode, description, merchantName, contact, emailAddress, fileName)`
+`tenant.add({shortcode, tenant, file})`
 
-Adds the tenant details to the SLAS organization
+Add or update SLAS a tenant.
 
 Param         | Type        | Description
 ------------- | ------------| --------------------------------
-tenantId      | (String)    | The tenant ID
-shortcode     | (String)    | The short code of the org
-description   | (String)    | Description of the tenant
-merchantName  | (String)    | Name of the merchant
-contact       | (String)    | Username of the user
-emailAddress  | (String)    | Email address of the user
-fileName      | (String)    | Path of the file containing all the params required for the tenant creation.
+shortcode     | (String)    | Realm short code, `kv7kzm78`
+tenant        | (String)    | Tenant ID, `zzrf_001`
+file          | (String)    | Path to a JSON file with object details, `file.json`
 
 **Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the newly created tenant reponse.
 
 ***
 
-`tenant.get(tenantId, shortcode)`
+`tenant.get({shortcode, tenant})`
 
-Gets the tenant matching the given `tenantId` for the given `shortCode`
+Get a SLAS tenant.
 
 Param         | Type        | Description
 ------------- | ------------| --------------------------------
-tenantId      | (String)    | The tenant ID
-shortcode     | (String)    | The short code of the org
+shortcode     | (String)    | Realm short code, `kv7kzm78`
+tenant        | (String)    | Tenant ID, `zzrf_001`
 
 **Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the tenant reponse.
 
 ***
 
-`tenant.list(shortcode)`
+`client.add({shortcode, tenant, client, body})`
 
-Lists all the tenants for the given `shortCode`
-
-Param         | Type        | Description
-------------- | ------------| --------------------------------
-shortcode     | (String)    | The short code of the org
-
-**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is list of tenants reponse.
-
-***
-
-`tenant.delete(tenantId, shortcode)`
-
-Deletes the tenant matching the given `tenantId` for the given `shortCode`
+Add or update a SLAS client for a tenant
 
 Param         | Type        | Description
 ------------- | ------------| --------------------------------
-tenantId      | (String)    | The tenant ID
-shortcode     | (String)    | The short code of the org
-
-**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the deletion reponse.
-
-***
-
-`client.add(tenantId, shortcode, file, clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis)`
-
-Registers a new client within a given tenant
-
-Param         | Type        | Description
-------------- | ------------| --------------------------------
-tenantId      | (String)    | The tenant ID
-shortcode     | (String)    | The short code of the org
-file          | (String)    | Path of the file containing all the params required for the client creation.
-clientid      | (String)    | SLAS client id
-clientname    | (String)    | The client name
-privateclient | (Boolean)   | Is the client a private client or not
-ecomtenant    | (String)    | The ecom tenant
-ecomsite      | (String)    | The ecom site
-secret        | (String)    | The secret tied to the client ID
-channels      | (Array)     | The list of channels for the client
-scopes        | (Array)     | The list of scopes authorized for the client
-redirecturis  | (Array)     | The list of redirect URIs authorized for the client
+shortcode     | (String)    | Realm short code, `kv7kzm78`
+tenant        | (String)    | Tenant ID, `zzrf_001`
+client        | (String)    | Client ID, `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`
+body          | (Object)    | Object with client's properties.
 
 **Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the newly created client reponse.
 
 ***
 
-`client.get(tenantId, shortcode, clientId)`
+`client.get({shortcode, tenant, client})`
 
-Gets the tenant matching the given `clientid` for the given `tenantId` and `shortCode`
+Get a SLAS client for a tenant.
 
 Param         | Type        | Description
 ------------- | ------------| --------------------------------
-tenantId      | (String)    | The tenant ID
-shortcode     | (String)    | The short code of the org
-clientid      | (String)    | SLAS client id
+shortcode     | (String)    | Realm short code, `kv7kzm78`
+tenant        | (String)    | Tenant ID, `zzrf_001`
+client        | (String)    | Client ID, `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`
 
 **Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the client reponse.
 
 ***
 
-`client.list(shortcode, tenantId)`
+`client.list({shortcode, tenantId})`
 
-Lists all the clients for the given `tenantId` and `shortCode`
+List SLAS clients for a tenant.
 
 Param         | Type        | Description
 ------------- | ------------| --------------------------------
-shortcode     | (String)    | The short code of the org
-tenantId      | (String)    | The tenant ID
+shortcode     | (String)    | Realm short code, `kv7kzm78`
+tenant        | (String)    | Tenant ID, `zzrf_001`
 
 **Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is list of clients reponse.
 
@@ -1085,13 +1048,13 @@ tenantId      | (String)    | The tenant ID
 
 `client.delete(tenantId, shortcode, clientId)`
 
-Deletes the client matching the given `clientId` for the given `tenantId` and `shortCode`
+Delete a SLAS client for a tenant.
 
 Param         | Type        | Description
 ------------- | ------------| --------------------------------
-tenantId      | (String)    | The tenant ID
-shortcode     | (String)    | The short code of the org
-clientid      | (String)    | SLAS client id
+shortcode     | (String)    | Realm short code, `kv7kzm78`
+tenant        | (String)    | Tenant ID, `zzrf_001`
+client        | (String)    | Client ID, `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`
 
 **Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the deletion reponse.
 

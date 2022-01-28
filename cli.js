@@ -1944,124 +1944,112 @@ program
         console.log();
     });
 
+const SLAS_OPTIONS = {
+    'shortcode': ['--shortcode <shortcode>', 'Realm short code, `kv7kzm78`'],
+    'tenant': ['--tenant <tenant>', 'Tenant ID, `zzrf_001`'],
+    'client': ['--client <client>', 'Client ID, `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`'],
+    'file': ['--file <file>', 'Path to a JSON file with object details, `file.json`'],
+    'json': ['-j, --json', 'Format output in json', false]
+}
+
 program
     .command('slas:tenant:add')
-    .description('Add or update SLAS tenant')
-    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
-    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
-    .option('--file <file>', 'Optional path to JSON file with tenant details')
-    .option('-j, --json', 'Format output in json', false)
+    .description('Add or update SLAS a tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.file)
+    .option(...SLAS_OPTIONS.json)
     .action(async (options) => {
         await require('./lib/slas').cli.tenant.add(options);
     })
     .on('--help', () => {
         console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:tenant:create --shortcode kv7kzm78 --tenant zzrf_001');
+        console.log('    $ sfcc-ci slas:tenant:create --shortcode kv7kzm78 --tenant zzrf_001 --file tenant.json');
+        console.log();
     });
 
 program
     .command('slas:tenant:get')
-    .description('Retrive SLAS tenant')
-    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
-    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
-    .option('-j, --json', 'Format output in json', false)
+    .description('Get a SLAS tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.json)
     .action(async (options) => {
         await require('./lib/slas').cli.tenant.get(options);
     })
     .on('--help', () => {
         console.log();
-    });
-
-program
-    .command('slas:tenant:delete')
-    .description('Remove SLAS tenant')
-    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
-    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
-    .option('-j, --json', 'Format output in json', false)
-    .action(async (options) => {
-        await require('./lib/slas').cli.tenant.delete(options);
-    })
-    .on('--help', () => {
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:tenant:get --shortcode kv7kzm78 --tenant zzrf_001');
         console.log();
     });
 
 program
     .command('slas:client:add')
-    .description('Add or update SLAS client for a tenant')
-    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
-    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
-    .option('--file <file>', 'Optional path to JSON file with client details.')
-    .option('--client <client>', 'Client ID, eg. `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')
-    .option('--clientname <clientname>', 'The name of the client ID')
-    .option('--privateclient <privateclient>', 'true the client is private')
-    .option('--ecomtenant <ecomtenant>', 'the ecom tenant')
-    .option('--ecomsite <ecomsite>', 'the ecom site')
-    .option('--secret <secret>', 'the slas secret, can be different then the secret in \
-        account manager, but shouldnt be')
-    .option('--channels <channels>', 'comma separated list of site IDs this API client should support')
-    .option('--scopes <scopes>', 'comma separated list of auth z scopes this API client should support')
-    .option('--redirecturis <redirecturis>', 'comma separated list of redirect uris this API client should support')
-
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-        const clientid = options.clientid;
-        const clientname = options.clientname;
-        const privateclient = options.privateclient;
-        const ecomtenant = options.ecomtenant;
-        const ecomsite = options.ecomsite;
-        const secret = options.secret;
-        const channels = !options.channels || options.channels.split(',').map(item => item.trim());
-        const scopes = !options.scopes || options.scopes.split(',').map(item => item.trim());
-        const redirecturis = !options.redirecturis || options.redirecturis.split(',').map(item => item.trim());
-
-        const slas = require('./lib/slas');
-        await slas.cli.client.add(options.tenant, options.shortcode, options.file,
-            clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, asJson);
-
+    .description('Add or update a SLAS client for a tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.client)
+    .option(...SLAS_OPTIONS.file)
+    .action(async (options) => {
+        await require('./lib/slas').cli.client.add(options);
     }).on('--help', function() {
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:client:add --shortcode kv7kzm78 --tenant zzrf_001 --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa --file client.json');
         console.log();
     });
 
 program
     .command('slas:client:get')
-    .description('Gets a SLAS client from a given tenant')
-    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
-    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
-    .option('--client <client>', 'Client ID, eg. `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')
+    .description('Get a SLAS client for a tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.client)
     .action(async (options) => {
         await require('./lib/slas').cli.client.get(options);
     }).on('--help', function() {
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:client:get --shortcode kv7kzm78 --tenant zzrf_001 --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa');
         console.log();
     });
 
 program
     .command('slas:client:list')
-    .description('List SLAS clients for a tenant')
-    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
-    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
+    .description('List SLAS clients for a tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
     .action(async (options) => {
         await require('./lib/slas').cli.client.list(options);
     })
     .on('--help', async () => {
         console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:client:list --shortcode kv7kzm78 --tenant zzrf_001');
+        console.log();
     });
 
 program
     .command('slas:client:delete')
-    .description('Deletes a SLAS client from a given tenant')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('--clientid <clientid>', 'The Client ID to delete')
-    .option('-j, --json', 'Formats the output in json')
+    .description('Delete a SLAS client for a tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.client)
     .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
-
+        await require('./lib/slas').cli.client.delete(options);
     }).on('--help', function() {
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:client:delete --shortcode kv7kzm78 --tenant zzrf_001 --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa');
         console.log();
     });
 

@@ -2001,7 +2001,11 @@ program
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci slas:client:add --shortcode kv7kzm78 --tenant zzrf_001 --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa --file client.json');
+        console.log('    $ sfcc-ci slas:client:add \\')
+        console.log('         --shortcode kv7kzm78 \\')
+        console.log('         --tenant zzrf_001 \\')
+        console.log('         --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa \\')
+        console.log('         --file client.json')
         console.log();
     });
 
@@ -2017,7 +2021,10 @@ program
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci slas:client:get --shortcode kv7kzm78 --tenant zzrf_001 --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa');
+        console.log('    $ sfcc-ci slas:client:get \\')
+        console.log('         --shortcode kv7kzm78 \\')
+        console.log('         --tenant zzrf_001 \\')
+        console.log('         --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa \\')
         console.log();
     });
 
@@ -2049,7 +2056,11 @@ program
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci slas:client:delete --shortcode kv7kzm78 --tenant zzrf_001 --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa');
+        console.log('    $ sfcc-ci slas:client:delete \\')
+        console.log('         --shortcode kv7kzm78 \\')
+        console.log('         --tenant zzrf_001 \\')
+        console.log('         --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa \\')
+
         console.log();
     });
 

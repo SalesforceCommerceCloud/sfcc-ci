@@ -1946,24 +1946,19 @@ program
 
 program
     .command('slas:tenant:add')
-    .description('Adds a SLAS tenant to a given organization or updates an existing one')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
+    .description('Add or update a SLAS tenant')
+    .option('--shortcode <shortcode>', 'the organization\'s short code')
+    .option('--tenant <tenant>', 'the tenant id used')
     .option('--file <file>', 'JSON file with tenant details')
-    .option('--merchantname <merchantame>', 'the name given for the tenant')
+    .option('--merchantname <merchantname>', 'the name given for the tenant')
     .option('--tenantdescription <tenantdescription>', 'the tenant descriptions')
     .option('--contact <contact>', 'Contact person to manage tenants')
     .option('--email <email>', 'Email to contact')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.tenant.add(options.tenant, options.shortcode,
-            options.tenantdescription, options.merchantname, options.contact, options.email, options.file, asJson);
-
-    }).on('--help', function() {
+    .option('-j, --json', 'Formats the output in json', false)
+    .action(async (options) => {
+        await require('./lib/slas').cli.tenant.add(options)
+    })
+    .on('--help', function() {
         console.log();
     });
 

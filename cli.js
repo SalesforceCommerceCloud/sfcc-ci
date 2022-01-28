@@ -1946,63 +1946,51 @@ program
 
 program
     .command('slas:tenant:add')
-    .description('Add or update a SLAS tenant')
-    .option('--shortcode <shortcode>', 'the organization\'s short code')
-    .option('--tenant <tenant>', 'the tenant id used')
-    .option('--file <file>', 'JSON file with tenant details')
-    .option('--merchantname <merchantname>', 'the name given for the tenant')
-    .option('--tenantdescription <tenantdescription>', 'the tenant descriptions')
-    .option('--contact <contact>', 'Contact person to manage tenants')
-    .option('--email <email>', 'Email to contact')
-    .option('-j, --json', 'Formats the output in json', false)
+    .description('Add or update SLAS tenant')
+    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
+    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
+    .option('--file <file>', 'Optional path to JSON file with tenant details')
+    .option('-j, --json', 'Format output in json', false)
     .action(async (options) => {
-        await require('./lib/slas').cli.tenant.add(options)
+        await require('./lib/slas').cli.tenant.add(options);
     })
-    .on('--help', function() {
+    .on('--help', () => {
         console.log();
     });
 
 program
     .command('slas:tenant:get')
-    .description('Gets a SLAS tenant from a given organization')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.tenant.get(options.tenant, options.shortcode, asJson);
-
-    }).on('--help', function() {
+    .description('Retrive SLAS tenant')
+    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
+    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
+    .option('-j, --json', 'Format output in json', false)
+    .action(async (options) => {
+        await require('./lib/slas').cli.tenant.get(options);
+    })
+    .on('--help', () => {
         console.log();
     });
 
 program
     .command('slas:tenant:delete')
-    .description('Deletes a SLAS tenant from a given organization')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.tenant.get(options.tenant, options.shortcode, asJson);
-
-    }).on('--help', function() {
+    .description('Remove SLAS tenant')
+    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
+    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
+    .option('-j, --json', 'Format output in json', false)
+    .action(async (options) => {
+        await require('./lib/slas').cli.tenant.delete(options);
+    })
+    .on('--help', () => {
         console.log();
     });
 
 program
     .command('slas:client:add')
-    .description('Adds a SLAS client to a given tenant or updates an existing one')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('--file <file>', 'The JSON File used to set up the slas client')
-    .option('--clientid <clientid>', 'The client ID to add')
+    .description('Add or update SLAS client for a tenant')
+    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
+    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
+    .option('--file <file>', 'Optional path to JSON file with client details.')
+    .option('--client <client>', 'Client ID, eg. `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')
     .option('--clientname <clientname>', 'The name of the client ID')
     .option('--privateclient <privateclient>', 'true the client is private')
     .option('--ecomtenant <ecomtenant>', 'the ecom tenant')
@@ -2038,35 +2026,24 @@ program
 program
     .command('slas:client:get')
     .description('Gets a SLAS client from a given tenant')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('--clientid <clientid>', 'The client ID to get information for')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
-
+    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
+    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
+    .option('--client <client>', 'Client ID, eg. `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')
+    .action(async (options) => {
+        await require('./lib/slas').cli.client.get(options);
     }).on('--help', function() {
         console.log();
     });
 
 program
     .command('slas:client:list')
-    .description('Lists all SLAS clients that belong to a given tenant')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.client.list(options.tenant, options.shortcode, asJson);
-
-    }).on('--help', function() {
+    .description('List SLAS clients for a tenant')
+    .option('--shortcode <shortcode>', 'Realm short code eg. `kv7kzm78`')
+    .option('--tenant <tenant>', 'Tenant ID eg. `zzrf_001`')
+    .action(async (options) => {
+        await require('./lib/slas').cli.client.list(options);
+    })
+    .on('--help', async () => {
         console.log();
     });
 

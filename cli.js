@@ -1553,20 +1553,35 @@ program
 program
     .command('org:list')
     .description('List all orgs eligible to manage')
+    .option('-c, --count <count>','Max count of list items (default is 25)')
+    .option('--all', 'Whether to return all orgs eligible to manage')
     .option('-o, --org <org>','Organization to get details for')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sortby <sortby>', 'Sort by specifying any field')
     .action(function(options) {
+        var count = ( options.count ? options.count : null );
+        var all = ( options.all ? options.all : false );
         var org = ( options.org ? options.org : null );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortBy ? options.sortBy : null );
-        require('./lib/org').cli.list(org, asJson, sortby);
+        require('./lib/org').cli.list(org, count, all, asJson, sortby);
     }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Returns organizations (orgs) from Account Manager the user is eligible to manage.');
+        console.log('  Depending on the number of orgs the list may be large. Use option --count to limit');
+        console.log('  the number of orgs returned. Use option --all to return all orgs in a single list.');
+        console.log();
+        console.log('  Use --org to get details of a single org.');
+        console.log();
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci org:list')
+        console.log('    $ sfcc-ci org:list -c 10')
         console.log('    $ sfcc-ci org:list --org "my-org"')
+        console.log('    $ sfcc-ci org:list --sortby "name"')
         console.log();
     });
 

@@ -637,6 +637,7 @@ The API is structured into sub modules. You may require sub modules directly, e.
   const sfcc_code = require('sfcc-ci').code;
   const sfcc_instance = require('sfcc-ci').instance;
   const sfcc_job = require('sfcc-ci').job;
+  const sfcc_slas = require('sfcc-ci').slas;
   const sfcc_user = require('sfcc-ci').user;
   const sfcc_webdav = require('sfcc-ci').webdav;
 ```
@@ -656,6 +657,14 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
   sfcc.job.run(instance, job_id, job_params, token, callback);
   sfcc.job.status(instance, job_id, job_execution_id, token, callback);
   sfcc.manifest.generate(directories, ignorePatterns, targetDirectory, fileName);
+  sfcc.slas.tenant.add(tenantId, shortcode, description, merchantName, contact, emailAddress, fileName).then(result => ...).catch(err => ...);
+  sfcc.slas.tenant.get(tenantId, shortcode).then(result => ...).catch(err => ...);
+  sfcc.slas.tenant.list(shortcode).then(result => ...).catch(err => ...);
+  sfcc.slas.tenant.delete(tenantId, shortcode).then(result => ...).catch(err => ...);
+  sfcc.slas.client.add(tenantId, shortcode, file, clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis).then(result => ...).catch(err => ...);
+  sfcc.slas.client.get(tenantId, shortcode, clientId).then(result => ...).catch(err => ...);
+  sfcc.slas.client.list(shortcode, tenantId).then(result => ...).catch(err => ...);
+  sfcc.slas.client.delete(tenantId, shortcode, clientId).then(result => ...).catch(err => ...);
   sfcc.user.create(org, user, mail, firstName, lastName, token).then(result => ...).catch(err => ...);
   sfcc.user.list(org, role, login, count, sortBy, token).then(result => ...).catch(err => ...);
   sfcc.user.update(login, changes, token).then(result => ...).catch(err => ...);
@@ -967,6 +976,130 @@ token            | (String)    | The Oauth token to use use for authentication
 callback         | (Function)  | Callback function executed as a result. The error and the job execution details will be passed as parameters to the callback function.
 
 **Returns:** (void) Function has no return value
+
+***
+
+### SLAS ###
+
+APIs available in `require('sfcc').slas`:
+
+`tenant.add(tenantId, shortcode, description, merchantName, contact, emailAddress, fileName)`
+
+Adds the tenant details to the SLAS organization
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+tenantId      | (String)    | The tenant ID
+shortcode     | (String)    | The short code of the org
+description   | (String)    | Description of the tenant
+merchantName  | (String)    | Name of the merchant
+contact       | (String)    | Username of the user
+emailAddress  | (String)    | Email address of the user
+fileName      | (String)    | Path of the file containing all the params required for the tenant creation.
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the newly created tenant reponse.
+
+***
+
+`tenant.get(tenantId, shortcode)`
+
+Gets the tenant matching the given `tenantId` for the given `shortCode`
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+tenantId      | (String)    | The tenant ID
+shortcode     | (String)    | The short code of the org
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the tenant reponse.
+
+***
+
+`tenant.list(shortcode)`
+
+Lists all the tenants for the given `shortCode`
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+shortcode     | (String)    | The short code of the org
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is list of tenants reponse.
+
+***
+
+`tenant.delete(tenantId, shortcode)`
+
+Deletes the tenant matching the given `tenantId` for the given `shortCode`
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+tenantId      | (String)    | The tenant ID
+shortcode     | (String)    | The short code of the org
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the deletion reponse.
+
+***
+
+`client.add(tenantId, shortcode, file, clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis)`
+
+Registers a new client within a given tenant
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+tenantId      | (String)    | The tenant ID
+shortcode     | (String)    | The short code of the org
+file          | (String)    | Path of the file containing all the params required for the client creation.
+clientid      | (String)    | SLAS client id
+clientname    | (String)    | The client name
+privateclient | (Boolean)   | Is the client a private client or not
+ecomtenant    | (String)    | The ecom tenant
+ecomsite      | (String)    | The ecom site
+secret        | (String)    | The secret tied to the client ID
+channels      | (Array)     | The list of channels for the client
+scopes        | (Array)     | The list of scopes authorized for the client
+redirecturis  | (Array)     | The list of redirect URIs authorized for the client
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the newly created client reponse.
+
+***
+
+`client.get(tenantId, shortcode, clientId)`
+
+Gets the tenant matching the given `clientid` for the given `tenantId` and `shortCode`
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+tenantId      | (String)    | The tenant ID
+shortcode     | (String)    | The short code of the org
+clientid      | (String)    | SLAS client id
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the client reponse.
+
+***
+
+`client.list(shortcode, tenantId)`
+
+Lists all the clients for the given `tenantId` and `shortCode`
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+shortcode     | (String)    | The short code of the org
+tenantId      | (String)    | The tenant ID
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is list of clients reponse.
+
+***
+
+`client.delete(tenantId, shortcode, clientId)`
+
+Deletes the client matching the given `clientId` for the given `tenantId` and `shortCode`
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+tenantId      | (String)    | The tenant ID
+shortcode     | (String)    | The short code of the org
+clientid      | (String)    | SLAS client id
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is the deletion reponse.
 
 ***
 

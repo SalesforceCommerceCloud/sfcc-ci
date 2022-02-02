@@ -698,9 +698,11 @@ program
 program
     .command('sandbox:start')
     .option('-s, --sandbox <id>','sandbox to start')
+    .option('--sync','Operates in synchronous mode and waits until the operation has finished.')
     .description('Start a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        var sync = ( options.sync ? options.sync : false );
         if (!sandbox_id) {
             this.missingArgument('sandbox');
             return;
@@ -713,7 +715,7 @@ program
             spec['realm'] = split[0];
             spec['instance'] = split[1];
         }
-        require('./lib/sandbox').cli.start(spec, false);
+        require('./lib/sandbox').cli.start(spec, false, sync);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -722,19 +724,24 @@ program
         console.log('  identify the id of your sandboxes.');
         console.log();
         console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
-        console.log('');
+        console.log();
+        console.log('  Use the --sync flag to wait for the sandbox to have `started` status.');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:start --sandbox my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:start --sandbox my-sandbox-id --sync');
         console.log();
     });
 
 program
     .command('sandbox:stop')
     .option('-s, --sandbox <id>','sandbox to stop')
+    .option('--sync','Operates in synchronous mode and waits until the operation has finished.')
     .description('Stop a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
+        var sync = ( options.sync ? options.sync : false );
         if (!sandbox_id) {
             this.missingArgument('sandbox');
             return;
@@ -747,7 +754,7 @@ program
             spec['realm'] = split[0];
             spec['instance'] = split[1];
         }
-        require('./lib/sandbox').cli.stop(spec, false);
+        require('./lib/sandbox').cli.stop(spec, false, sync);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -756,10 +763,13 @@ program
         console.log('  identify the id of your sandboxes.');
         console.log();
         console.log('  You can also pass the realm and the instance (e.g. zzzz-s01) as <id>.');
-        console.log('');
+        console.log();
+        console.log('  Use the --sync flag to wait for the sandbox to have `stopped` status.');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:stop --sandbox my-sandbox-id');
+        console.log('    $ sfcc-ci sandbox:stop --sandbox my-sandbox-id --sync');
         console.log();
     });
 
@@ -2058,7 +2068,7 @@ program
             require('./lib/log').error('Login missing. Please pass a login using -l,--login.');
         } else if ( !changes ) {
             require('./lib/log').error('Changes missing. Please specify changes using -c,--change.');
-        } else if ( noPrompt && !instance ) {
+        } else if ( noPrompt ) {
             updateUser(instance, login, changes, asJson);
         } else {
             prompt({

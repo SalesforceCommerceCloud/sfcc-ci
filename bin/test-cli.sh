@@ -15,6 +15,9 @@ if [ $? -eq 1 ]; then
 	exit 1
 fi
 
+# reset to track the time elapsed 
+SECONDS=0
+
 # pass parameters in the following order: 
 # $ bin/test-cli.sh <CLIENT_ID> <CLIENT_SECRET> <USER> <USER_PW> <HOST> <SANDBOX_REALM>
 
@@ -974,6 +977,104 @@ else
 fi
 
 ###############################################################################
+###### Testing ´sfcc-ci sandbox:start´
+###############################################################################
+
+echo "Testing command ´sfcc-ci sandbox:start´ (expected to fail):"
+node ./cli.js sandbox:start
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:start --sandbox <INVALID_ID>´ (expected to fail):"
+node ./cli.js sandbox:start --sandbox INVALID_ID
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:start --sandbox <sandbox>´:"
+node ./cli.js sandbox:start --sandbox $TEST_NEW_SANDBOX_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:start --sandbox <sandbox>´ (using <realm>-<instance> as id):"
+node ./cli.js sandbox:start --sandbox $ARG_SANDBOX_REALM"_"$TEST_NEW_SANDBOX_INSTANCE
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:start --sandbox <sandbox> --sync´:"
+node ./cli.js sandbox:start --sandbox $TEST_NEW_SANDBOX_ID --sync
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci sandbox:stop´
+###############################################################################
+
+echo "Testing command ´sfcc-ci sandbox:stop (expected to fail):"
+node ./cli.js sandbox:stop
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <INVALID_ID>´ (expected to fail):"
+node ./cli.js sandbox:stop --sandbox INVALID_ID
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox>´:"
+node ./cli.js sandbox:stop --sandbox $TEST_NEW_SANDBOX_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox>´ (using <realm>-<instance> as id):"
+node ./cli.js sandbox:stop --sandbox $ARG_SANDBOX_REALM"_"$TEST_NEW_SANDBOX_INSTANCE
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox> --sync´:"
+node ./cli.js sandbox:stop --sandbox $TEST_NEW_SANDBOX_ID --sync
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
 ###### Testing ´sfcc-ci sandbox:delete´
 ###############################################################################
 
@@ -1025,3 +1126,7 @@ else
 	echo -e "\t> FAILED"
 	exit 1
 fi
+
+# log time elapsed
+duration=$SECONDS
+echo -e "SUCCESS! Tests finished after $(($duration / 60)) minutes and $(($duration % 60)) seconds."

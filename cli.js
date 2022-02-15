@@ -141,7 +141,7 @@ program
     .action(function(options) {
         var asJson = ( options.json ? options.json : false );
         var start = ( options.start ? options.start : 0 );
-        var count = ( options.count ? options.count : 30 );
+        var count = ( options.count ? options.count : 25 );
 
         var id = options.clientid;
         if (id) {
@@ -217,7 +217,6 @@ program
         var asJson = ( options.json ? options.json : false );
         var noPrompt = ( options.noprompt ? options.noprompt : false );
         var file = ( options.file ? options.file : null );
-        console.info(file)
         if ( !id ) {
             require('./lib/log').error('Missing required --clientid. Use -h,--help for help.');
         } else if ( !changes && !file ) {

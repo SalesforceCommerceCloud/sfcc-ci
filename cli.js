@@ -132,32 +132,9 @@ program
     });
 
 program
-    .command('client:info')
-    .description('Get details of an Oauth client')
-    .option('-a, --clientid <clientid>','id of the Oauth client to get details for')
-    .option('-j, --json', 'Formats the output in json')
-    .action(function(options) {
-        var id = options.clientid;
-        var asJson = ( options.json ? options.json : false );
-        require('./lib/client').cli.info(id, asJson);
-    }).on('--help', function() {
-        console.log('');
-        console.log('  Details:');
-        console.log();
-        console.log('  This requires permissions in Account Manager to manage API clients of the org,');
-        console.log('  the client belongs to.');
-        console.log();
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci client:info -a xxxx-yyyy-zzzz')
-        console.log('    $ sfcc-ci client:info -a xxxx-yyyy-zzzz --json')
-        console.log();
-    });
-
-program
     .command('client:list')
     .description('Lists a Oauth clients you have access to')
+    .option('--clientid <clientid>','id of the Oauth client to get details for')
     .option('-j, --json', 'Formats the output in json')
     .option('-p, --page <page>', 'Optional Page')
     .option('-s, --size <size>', 'Optional Page Size')
@@ -165,8 +142,13 @@ program
         var asJson = ( options.json ? options.json : false );
         var page = ( options.page ? options.page : 0 );
         var size = ( options.size ? options.size : 30 );
-        require('./lib/client').cli.list(page, size, asJson);
 
+        var id = options.clientid;
+        if (id) {
+            require('./lib/client').cli.info(id, asJson);
+        } else {
+            require('./lib/client').cli.list(page, size, asJson);
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -174,11 +156,14 @@ program
         console.log('  Lists Oauth clients you have access to');
         console.log('');
         console.log('  This requires permissions in Account Manager to manage API clients of the org,');
-        console.log('  the client belongs to. You should pass changes to the user details in json')
+        console.log('  the client belongs to. You can retrieve details of a single Oauth client by');
+        console.log('  passing the optional --clientid.');
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci client:list');
+        console.log('    $ sfcc-ci client:list --clientid xxxx-yyyy-zzzz');
+        console.log('    $ sfcc-ci client:list --clientid xxxx-yyyy-zzzz --json');
         console.log();
     });
 
@@ -297,8 +282,8 @@ program
         console.log();
         console.log('  Rotates credentials of an Oauth client');
         console.log('');
-        console.log('  This requires permissions in Account Manager to manage API clients of the org,');
-        console.log('  the client belongs to.');
+        console.log('  This generates a new client secret and resets the existing secret. The operation requires');
+        console.log('  permissions in Account Manager to manage API clients of the org the client belongs to.');
         console.log('');
         console.log('  Examples:');
         console.log();

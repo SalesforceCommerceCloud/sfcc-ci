@@ -188,7 +188,7 @@ describe('Tests for lib/org.js', function() {
         it('properly filters internal properties', function(done) {
             var org = proxyquire('../../lib/org', {
                 'request': function (opts, callback) {
-                    callback(undefined, {statusCode: 200}, {content:[{id:1,name:"myorg",internal:'yes'}]});
+                    callback(undefined, {statusCode: 200}, {content:[{id:1,name:"myorg",links:'yes'}]});
                 },
                 './auth': {
                     'getToken' : () => 'mytoken',
@@ -246,7 +246,7 @@ describe('Tests for lib/org.js', function() {
                     'json' : jsonStub
                 }
             });
-            org.cli.list(null, true, 'id');
+            org.cli.list(null, null, false, true, 'id');
 
             const logArgs = jsonStub.getCall(0).args;
             expect(logArgs[0]).to.eql([{id:1,name:"org a",realms:[],twoFARoles:[]},
@@ -267,7 +267,7 @@ describe('Tests for lib/org.js', function() {
                     'json' : jsonStub
                 }
             });
-            org.cli.list('myorg', true, undefined);
+            org.cli.list('myorg', null, null, true, undefined);
 
             const logArgs = jsonStub.getCall(0).args;
             expect(logArgs[0]).to.eql({id:1,name:"myorg"});

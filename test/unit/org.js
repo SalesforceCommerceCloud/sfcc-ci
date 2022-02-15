@@ -246,7 +246,7 @@ describe('Tests for lib/org.js', function() {
                     'json' : jsonStub
                 }
             });
-            org.cli.list(null, true, 'id');
+            org.cli.list(null, null, false, true, 'id');
 
             const logArgs = jsonStub.getCall(0).args;
             expect(logArgs[0]).to.eql([{id:1,name:"org a",realms:[],twoFARoles:[]},
@@ -267,7 +267,7 @@ describe('Tests for lib/org.js', function() {
                     'json' : jsonStub
                 }
             });
-            org.cli.list('myorg', true, undefined);
+            org.cli.list('myorg', null, null, true, undefined);
 
             const logArgs = jsonStub.getCall(0).args;
             expect(logArgs[0]).to.eql({id:1,name:"myorg"});

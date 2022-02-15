@@ -191,10 +191,6 @@ else
 	exit 1
 fi
 
-###############################################################################
-###### Testing ´sfcc-ci sandbox:realm:list´
-###############################################################################
-
 # we have to re-authenticate with API key and user first
 echo "Running ´sfcc-ci client:auth <api_key> <secret> <user> <pwd>´:"
 node ./cli.js client:auth "$ARG_CLIENT_ID" "$ARG_CLIENT_SECRET" "$ARG_USER" "$ARG_USER_PW"
@@ -204,6 +200,41 @@ else
 	echo -e "\t> FAILED"
 	exit 1
 fi
+
+###############################################################################
+###### Testing ´sfcc-ci client:list´
+###############################################################################
+
+echo "Testing command ´sfcc-ci client:list´:"
+node ./cli.js client:list
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:list´ --clientid <INVALID_CLIENT>´ (expected to fail):"
+node ./cli.js client:list --clientid INVALID_CLIENT
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:list´ --clientid <client_id>´:"
+node ./cli.js client:list --clientid $ARG_CLIENT_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci sandbox:realm:list´
+###############################################################################
 
 echo "Testing command ´sfcc-ci sandbox:realm:list´:"
 node ./cli.js sandbox:realm:list

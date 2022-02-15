@@ -248,14 +248,14 @@ program
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci client:update -a xxxx-yyyy-zzzz --changes \'{"active": true}\'');
+        console.log('    $ sfcc-ci client:update --clientid xxxx-yyyy-zzzz --changes \'{"active": true}\'');
         console.log();
     });
 
 program
     .command('client:rotate')
     .description('Rotate credentials of an Oauth client')
-    .option('-a, --clientid <clientid>','id of the Oauth client to rotate')
+    .option('--clientid <clientid>','id of the Oauth client to rotate')
     .option('-j, --json', 'Formats the output in json')
     .option('-N, --noprompt','No prompt to confirm rotation')
     .action(function(options) {
@@ -290,14 +290,14 @@ program
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci client:rotate -a xxxx-yyyy-zzzz');
+        console.log('    $ sfcc-ci client:rotate --clientid xxxx-yyyy-zzzz');
         console.log();
     });
 
 program
     .command('client:delete')
     .description('Delete an Oauth client')
-    .option('-a, --clientid <clientid>','id of the Oauth client to delete')
+    .option('--clientid <clientid>','id of the Oauth client to delete')
     .option('-j, --json', 'Formats the output in json')
     .option('-N, --noprompt','No prompt to confirm deletion')
     .action(function(options) {
@@ -338,7 +338,7 @@ program
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci client:delete -a xxxx-yyyy-zzzz');
+        console.log('    $ sfcc-ci client:delete --clientid xxxx-yyyy-zzzz');
         console.log();
     });
 

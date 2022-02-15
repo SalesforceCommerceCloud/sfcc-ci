@@ -1120,6 +1120,24 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci org:list´ with option -c:"
+node ./cli.js org:list -c 2
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci org:list´ with option --all:"
+node ./cli.js org:list --all
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 echo "Testing command ´sfcc-ci org:list --org <org>´ with invalid org (expected to fail):"
 node ./cli.js org:list --org does_not_exist
 if [ $? -eq 1 ]; then

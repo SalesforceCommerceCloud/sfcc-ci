@@ -188,7 +188,7 @@ describe('Tests for lib/org.js', function() {
         it('properly filters internal properties', function(done) {
             var org = proxyquire('../../lib/org', {
                 'request': function (opts, callback) {
-                    callback(undefined, {statusCode: 200}, {content:[{id:1,name:"myorg",internal:'yes'}]});
+                    callback(undefined, {statusCode: 200}, {content:[{id:1,name:"myorg",links:'yes'}]});
                 },
                 './auth': {
                     'getToken' : () => 'mytoken',

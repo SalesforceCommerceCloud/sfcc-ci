@@ -134,20 +134,20 @@ program
 program
     .command('client:list')
     .description('Lists a Oauth clients you have access to')
+    .option('-c, --count <count>','Max count of list items (default is 25)')
+    .option('--start <start>','Zero-based index of first item to return (default is 0)')
     .option('--clientid <clientid>','id of the Oauth client to get details for')
     .option('-j, --json', 'Formats the output in json')
-    .option('-p, --page <page>', 'Optional Page')
-    .option('-s, --size <size>', 'Optional Page Size')
     .action(function(options) {
         var asJson = ( options.json ? options.json : false );
-        var page = ( options.page ? options.page : 0 );
-        var size = ( options.size ? options.size : 30 );
+        var start = ( options.start ? options.start : 0 );
+        var count = ( options.count ? options.count : 30 );
 
         var id = options.clientid;
         if (id) {
             require('./lib/client').cli.info(id, asJson);
         } else {
-            require('./lib/client').cli.list(page, size, asJson);
+            require('./lib/client').cli.list(start, count, asJson);
         }
     }).on('--help', function() {
         console.log('');
@@ -156,12 +156,15 @@ program
         console.log('  Lists Oauth clients you have access to');
         console.log('');
         console.log('  This requires permissions in Account Manager to manage API clients of the org,');
-        console.log('  the client belongs to. You can retrieve details of a single Oauth client by');
-        console.log('  passing the optional --clientid.');
+        console.log('  the client belongs to.');
+        console.log('');
+        console.log('  Use --clientid to get details of a single Oauth client.');
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci client:list');
+        console.log('    $ sfcc-ci client:list --count 50');
+        console.log('    $ sfcc-ci client:list --count 50 --start 1');
         console.log('    $ sfcc-ci client:list --clientid xxxx-yyyy-zzzz');
         console.log('    $ sfcc-ci client:list --clientid xxxx-yyyy-zzzz --json');
         console.log();

@@ -168,6 +168,39 @@ program
     });
 
 program
+    .command('client:create')
+    .description('Creates a new Oauth client')
+    .option('-c, --configuration <configuration>', 'Configuration of for Oauth client as json')
+    .option('-f, --file <file>', 'Configuration of the Oauth client as utf-8 encoded text file containing json')
+    .option('-j, --json', 'Formats the output in json')
+    .action(function(options) {
+        var configuration = ( options.configuration ? JSON.parse(options.configuration) : null );
+        var asJson = ( options.json ? options.json : false );
+        var file = ( options.file ? options.file : null );
+        if ( !configuration && !file) {
+            require('./lib/log').error('Configuration missing. Please specify configuration using -c,--configuration' +
+                'or -f, --file.');
+        } else {
+            require('./lib/client').cli.create(configuration, file, asJson);
+        }
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Creates a new Oauth client');
+        console.log('');
+        console.log('  This requires permissions in Account Manager to manage API clients of the org,');
+        console.log('  the client belongs to. You can pass client confguration as JSON string through option');
+        console.log('  -c,--configuration or as a utf-8 encoded text file containing JSON through option -f,--file.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci client:create --configuration \'{"active": true}\'');
+        console.log('    $ sfcc-ci client:create --file \'path/to/file.json\'');
+        console.log();
+    });
+
+program
     .command('client:update')
     .description('Update an Oauth client')
     .option('-a, --clientid <clientid>','id of the Oauth client to update')
@@ -213,39 +246,6 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci client:update -a xxxx-yyyy-zzzz --changes \'{"active": true}\'');
-        console.log();
-    });
-
-program
-    .command('client:create')
-    .description('Creates a new Oauth client')
-    .option('-c, --configuration <configuration>', 'Configuration of for Oauth client as json')
-    .option('-f, --file <file>', 'Configuration of the Oauth client as utf-8 encoded text file containing json')
-    .option('-j, --json', 'Formats the output in json')
-    .action(function(options) {
-        var configuration = ( options.configuration ? JSON.parse(options.configuration) : null );
-        var asJson = ( options.json ? options.json : false );
-        var file = ( options.file ? options.file : null );
-        if ( !configuration && !file) {
-            require('./lib/log').error('Configuration missing. Please specify configuration using -c,--configuration' +
-                'or -f, --file.');
-        } else {
-            require('./lib/client').cli.create(configuration, file, asJson);
-        }
-    }).on('--help', function() {
-        console.log('');
-        console.log('  Details:');
-        console.log();
-        console.log('  Creates a new Oauth client');
-        console.log('');
-        console.log('  This requires permissions in Account Manager to manage API clients of the org,');
-        console.log('  the client belongs to. You can pass client confguration as JSON string through option');
-        console.log('  -c,--configuration or as a utf-8 encoded text file containing JSON through option -f,--file.');
-        console.log('');
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci client:create --configuration \'{"active": true}\'');
-        console.log('    $ sfcc-ci client:create --file \'path/to/file.json\'');
         console.log();
     });
 

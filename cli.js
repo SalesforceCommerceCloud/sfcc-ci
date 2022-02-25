@@ -1959,169 +1959,131 @@ program
         console.log();
     });
 
+const SLAS_OPTIONS = {
+    'shortcode': ['--shortcode <shortcode>', 'Realm short code, `kv7kzm78`'],
+    'tenant': ['--tenant <tenant>', 'Tenant ID, `zzrf_001`'],
+    'client': ['--client <client>', 'Client ID, `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`'],
+    'file': ['--file <file>', 'Path to a JSON file with object details, `file.json`'],
+    'json': ['-j, --json', 'Format output in json', false],
+    'username': ['-u, --username <username>', 'Email address of user']
+}
 
 program
-    .command('slas:tenant:list')
-    .description('Lists all tenants that belong to a given organization')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.tenant.list(options.shortcode, asJson);
-
-    }).on('--help', function() {
+    .command('slas:tenant:create')
+    .description('Create or update SLAS a tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.file)
+    .option(...SLAS_OPTIONS.json)
+    .action(async (options) => {
+        await require('./lib/slas').cli.tenant.create(options);
+    })
+    .on('--help', () => {
         console.log();
-    });
-
-program
-    .command('slas:tenant:add')
-    .description('Adds a SLAS tenant to a given organization or updates an existing one')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('--file <file>', 'JSON file with tenant details')
-    .option('--merchantname <merchantame>', 'the name given for the tenant')
-    .option('--tenantdescription <tenantdescription>', 'the tenant descriptions')
-    .option('--contact <contact>', 'Contact person to manage tenants')
-    .option('--email <email>', 'Email to contact')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.tenant.add(options.tenant, options.shortcode,
-            options.tenantdescription, options.merchantname, options.contact, options.email, options.file, asJson);
-
-    }).on('--help', function() {
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:tenant:create --shortcode kv7kzm78 --tenant zzrf_001');
+        console.log('    $ sfcc-ci slas:tenant:create --shortcode kv7kzm78 --tenant zzrf_001 --file tenant.json');
         console.log();
     });
 
 program
     .command('slas:tenant:get')
-    .description('Gets a SLAS tenant from a given organization')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.tenant.get(options.tenant, options.shortcode, asJson);
-
-    }).on('--help', function() {
+    .description('Get a SLAS tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.json)
+    .action(async (options) => {
+        await require('./lib/slas').cli.tenant.get(options);
+    })
+    .on('--help', () => {
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:tenant:get --shortcode kv7kzm78 --tenant zzrf_001');
         console.log();
     });
 
 program
-    .command('slas:tenant:delete')
-    .description('Deletes a SLAS tenant from a given organization')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.tenant.get(options.tenant, options.shortcode, asJson);
-
-    }).on('--help', function() {
+    .command('slas:tenant:credential-quality')
+    .description('Get credential quality metrics for a SLAS tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.username)
+    .action(async (options) => {
+        await require('./lib/slas').cli.tenant.credentialQuality(options);
+    })
+    .on('--help', () => {
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:tenant:credential-quality --shortcode kv7kzm78 --tenant zzrf_001');
+        console.log('    $ sfcc-ci slas:tenant:credential-quality --shortcode kv7kzm78 --tenant zzrf_001 \\');
+        console.log('         --shortcode kv7kzm78 \\')
+        console.log('         --tenant zzrf_001 \\')
+        console.log('         --username user@example.com \\')
         console.log();
     });
 
 program
-    .command('slas:client:add')
-    .description('Adds a SLAS client to a given tenant or updates an existing one')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('--file <file>', 'The JSON File used to set up the slas client')
-    .option('--clientid <clientid>', 'The client ID to add')
-    .option('--clientname <clientname>', 'The name of the client ID')
-    .option('--privateclient <privateclient>', 'true the client is private')
-    .option('--ecomtenant <ecomtenant>', 'the ecom tenant')
-    .option('--ecomsite <ecomsite>', 'the ecom site')
-    .option('--secret <secret>', 'the slas secret, can be different then the secret in \
-        account manager, but shouldnt be')
-    .option('--channels <channels>', 'comma separated list of site IDs this API client should support')
-    .option('--scopes <scopes>', 'comma separated list of auth z scopes this API client should support')
-    .option('--redirecturis <redirecturis>', 'comma separated list of redirect uris this API client should support')
-
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-        const clientid = options.clientid;
-        const clientname = options.clientname;
-        const privateclient = options.privateclient;
-        const ecomtenant = options.ecomtenant;
-        const ecomsite = options.ecomsite;
-        const secret = options.secret;
-        const channels = !options.channels || options.channels.split(',').map(item => item.trim());
-        const scopes = !options.scopes || options.scopes.split(',').map(item => item.trim());
-        const redirecturis = !options.redirecturis || options.redirecturis.split(',').map(item => item.trim());
-
-        const slas = require('./lib/slas');
-        await slas.cli.client.add(options.tenant, options.shortcode, options.file,
-            clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, asJson);
-
+    .command('slas:client:create')
+    .description('Create or update a SLAS client for a tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.client)
+    .option(...SLAS_OPTIONS.file)
+    .action(async (options) => {
+        await require('./lib/slas').cli.client.create(options);
     }).on('--help', function() {
         console.log();
-    });
-
-program
-    .command('slas:client:get')
-    .description('Gets a SLAS client from a given tenant')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('--clientid <clientid>', 'The client ID to get information for')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
-
-    }).on('--help', function() {
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:client:create \\')
+        console.log('         --shortcode kv7kzm78 \\')
+        console.log('         --tenant zzrf_001 \\')
+        console.log('         --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa \\')
+        console.log('         --file client.json')
         console.log();
     });
 
 program
     .command('slas:client:list')
-    .description('Lists all SLAS clients that belong to a given tenant')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('-j, --json', 'Formats the output in json')
-    .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.client.list(options.tenant, options.shortcode, asJson);
-
+    .description('List SLAS clients for a tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.client)
+    .option(...SLAS_OPTIONS.json)
+    .action(async (options) => {
+        await require('./lib/slas').cli.client.list(options);
     }).on('--help', function() {
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:client:list --shortcode kv7kzm78 --tenant zzrf_001');
+        console.log('    $ sfcc-ci slas:client:list \\')
+        console.log('         --shortcode kv7kzm78 \\')
+        console.log('         --tenant zzrf_001 \\')
+        console.log('         --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa \\')
         console.log();
     });
 
 program
     .command('slas:client:delete')
-    .description('Deletes a SLAS client from a given tenant')
-    .option('--tenant <tenant>', 'the tenant id used for slas')
-    .option('--shortcode <shortcode>', 'the organizations short code')
-    .option('--clientid <clientid>', 'The Client ID to delete')
-    .option('-j, --json', 'Formats the output in json')
+    .description('Delete a SLAS client for a tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.client)
     .action(async function(options) {
-
-        var asJson = ( options.json ? options.json : false );
-
-        const slas = require('./lib/slas');
-        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
-
+        await require('./lib/slas').cli.client.delete(options);
     }).on('--help', function() {
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:client:delete \\')
+        console.log('         --shortcode kv7kzm78 \\')
+        console.log('         --tenant zzrf_001 \\')
+        console.log('         --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa \\')
+
         console.log();
     });
 

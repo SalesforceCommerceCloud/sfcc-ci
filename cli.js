@@ -1949,7 +1949,8 @@ const SLAS_OPTIONS = {
     'tenant': ['--tenant <tenant>', 'Tenant ID, `zzrf_001`'],
     'client': ['--client <client>', 'Client ID, `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`'],
     'file': ['--file <file>', 'Path to a JSON file with object details, `file.json`'],
-    'json': ['-j, --json', 'Format output in json', false]
+    'json': ['-j, --json', 'Format output in json', false],
+    'username': ['-u, --username <username>', 'Email address of user']
 }
 
 program
@@ -1989,6 +1990,27 @@ program
     });
 
 program
+    .command('slas:tenant:credential-quality')
+    .description('Get credential quality metrics for a SLAS tenant.')
+    .option(...SLAS_OPTIONS.shortcode)
+    .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.username)
+    .action(async (options) => {
+        await require('./lib/slas').cli.tenant.credentialQuality(options);
+    })
+    .on('--help', () => {
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci slas:tenant:credential-quality --shortcode kv7kzm78 --tenant zzrf_001');
+        console.log('    $ sfcc-ci slas:tenant:credential-quality --shortcode kv7kzm78 --tenant zzrf_001 \\');
+        console.log('         --shortcode kv7kzm78 \\')
+        console.log('         --tenant zzrf_001 \\')
+        console.log('         --username user@example.com \\')
+        console.log();
+    });
+
+program    
     .command('slas:client:add')
     .description('Add or update a SLAS client for a tenant.')
     .option(...SLAS_OPTIONS.shortcode)

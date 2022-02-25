@@ -1969,14 +1969,14 @@ const SLAS_OPTIONS = {
 }
 
 program
-    .command('slas:tenant:add')
-    .description('Add or update SLAS a tenant.')
+    .command('slas:tenant:create')
+    .description('Create or update SLAS a tenant.')
     .option(...SLAS_OPTIONS.shortcode)
     .option(...SLAS_OPTIONS.tenant)
     .option(...SLAS_OPTIONS.file)
     .option(...SLAS_OPTIONS.json)
     .action(async (options) => {
-        await require('./lib/slas').cli.tenant.add(options);
+        await require('./lib/slas').cli.tenant.create(options);
     })
     .on('--help', () => {
         console.log();
@@ -2025,20 +2025,20 @@ program
         console.log();
     });
 
-program    
-    .command('slas:client:add')
-    .description('Add or update a SLAS client for a tenant.')
+program
+    .command('slas:client:create')
+    .description('Create or update a SLAS client for a tenant.')
     .option(...SLAS_OPTIONS.shortcode)
     .option(...SLAS_OPTIONS.tenant)
     .option(...SLAS_OPTIONS.client)
     .option(...SLAS_OPTIONS.file)
     .action(async (options) => {
-        await require('./lib/slas').cli.client.add(options);
+        await require('./lib/slas').cli.client.create(options);
     }).on('--help', function() {
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci slas:client:add \\')
+        console.log('    $ sfcc-ci slas:client:create \\')
         console.log('         --shortcode kv7kzm78 \\')
         console.log('         --tenant zzrf_001 \\')
         console.log('         --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa \\')

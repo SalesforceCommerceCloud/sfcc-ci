@@ -33,10 +33,10 @@ describe("Shopper Login and API Access Service (SLAS)", () => {
     afterEach(() => fetchStub.reset());
 
     describe("Tenant CLI", () => {
-        it("Adds", async () => {
+        it("Creates", async () => {
             const response = {
                 contact: null,
-                description: "Added by SFCC-CI at 2022-01-01T12:00:00.000Z",
+                description: "Created by SFCC-CI at 2022-01-01T12:00:00.000Z",
                 emailAddress: "user@example.com",
                 instance: "aaaa_001",
                 merchantName: "_",
@@ -49,7 +49,7 @@ describe("Shopper Login and API Access Service (SLAS)", () => {
                 )
             );
 
-            await slas.cli.tenant.add(TENANT);
+            await slas.cli.tenant.create(TENANT);
 
             sinon.assert.calledOnce(fetchStub);
             sinon.assert.calledWithMatch(
@@ -69,7 +69,7 @@ describe("Shopper Login and API Access Service (SLAS)", () => {
         it("Gets", async () => {
             const response = {
                 contact: null,
-                description: "Added by SFCC-CI at 2022-01-01T12:00:00.000Z",
+                description: "Created by SFCC-CI at 2022-01-01T12:00:00.000Z",
                 emailAddress: "user@example.com",
                 instance: "aaaa_001",
                 merchantName: "_",

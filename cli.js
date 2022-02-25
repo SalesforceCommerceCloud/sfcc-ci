@@ -2047,37 +2047,23 @@ program
     });
 
 program
-    .command('slas:client:get')
-    .description('Get a SLAS client for a tenant.')
-    .option(...SLAS_OPTIONS.shortcode)
-    .option(...SLAS_OPTIONS.tenant)
-    .option(...SLAS_OPTIONS.client)
-    .action(async (options) => {
-        await require('./lib/slas').cli.client.get(options);
-    }).on('--help', function() {
-        console.log();
-        console.log('  Examples:');
-        console.log();
-        console.log('    $ sfcc-ci slas:client:get \\')
-        console.log('         --shortcode kv7kzm78 \\')
-        console.log('         --tenant zzrf_001 \\')
-        console.log('         --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa \\')
-        console.log();
-    });
-
-program
     .command('slas:client:list')
     .description('List SLAS clients for a tenant.')
     .option(...SLAS_OPTIONS.shortcode)
     .option(...SLAS_OPTIONS.tenant)
+    .option(...SLAS_OPTIONS.client)
+    .option(...SLAS_OPTIONS.json)
     .action(async (options) => {
         await require('./lib/slas').cli.client.list(options);
-    })
-    .on('--help', async () => {
+    }).on('--help', function() {
         console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci slas:client:list --shortcode kv7kzm78 --tenant zzrf_001');
+        console.log('    $ sfcc-ci slas:client:list \\')
+        console.log('         --shortcode kv7kzm78 \\')
+        console.log('         --tenant zzrf_001 \\')
+        console.log('         --client aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa \\')
         console.log();
     });
 

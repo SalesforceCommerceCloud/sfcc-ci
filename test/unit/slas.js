@@ -98,37 +98,6 @@ describe("Shopper Login and API Access Service (SLAS)", () => {
     });
 
     describe("Client CLI", () => {
-        it("Gets", async () => {
-            const response = {
-                clientId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                name: "test",
-                scopes: "sfcc.shopper-categories",
-                redirectUri: "http://localhost:3000/callback",
-                channels: ["RefArch", "RefArchGlobal"],
-                isPrivateClient: false,
-            };
-
-            fetchStub.returns(
-                Promise.resolve(
-                    new Response(JSON.stringify(response), { status: 200 })
-                )
-            );
-
-            await slas.cli.client.get(CLIENT);
-
-            sinon.assert.calledOnce(fetchStub);
-            sinon.assert.calledWithMatch(
-                fetchStub,
-                slas.getSlasUrl(CLIENT),
-                sinon.match({
-                    headers: {
-                        Authorization: `Bearer ${TOKEN}`,
-                        "Content-Type": "application/json",
-                    },
-                })
-            );
-        });
-
         it("Lists", async () => {
             const response = {
                 data: [
@@ -155,6 +124,37 @@ describe("Shopper Login and API Access Service (SLAS)", () => {
             sinon.assert.calledWithMatch(
                 fetchStub,
                 slas.getSlasUrl(TENANT),
+                sinon.match({
+                    headers: {
+                        Authorization: `Bearer ${TOKEN}`,
+                        "Content-Type": "application/json",
+                    },
+                })
+            );
+        });
+
+        it("Lists one Client", async () => {
+            const response = {
+                clientId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                name: "test",
+                scopes: "sfcc.shopper-categories",
+                redirectUri: "http://localhost:3000/callback",
+                channels: ["RefArch", "RefArchGlobal"],
+                isPrivateClient: false,
+            };
+
+            fetchStub.returns(
+                Promise.resolve(
+                    new Response(JSON.stringify(response), { status: 200 })
+                )
+            );
+
+            await slas.cli.client.list(CLIENT);
+
+            sinon.assert.calledOnce(fetchStub);
+            sinon.assert.calledWithMatch(
+                fetchStub,
+                slas.getSlasUrl(CLIENT),
                 sinon.match({
                     headers: {
                         Authorization: `Bearer ${TOKEN}`,

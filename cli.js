@@ -184,7 +184,7 @@ program
     .command('data:download')
     .option('-i, --instance <instance>','Instance to upload the file to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
-    .option('-f, --file <file>', 'being the file you want to download from Implex/src/instance/[file]')
+    .option('-f, --file <file>', 'being the file on Commerce Cloud you want to download from Implex/src/instance/[file]')
     .option('-l, --location <location>','being the local location to download the file to')
     .description('Downloads a file from a Commerce Cloud instance')
     .action(function(options) {
@@ -208,7 +208,7 @@ program
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci data:download --instance my-instance.demandware.net --filefile.zip '+
+        console.log('    $ sfcc-ci data:download --instance my-instance.demandware.net --file file.zip '+
             '--location ./file.zip');
         console.log();
     });

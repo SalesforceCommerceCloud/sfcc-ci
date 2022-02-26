@@ -180,12 +180,12 @@ program
         console.log();
     });
 
-    program
+program
     .command('data:download')
     .option('-i, --instance <instance>','Instance to upload the file to. Can be an ' +
         'instance alias. If not specified the currently configured instance will be used.')
-    .option('-f, --file <file>', 'being the source location on the instance to download from')
-    .option('-l, --location <location>','being the location to download the file to')
+    .option('-f, --file <file>', 'being the file you want to download from Implex/src/instance/[file]')
+    .option('-l, --location <location>','being the local location to download the file to')
     .description('Downloads a file from a Commerce Cloud instance')
     .action(function(options) {
         var instance = require('./lib/instance').getInstance(options.instance);
@@ -204,11 +204,11 @@ program
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  Downloads the file from instance location -- /webdav/Sites/Implex .');
+        console.log('  Downloads file from the instance from the location Implex/src/instance/ .');
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci data:download --instance my-instance.demandware.net --file Implex/src/instance/file.zip '+
+        console.log('    $ sfcc-ci data:download --instance my-instance.demandware.net --filefile.zip '+
             '--location ./file.zip');
         console.log();
     });

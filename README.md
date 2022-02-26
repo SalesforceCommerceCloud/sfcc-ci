@@ -294,6 +294,7 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                               Return the current authentication token
     data:upload [options]                                           Uploads a file onto a Commerce Cloud instance
+    data:download [options]                                         Downloads a file from a Commerce Cloud Impex location
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
     sandbox:realm:update [options]                                  Update realm settings
     sandbox:list [options]                                          List all available sandboxes
@@ -1341,6 +1342,23 @@ path          | (String)    | The path relative to .../webdav/Sites where the fi
 file          | (String)    | The file to upload
 token         | (String)    | The Oauth token to use use for authentication
 options       | (Object)    | The options parameter can contains two properties: pfx: the path to the client certificate to use for two factor authentication. passphrase: the optional passphrase to use with the client certificate
+callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
+
+**Returns:** (void) Function has no return value
+
+***
+
+`download(instance, file, location, options)`
+
+Downloads a file from a Commerce Cloud Impex location.
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to upload the import file to
+file          | (String)    | The file you want to download from the location /impex/src/instance
+location      | (String)    | The local file path where you want to save your file
+token         | (String)    | The Oauth token to use use for authentication
+options       | (Object)    | The options parameter can contains two properties: pfx: the path to the client certificate to use for two factor authentication. passphrase: the optional passphrase to use with the client 
 callback      | (Function)  | Callback function executed as a result. The error will be passed as parameter to the callback function.
 
 **Returns:** (void) Function has no return value

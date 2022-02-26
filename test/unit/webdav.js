@@ -268,6 +268,16 @@ describe('Tests for lib/webdav.js', function() {
         });
     });
 
+    describe('cli.download function', function() {
+        it('command succeeds', function(){
+            try {
+                out = webdav.cli.download('instance', 'site_import.zip', './site_import.zip', {});
+            } catch (e) {
+                throw e;
+            }
+        });
+    });
+
     describe('postFile function', function() {
 
         beforeEach(function() {

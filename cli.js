@@ -181,6 +181,40 @@ program
     });
 
 program
+    .command('data:download')
+    .option('-i, --instance <instance>','Instance to upload the file to. Can be an ' +
+        'instance alias. If not specified the currently configured instance will be used.')
+    .option('-f, --file <file>', 'being the file on Commerce Cloud you want to download ' +
+        'from location /Implex/src/instance/ ')
+    .option('-l, --location <location>','being the local location to download the file to')
+    .description('Downloads a file from a Commerce Cloud instance')
+    .action(function(options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        var file = ( options.file ? options.file : null );
+        if (!file) {
+            this.missingArgument('file');
+            return;
+        }
+        var location = ( options.location ? options.location : null );
+        if (!location) {
+            this.missingArgument('location');
+            return;
+        }
+        require('./lib/webdav').cli.download(instance, file, location, {});
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Downloads file from the instance from the location Implex/src/instance/ .');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci data:download --instance my-instance.demandware.net --file file.zip '+
+            '--location ./file.zip');
+        console.log();
+    });
+
+program
     .command('sandbox:realm:list')
     .description('List realms eligible to manage sandboxes for')
     .option('-r, --realm <realm>','Realm to get details for')

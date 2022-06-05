@@ -118,7 +118,7 @@ describe('Tests for lib/auth.js', function() {
 
             it('accepts an alternate account manager URI', function() {
                 const accountManager = AMURI1;
-                auth.auth(clientKey, clientSecret, null, null, false, accountManager);
+                auth.auth(clientKey, clientSecret, null, null, { accountManager: accountManager });
                 const postArgs = requestStub.post.getCall(0).args[0];
                 expect(postArgs.uri).to.equal('https://account-pod5.demandware.net/dw/oauth2/access_token');
             });
@@ -141,9 +141,15 @@ describe('Tests for lib/auth.js', function() {
             it('will use accountManager function arg over dwjson config value', function() {
                 const accountManager = AMURI1;
                 dwjsonMock['account-manager'] = AMURI2;
-                auth.auth(clientKey, clientSecret, null, null, false, accountManager);
+                auth.auth(clientKey, clientSecret, null, null, { accountManager: accountManager });
                 const postArgs = requestStub.post.getCall(0).args[0];
                 expect(postArgs.uri).to.equal('https://account-pod5.demandware.net/dw/oauth2/access_token');
+            });
+
+            it('forces client_credentials grant type if flag provided', function() {
+                auth.auth(clientKey, clientSecret, user, password, { forceClientCredentials: true });
+                const postArgs = requestStub.post.getCall(0).args[0];
+                expect(postArgs.form.grant_type).to.equal('client_credentials');
             });
         });
     });

@@ -116,6 +116,14 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci client:auth´ with valid client and user credentials and --client option:"
+node ./cli.js client:auth "$ARG_CLIENT_ID" "$ARG_CLIENT_SECRET" "$ARG_USER" "$ARG_USER_PW" --client
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
 ###############################################################################
 ###### Testing ´sfcc-ci client:auth:token´
 ###############################################################################

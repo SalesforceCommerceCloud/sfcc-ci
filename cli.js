@@ -74,10 +74,15 @@ program
     .option('-a, --authserver [authserver]','The authorization server used to authenticate')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
         'once the token expires.')
+    .option('-c, --client', 'Forses authorization with client_credentials type')
     .description('Authenticate an API client with an optional user for automation use')
-    .action(function(client, secret, user, user_password, options) {
-        var renew = ( options.renew ? options.renew : false );
-        require('./lib/auth').auth(client, secret, user, user_password, renew, options.authserver);
+    .action(function(client, secret, user, user_password, cliOptions) {
+        var options = {
+            autoRenew: !!cliOptions.renew,
+            accountManager: cliOptions.authserver,
+            forceClientCredentials: !!cliOptions.client
+        }
+        require('./lib/auth').auth(client, secret, user, user_password, options);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -100,6 +105,7 @@ program
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -r');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -a account.demandware.com');
+        console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -c');
         console.log('    $ sfcc-ci client:auth');
         console.log();
     });

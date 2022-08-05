@@ -320,6 +320,37 @@ else
 fi
 
 ###############################################################################
+###### Testing ´sfcc-ci sandbox:ips´
+###############################################################################
+
+echo "Testing command ´sfcc-ci sandbox:ips´:"
+node ./cli.js sandbox:ips
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:ips --realm (expected to fail)´:"
+node ./cli.js sandbox:ips --realm
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:ips --realm <realm>´:"
+node ./cli.js sandbox:ips --realm $ARG_SANDBOX_REALM
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
 ###### Testing ´sfcc-ci sandbox:list´
 ###############################################################################
 

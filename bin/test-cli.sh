@@ -1201,7 +1201,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci user:create --login <login>´:"
-node ./cli.js user:create --login "$ARG_TEST_USER" --user '{"firstName": "John", "lastName": "Doe"}'
+node ./cli.js user:create --org "$ARG_TEST_ORG" --login "$ARG_TEST_USER" --user '{"firstName": "John", "lastName": "Doe"}'
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -1253,8 +1253,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci user:delete --login <login>´ with invalid user (expected to fail):"
-node ./cli.js user:delete --login does_not_exist
+echo "Testing command ´sfcc-ci user:delete --login <login>´ --noprompt with invalid user (expected to fail):"
+node ./cli.js user:delete --login does_not_exist --noprompt
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else

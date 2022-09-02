@@ -351,7 +351,7 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     $SFCC_OAUTH_CLIENT_SECRET          client secret used for authentication
     $SFCC_OAUTH_USER_NAME              user name used for authentication
     $SFCC_OAUTH_USER_PASSWORD          user password used for authentication
-    $SFCC_SANDBOX_API_HOST             set sandbox API host
+    $SFCC_SANDBOX_API_HOST             set alternative sandbox API host
     $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes
     $SFCC_SCAPI_SHORTCODE              the Salesforce Commerce (Headless) API Shortcode
     $SFCC_SCAPI_TENANTID               the Salesforce Commerce (Headless) API TenantId
@@ -399,7 +399,7 @@ The use of environment variables is optional. `sfcc-ci` respects the following e
 * `SFCC_OAUTH_CLIENT_SECRET` client secret used for authentication
 * `SFCC_OAUTH_USER_NAME` user name used for authentication
 * `SFCC_OAUTH_USER_PASSWORD` user password used for authentication
-* `SFCC_SANDBOX_API_HOST` set sandbox API host
+* `SFCC_SANDBOX_API_HOST` set alternative sandbox API host
 * `SFCC_SANDBOX_API_POLLING_TIMEOUT` set timeout for sandbox polling in minutes
 * `DEBUG` enable verbose output
 
@@ -478,7 +478,7 @@ users:* | Account Administrator role assigned to user _or_ OCAPI Data API Settin
 
 ### API Server ###
 
-`sfcc-ci` uses a default host for the sandbox API. You can overwrite this host and use an alternative host using the env var `SFCC_SANDBOX_API_HOST`:
+`sfcc-ci` uses a default host for the sandbox API. This is the standard Sandbox API Gateway at admin.dx.commercecloud.salesforce.com. Usually this is fine and you don't need to change this. However, you can overwrite this host and use an alternative host using the env var `SFCC_SANDBOX_API_HOST`:
 
 ```bash
 export SFCC_SANDBOX_API_HOST=<alternative-sandbox-api-host>

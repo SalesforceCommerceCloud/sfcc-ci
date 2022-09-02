@@ -268,15 +268,23 @@ program
 program
     .command('sandbox:ips')
     .description('List inbound and outbound IP addresses for sandboxes')
+    .option('-r, --realm <realm>','Realm to get IP details for')
     .option('-j, --json','Formats the output in json')
     .action(function(options) {
+        var realm = ( options.realm ? options.realm : null );
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.ips(asJson);
+        require('./lib/sandbox').cli.ips(realm, asJson);
     }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Use the optional --realm parameter to only retrieve IP addresses relevant for a particular');
+        console.log('  realm.');
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:ips');
+        console.log('    $ sfcc-ci sandbox:ips --realm zzzz');
         console.log('    $ sfcc-ci sandbox:ips --json');
         console.log();
     });
@@ -1819,7 +1827,7 @@ program
         console.log('  If an org is passed using -o,--org, the user will be created in the Account Manager');
         console.log('  for the passed org. The login (an email) must be unique. After a successful');
         console.log('  creation the user will receive a confirmation e-mail with a link to activate his');
-        console.log('  account. Default roles of the user in Account Manager are "xchange-user" and "doc-user".');
+        console.log('  account.');
         console.log('');
         console.log('  Use -i,--instance to create a local user is on the Commerce Cloud instance.');
         console.log('  The login must be unique. By default no roles will be assigned to the user on the instance.');
@@ -1829,7 +1837,7 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci user:create --org my-org --login jdoe@email.org --user \'{"firstName":' +
-            '"John", "lastName":"Doe", "roles": ["xchange-user"]}\'');
+            '"John", "lastName":"Doe", "roles": ["controlcenter-user"]}\'');
         console.log('    $ sfcc-ci user:create --instance my-instance --login "my-user" --user \'{"email":' +
             '"jdoe@email.org", "first_name":"John", "last_name":"Doe", "roles": ["Administrator"]}\'');
         console.log();
@@ -2135,7 +2143,7 @@ program.on('--help', function() {
     console.log('    $SFCC_OAUTH_CLIENT_SECRET          client secret used for authentication');
     console.log('    $SFCC_OAUTH_USER_NAME              user name used for authentication');
     console.log('    $SFCC_OAUTH_USER_PASSWORD          user password used for authentication');
-    console.log('    $SFCC_SANDBOX_API_HOST             set sandbox API host');
+    console.log('    $SFCC_SANDBOX_API_HOST             set alternative sandbox API host');
     console.log('    $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes')
     console.log('    $SFCC_SCAPI_SHORTCODE              the Salesforce Commerce (Headless) API Shortcode');
     console.log('    $SFCC_SCAPI_TENANTID               the Salesforce Commerce (Headless) API TenantId')

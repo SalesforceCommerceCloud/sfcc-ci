@@ -50,6 +50,18 @@ describe('Alias Tests for lib/sandbox.js', function() {
             domainVerificationRecord: "verify=yes"
         }]
     };
+    const sandboxList = {
+        kind: "SandboxList",
+        code: 200,
+        status: "Success",
+        data: [{
+            id: "s1",
+            realm: "zzzz",
+        },{
+            id: "s2",
+            realm: "zzzz"
+        }]
+    };
     var sandbox = proxyquire('../../lib/sandbox', {
         'request': requestStub,
         './auth': {
@@ -92,7 +104,9 @@ describe('Alias Tests for lib/sandbox.js', function() {
                     }
                     return
                 }
-                if (method === 'GET') {
+                if (method === 'GET' && url.endsWith('/sandboxes')) {
+                    responseHandler("", {statusCode: 200, body: sandboxList})
+                } else if (method === 'GET') {
                     responseHandler("", {statusCode: 200, body: existingAlias})
                 } else {
                     // delete
@@ -122,16 +136,16 @@ describe('Alias Tests for lib/sandbox.js', function() {
             sinon.assert.calledWith(consError, "Reading sandbox alias failed: Alias not found.");
         });
         it('Read SBX alias, invalid sandbox', () => {
-            sandbox.cli.alias.get({id: "invalidSandboxId"},"s1", true);
-            sinon.assert.calledWith(consJson, {error: "Reading sandbox alias failed: Invalid sandbox ID."});
-            sandbox.cli.alias.get({id: "invalidSandboxId"},"s1", false);
-            sinon.assert.calledWith(consError, "Reading sandbox alias failed: Invalid sandbox ID.");
+            sandbox.cli.alias.get({id: "invalidSandboxId"},"a1", true);
+            sinon.assert.calledWith(consJson, {error: "Cannot find sandbox with given ID."});
+            sandbox.cli.alias.get({id: "invalidSandboxId"},"a1", false);
+            sinon.assert.calledWith(consError, "Cannot find sandbox with given ID.");
         });
         it('Read SBX alias, sandbox not found', () => {
-            sandbox.cli.alias.get({id: "unknownSandboxId"},"s1", true);
-            sinon.assert.calledWith(consJson, {error: "Reading sandbox alias failed: Sandbox not found."});
-            sandbox.cli.alias.get({id: "unknownSandboxId"},"s1", false);
-            sinon.assert.calledWith(consError, "Reading sandbox alias failed: Sandbox not found.");
+            sandbox.cli.alias.get({id: "unknownSandboxId"},"a1", true);
+            sinon.assert.calledWith(consJson, {error: "Cannot find sandbox with given ID."});
+            sandbox.cli.alias.get({id: "unknownSandboxId"},"a1", false);
+            sinon.assert.calledWith(consError, "Cannot find sandbox with given ID.");
         });
     })
 
@@ -144,15 +158,15 @@ describe('Alias Tests for lib/sandbox.js', function() {
         });
         it('Create SBX alias, invalid sandbox', () => {
             sandbox.cli.alias.create({id: "invalidSandboxId"},"alias", false, true);
-            sinon.assert.calledWith(consJson, {error: "Creating sandbox alias failed: Invalid sandbox ID."});
+            sinon.assert.calledWith(consJson, {error: "Cannot find sandbox with given ID."});
             sandbox.cli.alias.create({id: "invalidSandboxId"},"alias", false, false);
-            sinon.assert.calledWith(consError, "Creating sandbox alias failed: Invalid sandbox ID.");
+            sinon.assert.calledWith(consError, "Cannot find sandbox with given ID.");
         });
         it('Create SBX alias, sandbox not found', () => {
             sandbox.cli.alias.create({id: "unknownSandboxId"},"alias", false, true);
-            sinon.assert.calledWith(consJson, {error: "Creating sandbox alias failed: Sandbox not found."});
+            sinon.assert.calledWith(consJson, {error: "Cannot find sandbox with given ID."});
             sandbox.cli.alias.create({id: "unknownSandboxId"},"alias", false, false);
-            sinon.assert.calledWith(consError, "Creating sandbox alias failed: Sandbox not found.");
+            sinon.assert.calledWith(consError, "Cannot find sandbox with given ID.");
         });
     })
 
@@ -168,15 +182,15 @@ describe('Alias Tests for lib/sandbox.js', function() {
         });
         it('List aliases, invalid sandbox ID', () => {
             sandbox.cli.alias.list({id: "invalidSandboxId"}, true);
-            sinon.assert.calledWith(consJson, {error: "Getting sandbox aliases failed: Invalid sandbox ID."});
+            sinon.assert.calledWith(consJson, {error: "Cannot find sandbox with given ID."});
             sandbox.cli.alias.list({id: "invalidSandboxId"}, false);
-            sinon.assert.calledWith(consError, "Getting sandbox aliases failed: Invalid sandbox ID.");
+            sinon.assert.calledWith(consError, "Cannot find sandbox with given ID.");
         });
         it('List aliases, sandbox not found', () => {
             sandbox.cli.alias.list({id: "unknownSandboxId"}, true);
-            sinon.assert.calledWith(consJson, {error: "Getting sandbox aliases failed: Sandbox not found."});
+            sinon.assert.calledWith(consJson, {error: "Cannot find sandbox with given ID."});
             sandbox.cli.alias.list({id: "unknownSandboxId"}, false);
-            sinon.assert.calledWith(consError, "Getting sandbox aliases failed: Sandbox not found.");
+            sinon.assert.calledWith(consError, "Cannot find sandbox with given ID.");
         });
     });
 
@@ -201,15 +215,15 @@ describe('Alias Tests for lib/sandbox.js', function() {
         });
         it('Delete SBX alias, invalid sandbox', () => {
             sandbox.cli.alias.delete({id: "invalidSandboxId"},"s1", true);
-            sinon.assert.calledWith(consJson, {error: "Deleting sandbox alias failed: Invalid sandbox ID."});
+            sinon.assert.calledWith(consJson, {error: "Cannot find sandbox with given ID."});
             sandbox.cli.alias.delete({id: "invalidSandboxId"},"s1", false);
-            sinon.assert.calledWith(consError, "Deleting sandbox alias failed: Invalid sandbox ID.");
+            sinon.assert.calledWith(consError, "Cannot find sandbox with given ID.");
         });
         it('Delete SBX alias, sandbox not found', () => {
             sandbox.cli.alias.delete({id: "unknownSandboxId"},"s1", true);
-            sinon.assert.calledWith(consJson, {success: true});
+            sinon.assert.calledWith(consJson, {error: "Cannot find sandbox with given ID."});
             sandbox.cli.alias.delete({id: "unknownSandboxId"},"s1", false);
-            sinon.assert.calledWith(consInfo, "Success");
+            sinon.assert.calledWith(consError, "Cannot find sandbox with given ID.");
         });
     });
 

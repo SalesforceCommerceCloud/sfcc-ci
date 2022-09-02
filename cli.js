@@ -268,15 +268,23 @@ program
 program
     .command('sandbox:ips')
     .description('List inbound and outbound IP addresses for sandboxes')
+    .option('-r, --realm <realm>','Realm to get IP details for')
     .option('-j, --json','Formats the output in json')
     .action(function(options) {
+        var realm = ( options.realm ? options.realm : null );
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.ips(asJson);
+        require('./lib/sandbox').cli.ips(realm, asJson);
     }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Use the optional --realm parameter to only retrieve IP addresses relevant for a particular');
+        console.log('  realm.');
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:ips');
+        console.log('    $ sfcc-ci sandbox:ips --realm zzzz');
         console.log('    $ sfcc-ci sandbox:ips --json');
         console.log();
     });
@@ -1553,20 +1561,35 @@ program
 program
     .command('org:list')
     .description('List all orgs eligible to manage')
+    .option('-c, --count <count>','Max count of list items (default is 25)')
+    .option('--all', 'Whether to return all orgs eligible to manage')
     .option('-o, --org <org>','Organization to get details for')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sortby <sortby>', 'Sort by specifying any field')
     .action(function(options) {
+        var count = ( options.count ? options.count : null );
+        var all = ( options.all ? options.all : false );
         var org = ( options.org ? options.org : null );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortBy ? options.sortBy : null );
-        require('./lib/org').cli.list(org, asJson, sortby);
+        require('./lib/org').cli.list(org, count, all, asJson, sortby);
     }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Returns organizations (orgs) from Account Manager the user is eligible to manage.');
+        console.log('  Depending on the number of orgs the list may be large. Use option --count to limit');
+        console.log('  the number of orgs returned. Use option --all to return all orgs in a single list.');
+        console.log();
+        console.log('  Use --org to get details of a single org.');
+        console.log();
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci org:list')
+        console.log('    $ sfcc-ci org:list -c 10')
         console.log('    $ sfcc-ci org:list --org "my-org"')
+        console.log('    $ sfcc-ci org:list --sortby "name"')
         console.log();
     });
 
@@ -2120,7 +2143,7 @@ program.on('--help', function() {
     console.log('    $SFCC_OAUTH_CLIENT_SECRET          client secret used for authentication');
     console.log('    $SFCC_OAUTH_USER_NAME              user name used for authentication');
     console.log('    $SFCC_OAUTH_USER_PASSWORD          user password used for authentication');
-    console.log('    $SFCC_SANDBOX_API_HOST             set sandbox API host');
+    console.log('    $SFCC_SANDBOX_API_HOST             set alternative sandbox API host');
     console.log('    $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes')
     console.log('    $SFCC_SCAPI_SHORTCODE              the Salesforce Commerce (Headless) API Shortcode');
     console.log('    $SFCC_SCAPI_TENANTID               the Salesforce Commerce (Headless) API TenantId')

@@ -19,7 +19,7 @@ fi
 SECONDS=0
 
 # pass parameters in the following order: 
-# $ bin/test-cli.sh <CLIENT_ID> <CLIENT_SECRET> <USER> <USER_PW> <HOST> <SANDBOX_REALM>
+# $ bin/test-cli.sh <CLIENT_ID> <CLIENT_SECRET> <USER> <USER_PW> <HOST> <SANDBOX_REALM> <TEST_ORG> <TEST_USER>
 
 # mapping input parameters
 ARG_CLIENT_ID=$1
@@ -28,6 +28,8 @@ ARG_USER=$3
 ARG_USER_PW=$4
 ARG_HOST=$5
 ARG_SANDBOX_REALM=$6
+ARG_TEST_ORG=$7
+ARG_TEST_USER=$8
 
 # check on host
 if [ "$ARG_HOST" = "" ]; then
@@ -310,6 +312,37 @@ else
 fi
 echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --default-sandbox-ttl <previous>´ (restore):"
 node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --default-sandbox-ttl $TEST_REALM_DEFAULT_SANDBOX_TTL
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci sandbox:ips´
+###############################################################################
+
+echo "Testing command ´sfcc-ci sandbox:ips´:"
+node ./cli.js sandbox:ips
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:ips --realm (expected to fail)´:"
+node ./cli.js sandbox:ips --realm
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:ips --realm <realm>´:"
+node ./cli.js sandbox:ips --realm $ARG_SANDBOX_REALM
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -1118,9 +1151,120 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci org:list´ with option -c:"
+node ./cli.js org:list -c 2
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci org:list´ with option --all:"
+node ./cli.js org:list --all
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 echo "Testing command ´sfcc-ci org:list --org <org>´ with invalid org (expected to fail):"
 node ./cli.js org:list --org does_not_exist
 if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci org:list --org <org>´:"
+node ./cli.js org:list --org "$ARG_TEST_ORG"
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci user:create´
+###############################################################################
+
+echo "Testing command ´sfcc-ci user:create´ without option (expected to fail):"
+node ./cli.js user:create
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci user:create --login <login>´:"
+node ./cli.js user:create --org "$ARG_TEST_ORG" --login "$ARG_TEST_USER" --user '{"firstName": "John", "lastName": "Doe"}'
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci user:list´
+###############################################################################
+
+echo "Testing command ´sfcc-ci user:list´ without option:"
+node ./cli.js user:list
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci user:list --login <login>´ with invalid user (expected to fail):"
+node ./cli.js user:list --login does_not_exist
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci user:list --login <login>´:"
+node ./cli.js user:list --login "$ARG_TEST_USER"
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci user:delete´
+###############################################################################
+
+echo "Testing command ´sfcc-ci user:delete without option (expected to fail):"
+node ./cli.js user:delete
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci user:delete --login <login>´ --noprompt with invalid user (expected to fail):"
+node ./cli.js user:delete --login does_not_exist --noprompt
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci user:delete --login <login> --purge --noprompt:"
+node ./cli.js user:delete --login "$ARG_TEST_USER" --purge --noprompt
+if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
 	echo -e "\t> FAILED"

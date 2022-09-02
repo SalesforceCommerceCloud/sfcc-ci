@@ -1827,7 +1827,7 @@ program
         console.log('  If an org is passed using -o,--org, the user will be created in the Account Manager');
         console.log('  for the passed org. The login (an email) must be unique. After a successful');
         console.log('  creation the user will receive a confirmation e-mail with a link to activate his');
-        console.log('  account. Default roles of the user in Account Manager are "xchange-user" and "doc-user".');
+        console.log('  account.');
         console.log('');
         console.log('  Use -i,--instance to create a local user is on the Commerce Cloud instance.');
         console.log('  The login must be unique. By default no roles will be assigned to the user on the instance.');
@@ -1837,7 +1837,7 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci user:create --org my-org --login jdoe@email.org --user \'{"firstName":' +
-            '"John", "lastName":"Doe", "roles": ["xchange-user"]}\'');
+            '"John", "lastName":"Doe", "roles": ["controlcenter-user"]}\'');
         console.log('    $ sfcc-ci user:create --instance my-instance --login "my-user" --user \'{"email":' +
             '"jdoe@email.org", "first_name":"John", "last_name":"Doe", "roles": ["Administrator"]}\'');
         console.log();

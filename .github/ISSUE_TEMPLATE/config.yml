@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 'Unofficial Commerce Cloud Slack: #sfcc-ci'
+    url: https://sfcc-unofficial.slack.com/archives/CAUFG3SHF
+    about: 'Community help can be found on the CC Unofficial Slack (https://github.com/sfcc-unofficial/docs) in the #sfcc-ci channel'

@@ -2004,7 +2004,9 @@ program
         console.log('');
         console.log('  Details:');
         console.log();
-        console.log('  Reset a user.');
+        console.log('  Reset a user. This is useful when the user forgot their password or');
+        console.log('  when you want to unlink the Account Manager user account from a Salesforce account.');
+        console.log('  An email is automatically sent to the user\'s email address with an activation link.');
         console.log('');
         console.log('  This requires permissions in Account Manager to adminstrate the org,');
         console.log('  the user belongs to.');

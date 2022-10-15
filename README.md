@@ -667,6 +667,7 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
   sfcc.user.grant(login, role, scope, token).then(result => ...).catch(err => ...);
   sfcc.user.revoke(login, role, scope, token).then(result => ...).catch(err => ...);
   sfcc.user.delete(login, purge, token).then(result => ...).catch(err => ...);
+  sfcc.user.reset(login, token).then(result => ...).catch(err => ...);
   sfcc.user.createLocal(instance, login, user, token).then(result => ...).catch(err => ...);
   sfcc.user.searchLocal(instance, login, query, role, sortBy, count, start, token).then(result => ...).catch(err => ...);
   sfcc.user.updateLocal(instance, login, changes, token).then(result => ...).catch(err => ...);

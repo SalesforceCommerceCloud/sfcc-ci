@@ -2106,6 +2106,7 @@ program
     .option('--channels <channels>', 'comma separated list of site IDs this API client should support')
     .option('--scopes <scopes>', 'comma separated list of auth z scopes this API client should support')
     .option('--redirecturis <redirecturis>', 'comma separated list of redirect uris this API client should support')
+    .option('--callbackuris <callbackuris>', 'comma separated list of callback uris this API client should support')
 
     .option('-j, --json', 'Formats the output in json')
     .action(async function(options) {
@@ -2119,11 +2120,13 @@ program
         const secret = options.secret;
         const channels = !options.channels || options.channels.split(',').map(item => item.trim());
         const scopes = !options.scopes || options.scopes.split(',').map(item => item.trim());
-        const redirecturis = !options.redirecturis || options.redirecturis.split(',').map(item => item.trim());
+        const redirecturis = options.redirecturis ? options.redirecturis.split(',').map(item => item.trim()) : [];
+        const callbackuris = options.callbackuris ? options.callbackuris.split(',').map(item => item.trim()) : [];
 
         const slas = require('./lib/slas');
         await slas.cli.client.add(options.tenant, options.shortcode, options.file,
-            clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, asJson);
+            clientid, clientname, privateclient, ecomtenant, ecomsite, secret,
+            channels, scopes, redirecturis, callbackuris, asJson);
 
     }).on('--help', function() {
         console.log();
@@ -2176,7 +2179,7 @@ program
         var asJson = ( options.json ? options.json : false );
 
         const slas = require('./lib/slas');
-        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
+        await slas.cli.client.delete(options.tenant, options.shortcode, options.clientid, asJson);
 
     }).on('--help', function() {
         console.log();

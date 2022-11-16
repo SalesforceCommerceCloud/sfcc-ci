@@ -1969,6 +1969,55 @@ program
 
 
 program
+    .command('user:reset')
+    .description('Reset a user')
+    .option('-l, --login <login>', 'Login of the user to reset')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-N, --noprompt', 'No prompt to confirm reset')
+    .action(function (options) {
+        var login = options.login;
+        var asJson = (options.json ? options.json : false);
+        var noPrompt = (options.noprompt ? options.noprompt : false);
+
+        var resetUser = function (login, asJson) {
+            require('./lib/user').cli.reset(login, asJson);
+        };
+
+        if (!login) {
+            require('./lib/log').error('Missing required --login. Use -h,--help for help.');
+        } else if (noPrompt) {
+            resetUser(login, asJson);
+        } else {
+            prompt({
+                type: 'confirm',
+                name: 'ok',
+                default: false,
+                message: 'Reset user ' + login +
+                    '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    resetUser(login, asJson);
+                }
+            });
+        }
+    }).on('--help', function () {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Reset a user. This is useful when the user forgot their password or');
+        console.log('  when you want to unlink the Account Manager user account from a Salesforce account.');
+        console.log('  An email is automatically sent to the user\'s email address with an activation link.');
+        console.log('');
+        console.log('  This requires permissions in Account Manager to adminstrate the org,');
+        console.log('  the user belongs to.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci user:reset --login jdoe@email.org');
+        console.log();
+    });
+
+program
     .command('slas:tenant:list')
     .description('Lists all tenants that belong to a given organization')
     .option('--shortcode <shortcode>', 'the organizations short code')
@@ -2057,6 +2106,7 @@ program
     .option('--channels <channels>', 'comma separated list of site IDs this API client should support')
     .option('--scopes <scopes>', 'comma separated list of auth z scopes this API client should support')
     .option('--redirecturis <redirecturis>', 'comma separated list of redirect uris this API client should support')
+    .option('--callbackuris <callbackuris>', 'comma separated list of callback uris this API client should support')
 
     .option('-j, --json', 'Formats the output in json')
     .action(async function(options) {
@@ -2070,11 +2120,13 @@ program
         const secret = options.secret;
         const channels = !options.channels || options.channels.split(',').map(item => item.trim());
         const scopes = !options.scopes || options.scopes.split(',').map(item => item.trim());
-        const redirecturis = !options.redirecturis || options.redirecturis.split(',').map(item => item.trim());
+        const redirecturis = options.redirecturis ? options.redirecturis.split(',').map(item => item.trim()) : [];
+        const callbackuris = options.callbackuris ? options.callbackuris.split(',').map(item => item.trim()) : [];
 
         const slas = require('./lib/slas');
         await slas.cli.client.add(options.tenant, options.shortcode, options.file,
-            clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, asJson);
+            clientid, clientname, privateclient, ecomtenant, ecomsite, secret,
+            channels, scopes, redirecturis, callbackuris, asJson);
 
     }).on('--help', function() {
         console.log();
@@ -2127,7 +2179,7 @@ program
         var asJson = ( options.json ? options.json : false );
 
         const slas = require('./lib/slas');
-        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
+        await slas.cli.client.delete(options.tenant, options.shortcode, options.clientid, asJson);
 
     }).on('--help', function() {
         console.log();

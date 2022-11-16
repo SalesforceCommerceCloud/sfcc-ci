@@ -1969,6 +1969,55 @@ program
 
 
 program
+    .command('user:reset')
+    .description('Reset a user')
+    .option('-l, --login <login>', 'Login of the user to reset')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-N, --noprompt', 'No prompt to confirm reset')
+    .action(function (options) {
+        var login = options.login;
+        var asJson = (options.json ? options.json : false);
+        var noPrompt = (options.noprompt ? options.noprompt : false);
+
+        var resetUser = function (login, asJson) {
+            require('./lib/user').cli.reset(login, asJson);
+        };
+
+        if (!login) {
+            require('./lib/log').error('Missing required --login. Use -h,--help for help.');
+        } else if (noPrompt) {
+            resetUser(login, asJson);
+        } else {
+            prompt({
+                type: 'confirm',
+                name: 'ok',
+                default: false,
+                message: 'Reset user ' + login +
+                    '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    resetUser(login, asJson);
+                }
+            });
+        }
+    }).on('--help', function () {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Reset a user. This is useful when the user forgot their password or');
+        console.log('  when you want to unlink the Account Manager user account from a Salesforce account.');
+        console.log('  An email is automatically sent to the user\'s email address with an activation link.');
+        console.log('');
+        console.log('  This requires permissions in Account Manager to adminstrate the org,');
+        console.log('  the user belongs to.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci user:reset --login jdoe@email.org');
+        console.log();
+    });
+
+program
     .command('slas:tenant:list')
     .description('Lists all tenants that belong to a given organization')
     .option('--shortcode <shortcode>', 'the organizations short code')

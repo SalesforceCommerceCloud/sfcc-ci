@@ -35,7 +35,6 @@
     "inquirer": "^7.3.3",
     "jsondiffpatch": "^0.4.1",
     "jsonwebtoken": "^8.3.0",
-    "node-fetch": "^2.6.7",
     "node-sha1": "^1.0.1",
     "open": "^6.4.0",
     "request": "^2.88.0",

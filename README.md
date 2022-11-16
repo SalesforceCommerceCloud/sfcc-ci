@@ -49,6 +49,22 @@ Ensure you have a valid Commerce Cloud API key (client ID) set up. If you don't 
 
 For automation (e.g. a build server integration) you'll need the API key as well as the API secret for authentication. If you want to use authentication in interactive mode, you have to set _Redirect URIs_ to `http://localhost:8080`. If you want to manage sandboxes you have to set _Default Scopes_ to `roles tenantFilter profile`.
 
+### SLAS Prerequisites ###
+In order to use your API key with SLAS, please ensure the following are configured for your client:
+
+1. Has `Roles` > `Commerce Cloud Developer Experience` > `Sandbox API User` with "All Sandboxes" scope.<br/>
+  ![Account Manager Client ID](docs/images/client-api-user.png)
+2. Set _Default Scopes_ to:
+```txt
+mail
+roles
+tenantFilter
+profile
+openId
+```
+3. Set "Token Endpoint Auth Method" to `client_secret_post`
+4. Set "Access Token Format" to `JWT`
+    
 ### Grant your API key access to your instances ###
 
 In order to perform CLI commands, you have to permit API calls to the Commerce Cloud instance(s) you wish to integrate with. You do that by modifying the Open Commerce API Settings as well as the WebDAV Client Permissions on the Commerce Cloud instance.
@@ -334,6 +350,7 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     user:create [options]                                           Create a new user
     user:update [options]                                           Update a user
     user:delete [options]                                           Delete a user
+    user:reset [options]                                            Reset a user
     slas:tenant:list [options]                                      Lists all tenants that belong to a given organization
     slas:tenant:add [options]                                       Adds a SLAS tenant to a given organization or updates an existing one
     slas:tenant:get [options]                                       Gets a SLAS tenant from a given organization
@@ -652,20 +669,21 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
   sfcc.job.run(instance, job_id, job_params, token, callback);
   sfcc.job.status(instance, job_id, job_execution_id, token, callback);
   sfcc.manifest.generate(directories, ignorePatterns, targetDirectory, fileName);
-  sfcc.slas.tenant.add(tenantId, shortcode, description, merchantName, contact, emailAddress, fileName).then(result => ...).catch(err => ...);
-  sfcc.slas.tenant.get(tenantId, shortcode).then(result => ...).catch(err => ...);
-  sfcc.slas.tenant.list(shortcode).then(result => ...).catch(err => ...);
-  sfcc.slas.tenant.delete(tenantId, shortcode).then(result => ...).catch(err => ...);
-  sfcc.slas.client.add(tenantId, shortcode, file, clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis).then(result => ...).catch(err => ...);
-  sfcc.slas.client.get(tenantId, shortcode, clientId).then(result => ...).catch(err => ...);
-  sfcc.slas.client.list(shortcode, tenantId).then(result => ...).catch(err => ...);
-  sfcc.slas.client.delete(tenantId, shortcode, clientId).then(result => ...).catch(err => ...);
+  sfcc.slas.tenant.add(tenantId, shortcode, description, merchantName, contact, emailAddress, fileName, token).then(result => ...).catch(err => ...);
+  sfcc.slas.tenant.get(tenantId, shortcode, token).then(result => ...).catch(err => ...);
+  sfcc.slas.tenant.list(shortcode, token).then(result => ...).catch(err => ...);
+  sfcc.slas.tenant.delete(tenantId, shortcode, token).then(result => ...).catch(err => ...);
+  sfcc.slas.client.add(tenantId, shortcode, file, clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, callbackuris, token).then(result => ...).catch(err => ...);
+  sfcc.slas.client.get(tenantId, shortcode, clientId, token).then(result => ...).catch(err => ...);
+  sfcc.slas.client.list(shortcode, tenantId, token).then(result => ...).catch(err => ...);
+  sfcc.slas.client.delete(tenantId, shortcode, clientId, token).then(result => ...).catch(err => ...);
   sfcc.user.create(org, user, mail, firstName, lastName, token).then(result => ...).catch(err => ...);
   sfcc.user.list(org, role, login, count, sortBy, token).then(result => ...).catch(err => ...);
   sfcc.user.update(login, changes, token).then(result => ...).catch(err => ...);
   sfcc.user.grant(login, role, scope, token).then(result => ...).catch(err => ...);
   sfcc.user.revoke(login, role, scope, token).then(result => ...).catch(err => ...);
   sfcc.user.delete(login, purge, token).then(result => ...).catch(err => ...);
+  sfcc.user.reset(login, token).then(result => ...).catch(err => ...);
   sfcc.user.createLocal(instance, login, user, token).then(result => ...).catch(err => ...);
   sfcc.user.searchLocal(instance, login, query, role, sortBy, count, start, token).then(result => ...).catch(err => ...);
   sfcc.user.updateLocal(instance, login, changes, token).then(result => ...).catch(err => ...);

@@ -119,6 +119,24 @@ describe('Tests for lib/user.js', function() {
                 },
                 './log': {
                     'json' : jsonStub
+                }
+            });
+            user.cli.list(null, null, null, null, true, undefined);
+
+            const reqArgs = requestStub.getCall(0).args[0];
+            expect(reqArgs.uri).to.equal('https://am.host/dw/rest/v1/users?page=0&size=25');
+            expect(reqArgs.method).to.equal('GET');
+        });
+
+        it('searches by org', function() {
+            var user = proxyquire('../../lib/user', {
+                'request': requestStub,
+                './auth': {
+                    'getToken' : () => 'mytoken',
+                    'getAMHost' : () => 'am.host'
+                },
+                './log': {
+                    'json' : jsonStub
                 },
                 './org': {
                     'getOrg' : function (id, undefined, callback) {
@@ -129,7 +147,7 @@ describe('Tests for lib/user.js', function() {
             user.cli.list('myorg', null, null, null, true, undefined);
 
             const reqArgs = requestStub.getCall(0).args[0];
-            expect(reqArgs.uri).to.equal('https://am.host/dw/rest/v1/users?page=0&size=25');
+            expect(reqArgs.uri).to.equal('https://am.host/dw/rest/v1/users/search/findByOrg?organization=myorg');
             expect(reqArgs.method).to.equal('GET');
         });
 

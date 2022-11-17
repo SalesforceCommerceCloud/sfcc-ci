@@ -1723,7 +1723,7 @@ program
     .description('List users eligible to manage')
     .option('-c, --count <count>','Max count of list items (default is 25)')
     .option('--start <start>','Zero-based index of first item to return (default is 0)')
-    .option('-o, --org <org>','Org to return users for (only works in combination with <role>)')
+    .option('-o, --org <org>','Org to return users for')
     .option('-i, --instance <instance>','Instance to search users for. Can be an instance alias.')
     .option('-l, --login <login>','Login of a user to get details for')
     .option('-r, --role <role>','Limit users to a certain role')
@@ -1762,8 +1762,7 @@ program
         console.log();
         console.log('  Use --login to get details of a single user.');
         console.log();
-        console.log('  If options --org and --role are used, you can filter users by organization and');
-        console.log('  role. --org only works in combination with --role. Only enabled users are returned.');
+        console.log('  Use options --org and --role, to filter users by organization, role or both.');
         console.log();
         console.log('  If option --instance is used, local users from this Commerce Cloud instance');
         console.log('  are being returned. Use --query to narrow down the users.');
@@ -1787,6 +1786,7 @@ program
         console.log('    $ sfcc-ci user:list --login my-login');
         console.log('    $ sfcc-ci user:list --login my-login -j');
         console.log('    $ sfcc-ci user:list --role account-admin');
+        console.log('    $ sfcc-ci user:list --org my-org');
         console.log('    $ sfcc-ci user:list --org my-org --role bm-user');
         console.log();
     });

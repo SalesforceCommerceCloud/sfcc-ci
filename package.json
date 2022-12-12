@@ -39,7 +39,7 @@
     "open": "^6.4.0",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
-    "snyk": "^1.996.0",
+    "snyk": "^1.1044.0",
     "table": "^6.8.1"
   },
   "devDependencies": {

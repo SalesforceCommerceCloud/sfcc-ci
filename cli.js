@@ -1566,13 +1566,15 @@ program
     .option('-o, --org <org>','Organization to get details for')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sortby <sortby>', 'Sort by specifying any field')
+    .option('--auditlogs', 'Returns audit logs for changes made to an org')
     .action(function(options) {
         var count = ( options.count ? options.count : null );
         var all = ( options.all ? options.all : false );
         var org = ( options.org ? options.org : null );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortBy ? options.sortBy : null );
-        require('./lib/org').cli.list(org, count, all, asJson, sortby);
+        var auditlogs = ( options.auditlogs ? options.auditlogs : null );
+        require('./lib/org').cli.list(org, auditlogs, count, all, asJson, sortby);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -1583,6 +1585,7 @@ program
         console.log();
         console.log('  Use --org to get details of a single org.');
         console.log();
+        console.log('  Use option --auditlogs to return audit logs for changes made to a single org.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -1590,6 +1593,7 @@ program
         console.log('    $ sfcc-ci org:list -c 10')
         console.log('    $ sfcc-ci org:list --org "my-org"')
         console.log('    $ sfcc-ci org:list --sortby "name"')
+        console.log('    $ sfcc-ci org:list --org "my-org" --auditlogs')
         console.log();
     });
 
@@ -1730,6 +1734,7 @@ program
     .option('-q, --query <query>','Query to search users for')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sortby <sortby>', 'Sort by specifying any field')
+    .option('--auditlogs', 'Returns audit logs for changes made to a user')
     .action(function(options) {
         var count = ( options.count ? options.count : null );
         var start = ( options.start ? options.start : null );
@@ -1740,6 +1745,7 @@ program
         var query = ( options.query ? JSON.parse(options.query) : null );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortby ? options.sortby : null );
+        var auditlogs = ( options.auditlogs ? options.auditlogs : null );
         if ( instance && login ) {
             // get users on the instance with role
             require('./lib/user').cli.searchLocal(instance, login, query, null, null, null, null, asJson);
@@ -1748,7 +1754,7 @@ program
             require('./lib/user').cli.searchLocal(instance, login, query, role, sortby, count, start, asJson);
         } else if ( ( org && role ) || ( !org && role ) || !( org && role ) ) {
             // get users from AM
-            require('./lib/user').cli.list(org, role, login, count, asJson, sortby);
+            require('./lib/user').cli.list(org, role, login, count, asJson, sortby, auditlogs);
         } else {
             require('./lib/log').error('Ambiguous options. Please consult the help using --help.');
         }
@@ -1761,6 +1767,8 @@ program
         console.log('  be large. Use option --count to limit the number of users.');
         console.log();
         console.log('  Use --login to get details of a single user.');
+        console.log();
+        console.log('  Use option --auditlogs to return audit logs for changes made to a single user.');
         console.log();
         console.log('  Use options --org and --role, to filter users by organization, role or both.');
         console.log();
@@ -1785,6 +1793,7 @@ program
         console.log('    $ sfcc-ci user:list --instance my-instance --role Administrator');
         console.log('    $ sfcc-ci user:list --login my-login');
         console.log('    $ sfcc-ci user:list --login my-login -j');
+        console.log('    $ sfcc-ci user:list --login my-login --auditlogs');
         console.log('    $ sfcc-ci user:list --role account-admin');
         console.log('    $ sfcc-ci user:list --org my-org');
         console.log('    $ sfcc-ci user:list --org my-org --role bm-user');

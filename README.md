@@ -475,7 +475,7 @@ Removing the env var (`unset SFCC_OAUTH_LOCAL_PORT`) will make the CLI use the d
 
 ## Authorization ##
 
-Depending on which activities you want to want to perform, you have to ensure proper permissions have been granted beforehand. The required permissions and where to grant them depends on the command you have to execute and whether you want to execute commands interactively (with the presence of a user) or implement automations (no user present).
+Depending on which activities you want to want to perform, you have to ensure proper permissions have been granted beforehand. The required permissions and how to grant them depends on the commands you want to perform and whether you want to execute commands interactively (with the presence of a user) or implement automations (no user present).
 
 Consult the table below to set permissions depending on the activity desired:
 
@@ -489,7 +489,15 @@ job:* | OCAPI Data API Settings | OCAPI Data API Settings
 cartridge:* | OCAPI Data API Settings | OCAPI Data API Settings
 org:* | Account Administrator role assigned to user | Account Administrator role assigned to API client
 role:* | Account Administrator role assigned to user _or_ OCAPI Data API Settings | Account Administrator role assigned to API client _or_ OCAPI Data API Settings 
-users:* | Account Administrator role assigned to user _or_ OCAPI Data API Settings | Account Administrator role assigned to API client _or_ OCAPI Data API Settings 
+users:* | Account Administrator role assigned to user _or_ OCAPI Data API Settings | Account Administrator role assigned to API client _or_ OCAPI Data API Settings
+
+### Authorizing a User ###
+
+Authorizing a user usually requires assigning the required role to the user in Account Manager. Assigning a role to a user in Account Manager, such as the `Sandbox API User` role, itself requires the Account Administrator role.
+
+### Authorizing an API Client ###
+
+Authorizing an API client requires assigning the required role to the API client in Account Manager or granting permissions to the API client on the B2C Commerce instance via the OCAPI Data API settings. Assigning a role to an API client in Account Manager, such as the `Sandbox API User` role, itself requires the Account Administrator or API Admin role.
 
 ## Sandbox API ##
 

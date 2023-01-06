@@ -1,6 +1,6 @@
 {
   "name": "sfcc-ci",
-  "version": "2.4.1",
+  "version": "2.10.0",
   "description": "Command line tool to allow Continuous Integration practices with Salesforce Commerce Cloud instances",
   "main": "index.js",
   "bin": {
@@ -10,9 +10,11 @@
     "lint": "eslint --ignore-path .gitignore ./",
     "test": "npm run lint && npm run test:unit",
     "test:unit": "mocha test/unit --recursive",
-    "test:unit:coverage": "istanbul cover _mocha test/unit --recursive",
+    "test:unit:coverage": "npx nyc@15.1.0 mocha test/unit",
     "test:functional:cli": "bin/test-cli.sh",
-    "dist": "pkg . --out-path dist/"
+    "dist": "npx pkg@5.5.2 . --out-path dist/",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -22,24 +24,36 @@
   "license": "BSD-3-Clause",
   "homepage": "https://github.com/SalesforceCommerceCloud/sfcc-ci#readme",
   "dependencies": {
+    "archiver": "^5.3.1",
     "chalk": "^2.4.1",
+    "colors": "1.4.0",
     "commander": "^2.18.0",
     "conf": "^4.0.2",
-    "dotenv": "^8.2.0",
-    "inquirer": "^6.2.0",
-    "jsonwebtoken": "^8.3.0",
+    "del": "^5.1.0",
+    "dotenv": "^8.6.0",
+    "globby": "^11.1.0",
+    "inquirer": "^7.3.3",
+    "jsondiffpatch": "^0.4.1",
+    "jsonwebtoken": "^9.0.0",
+    "node-sha1": "^1.0.1",
     "open": "^6.4.0",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
-    "table": "^5.0.2"
+    "snyk": "^1.1071.0",
+    "table": "^6.8.1"
   },
   "devDependencies": {
+    "archiver": "^5.3.1",
     "chai": "^4.1.2",
+    "chalk": "^2.4.1",
+    "del": "^5.1.0",
     "eslint": "^5.5.0",
-    "istanbul": "^0.4.5",
-    "mocha": "^5.2.0",
-    "pkg": "^4.3.4",
+    "globby": "^11.1.0",
+    "jsondiffpatch": "^0.4.1",
+    "mocha": "^6.2.3",
+    "node-sha1": "^1.0.1",
     "proxyquire": "^2.1.0",
     "sinon": "^7.2.2"
-  }
+  },
+  "snyk": true
 }

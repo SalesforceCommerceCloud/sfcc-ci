@@ -1566,13 +1566,15 @@ program
     .option('-o, --org <org>','Organization to get details for')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sortby <sortby>', 'Sort by specifying any field')
+    .option('--auditlogs', 'Returns audit logs for changes made to an org')
     .action(function(options) {
         var count = ( options.count ? options.count : null );
         var all = ( options.all ? options.all : false );
         var org = ( options.org ? options.org : null );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortBy ? options.sortBy : null );
-        require('./lib/org').cli.list(org, count, all, asJson, sortby);
+        var auditlogs = ( options.auditlogs ? options.auditlogs : null );
+        require('./lib/org').cli.list(org, auditlogs, count, all, asJson, sortby);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -1583,6 +1585,7 @@ program
         console.log();
         console.log('  Use --org to get details of a single org.');
         console.log();
+        console.log('  Use option --auditlogs to return audit logs for changes made to a single org.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -1590,6 +1593,7 @@ program
         console.log('    $ sfcc-ci org:list -c 10')
         console.log('    $ sfcc-ci org:list --org "my-org"')
         console.log('    $ sfcc-ci org:list --sortby "name"')
+        console.log('    $ sfcc-ci org:list --org "my-org" --auditlogs')
         console.log();
     });
 
@@ -1723,13 +1727,14 @@ program
     .description('List users eligible to manage')
     .option('-c, --count <count>','Max count of list items (default is 25)')
     .option('--start <start>','Zero-based index of first item to return (default is 0)')
-    .option('-o, --org <org>','Org to return users for (only works in combination with <role>)')
+    .option('-o, --org <org>','Org to return users for')
     .option('-i, --instance <instance>','Instance to search users for. Can be an instance alias.')
     .option('-l, --login <login>','Login of a user to get details for')
     .option('-r, --role <role>','Limit users to a certain role')
     .option('-q, --query <query>','Query to search users for')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sortby <sortby>', 'Sort by specifying any field')
+    .option('--auditlogs', 'Returns audit logs for changes made to a user')
     .action(function(options) {
         var count = ( options.count ? options.count : null );
         var start = ( options.start ? options.start : null );
@@ -1740,6 +1745,7 @@ program
         var query = ( options.query ? JSON.parse(options.query) : null );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortby ? options.sortby : null );
+        var auditlogs = ( options.auditlogs ? options.auditlogs : null );
         if ( instance && login ) {
             // get users on the instance with role
             require('./lib/user').cli.searchLocal(instance, login, query, null, null, null, null, asJson);
@@ -1748,7 +1754,7 @@ program
             require('./lib/user').cli.searchLocal(instance, login, query, role, sortby, count, start, asJson);
         } else if ( ( org && role ) || ( !org && role ) || !( org && role ) ) {
             // get users from AM
-            require('./lib/user').cli.list(org, role, login, count, asJson, sortby);
+            require('./lib/user').cli.list(org, role, login, count, asJson, sortby, auditlogs);
         } else {
             require('./lib/log').error('Ambiguous options. Please consult the help using --help.');
         }
@@ -1762,8 +1768,9 @@ program
         console.log();
         console.log('  Use --login to get details of a single user.');
         console.log();
-        console.log('  If options --org and --role are used, you can filter users by organization and');
-        console.log('  role. --org only works in combination with --role. Only enabled users are returned.');
+        console.log('  Use option --auditlogs to return audit logs for changes made to a single user.');
+        console.log();
+        console.log('  Use options --org and --role, to filter users by organization, role or both.');
         console.log();
         console.log('  If option --instance is used, local users from this Commerce Cloud instance');
         console.log('  are being returned. Use --query to narrow down the users.');
@@ -1786,7 +1793,9 @@ program
         console.log('    $ sfcc-ci user:list --instance my-instance --role Administrator');
         console.log('    $ sfcc-ci user:list --login my-login');
         console.log('    $ sfcc-ci user:list --login my-login -j');
+        console.log('    $ sfcc-ci user:list --login my-login --auditlogs');
         console.log('    $ sfcc-ci user:list --role account-admin');
+        console.log('    $ sfcc-ci user:list --org my-org');
         console.log('    $ sfcc-ci user:list --org my-org --role bm-user');
         console.log();
     });

@@ -475,7 +475,7 @@ Removing the env var (`unset SFCC_OAUTH_LOCAL_PORT`) will make the CLI use the d
 
 ## Authorization ##
 
-Depending on which activities you want to want to perform, you have to ensure proper permissions have been granted beforehand. The required permissions and where to grant them to depend on the command and whether you want to execute commands interactively (user present) or implement automations (no user present).
+Depending on which activities you want to want to perform, you have to ensure proper permissions have been granted beforehand. The required permissions and how to grant them depends on the commands you want to perform and whether you want to execute commands interactively (with the presence of a user) or implement automations (no user present).
 
 Consult the table below to set permissions depending on the activity desired:
 
@@ -489,7 +489,15 @@ job:* | OCAPI Data API Settings | OCAPI Data API Settings
 cartridge:* | OCAPI Data API Settings | OCAPI Data API Settings
 org:* | Account Administrator role assigned to user | Account Administrator role assigned to API client
 role:* | Account Administrator role assigned to user _or_ OCAPI Data API Settings | Account Administrator role assigned to API client _or_ OCAPI Data API Settings 
-users:* | Account Administrator role assigned to user _or_ OCAPI Data API Settings | Account Administrator role assigned to API client _or_ OCAPI Data API Settings 
+users:* | Account Administrator role assigned to user _or_ OCAPI Data API Settings | Account Administrator role assigned to API client _or_ OCAPI Data API Settings
+
+### Authorizing a User ###
+
+Authorizing a user usually requires assigning the required role to the user in Account Manager. Assigning a role to a user in Account Manager, such as the `Sandbox API User` role, itself requires the Account Administrator role.
+
+### Authorizing an API Client ###
+
+Authorizing an API client requires assigning the required role to the API client in Account Manager or granting permissions to the API client on the B2C Commerce instance via the OCAPI Data API settings. Assigning a role to an API client in Account Manager, such as the `Sandbox API User` role, itself requires the Account Administrator or API Admin role.
 
 ## Sandbox API ##
 
@@ -533,16 +541,12 @@ The examples below assume you have defined a set of environment variables:
 
 * an API Key (the client ID)
 * an API Secret (the client secret)
-* your Account Manager User Name
-* your Account Manager User Password
 
 On Linux and MacOS you can set environment variables as follows:
 
 ```bash
 export API_KEY=<my-api-key>
 export API_SECRET=<my-api-secret>
-export API_USER=<my-user>
-export API_USER_PW=<my-user-pw>
 ```
 
 On Windows you set them as follows:
@@ -550,8 +554,6 @@ On Windows you set them as follows:
 ```bash
 set API_KEY=<my-api-key>
 set API_SECRET=<my-api-secret>
-set API_USER=<my-user>
-set API_USER_PW=<my-user-pw>
 ```
 
 The remainder of the examples below assume you are on Linux or MacOS. If you are on Windows you access environment variables using `%MY_ENV_VAR%` instead of `$MY_ENV_VAR`.
@@ -566,21 +568,13 @@ In an interactive mode you usually authenticate as follows:
 sfcc-ci auth:login $API_KEY
 ```
 
-In an automation scenario (where no user is present) authentication is done as follows:
+In an automation scenario (where no user is present) authentication is done using API client credentials as follows:
 
 ```bash
 sfcc-ci client:auth $API_KEY $API_SECRET
 ```
 
-In an automation scenario where you want to manage sandboxes you still need a service user (with role Sandbox API User assigned). In this case authentication is done as follows:
-
-```bash
-sfcc-ci client:auth $API_KEY $API_SECRET
-```
-
-Note, that the service user must not be doing MFA. You may accomplish this by only assigning role Sandbox API User and deactivating MFA for only exactly this role.
-
-Logging out (and removing any traces of secrets from the machine):
+Logging out (and removing auth tokens from the machine):
 
 ```bash
 sfcc-ci auth:logout

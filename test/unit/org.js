@@ -17,6 +17,7 @@ var requestStub = sinon.spy();
 var testbase = require('./_base');
 var jsonStub = testbase.jsonLogStub;
 var infoStub = testbase.infoLogStub;
+var tableStub = testbase.tableLogStub;
 
 describe('Tests for lib/org.js', function() {
 
@@ -91,7 +92,8 @@ describe('Tests for lib/org.js', function() {
             });
 
             org.getOrg('myorg', undefined, function(err, found) {
-                expect(err.message).to.equal('Getting org failed: Permission error');
+                expect(err.message).to.equal('Operation forbidden. Please make sure, you have the permission ' +
+                    'to perform this operation.');
                 done();
             });
         });
@@ -108,7 +110,7 @@ describe('Tests for lib/org.js', function() {
             });
 
             org.getOrg('myorg', undefined, function(err, found) {
-                expect(err.message).to.equal('Getting org failed: 500');
+                expect(err.message).to.equal('Operation failed. Error code 500');
                 done();
             });
         });
@@ -204,11 +206,115 @@ describe('Tests for lib/org.js', function() {
         });
     });
 
+    describe('getOrgById function', function() {
+
+        beforeEach(function() {
+            requestStub.resetHistory();
+        });
+
+        it('makes a get request', function() {
+
+            org.getOrgById('myorg');
+
+            const getArgs = requestStub.getCall(0).args[0];
+            expect(getArgs.uri).to.equal('https://am.host/dw/rest/v1/organizations/myorg');
+            expect(getArgs.method).to.equal('GET');
+        });
+
+        it('handles arbitrary error', function(done) {
+            var org = proxyquire('../../lib/org', {
+                'request': function (opts, callback) {
+                    callback('someerror', undefined, undefined);
+                },
+                './auth': {
+                    'getToken' : () => 'mytoken',
+                    'getAMHost' : () => 'am.host'
+                }
+            });
+
+            org.getOrgById('myorg').catch(err => {
+                expect(err.message).to.equal('The operation could not be performed properly. ');
+                done();
+            });
+        });
+
+        it('handles 401 error', function(done) {
+            var org = proxyquire('../../lib/org', {
+                'request': function (opts, callback) {
+                    callback('error', {statusCode: 401}, undefined);
+                },
+                './auth': {
+                    'getToken' : () => 'mytoken',
+                    'getAMHost' : () => 'am.host'
+                }
+            });
+
+            org.getOrgById('myorg').catch(err => {
+                expect(err.message).to.equal('Authentication invalid. Please (re-)authenticate by running ' +
+                    '´sfcc-ci auth:login´ or ´sfcc-ci client:auth´');
+                done();
+            });
+        });
+
+        it('handles 403 error', function(done) {
+            var org = proxyquire('../../lib/org', {
+                'request': function (opts, callback) {
+                    callback('Permission error', {statusCode: 403}, undefined);
+                },
+                './auth': {
+                    'getToken' : () => 'mytoken',
+                    'getAMHost' : () => 'am.host'
+                }
+            });
+
+            org.getOrgById('myorg').catch(err => {
+                expect(err.message).to.equal('Operation forbidden. Please make sure, you have the permission ' +
+                    'to perform this operation.');
+                done();
+            });
+        });
+
+        it('handles other 4xx or 5xx errors', function(done) {
+            var org = proxyquire('../../lib/org', {
+                'request': function (opts, callback) {
+                    callback(undefined, {statusCode: 500}, undefined);
+                },
+                './auth': {
+                    'getToken' : () => 'mytoken',
+                    'getAMHost' : () => 'am.host'
+                }
+            });
+
+            org.getOrgById('myorg').catch(err => {
+                expect(err.message).to.equal('Operation failed. Error code 500');
+                done();
+            });
+        });
+
+        it('properly processes a none found org', function(done) {
+            var org = proxyquire('../../lib/org', {
+                'request': function (opts, callback) {
+                    callback(undefined, {statusCode: 404}, {content:[]});
+                },
+                './auth': {
+                    'getToken' : () => 'mytoken',
+                    'getAMHost' : () => 'am.host'
+                }
+            });
+
+            org.getOrgById('myorg').catch(err => {
+                expect(err.message).to.equal('Operation failed. Error code 404');
+                done();
+            });
+        });
+    });
+
     describe('cli.list function', function() {
         beforeEach(function() {
             requestStub.resetHistory();
             jsonStub.resetHistory();
             infoStub.resetHistory();
+            tableStub.resetHistory();
         });
 
         it('prints no orgs found', function() {
@@ -231,7 +337,7 @@ describe('Tests for lib/org.js', function() {
             expect(logArgs[0]).to.equal('No orgs found');
         });
 
-        it('prints a list of orgs', function() {
+        it('returns a list of orgs as json', function() {
 
             var org = proxyquire('../../lib/org', {
                 'request': function (opts, callback) {

@@ -202,6 +202,30 @@ else
 fi
 
 ###############################################################################
+###### Testing ´sfcc-ci client:create´
+###############################################################################
+
+echo "Testing command ´sfcc-ci client:create´ without option (expected to fail):"
+node ./cli.js client:create
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:create --configuration <configuration>´ --noprompt:"
+TEST_NEW_CLIENT_RESULT=`node ./cli.js client:create --configuration '{"name": "My new client", "password": "%2secret(Sauce7?!"}' --json`
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+# grab some client details for next set of tests
+TEST_NEW_CLIENT_ID=`echo $TEST_NEW_CLIENT_RESULT | jq '.client.id' -r`
+
+###############################################################################
 ###### Testing ´sfcc-ci client:list´
 ###############################################################################
 
@@ -224,13 +248,84 @@ else
 fi
 
 echo "Testing command ´sfcc-ci client:list´ --clientid <client_id>´:"
-node ./cli.js client:list --clientid $ARG_CLIENT_ID
+node ./cli.js client:list --clientid $TEST_NEW_CLIENT_ID
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
 	echo -e "\t> FAILED"
 	exit 1
 fi
+
+###############################################################################
+###### Testing ´sfcc-ci client:update´
+###############################################################################
+
+echo "Testing command ´sfcc-ci client:update´ without option (expected to fail):"
+node ./cli.js client:update
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:update --clientid <client_id> --changes <changes> --noprompt´:"
+node ./cli.js client:update --clientid $TEST_NEW_CLIENT_ID --changes '{"active": false}' --noprompt
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci client:rotate´
+###############################################################################
+
+echo "Testing command ´sfcc-ci client:rotate´ without option (expected to fail):"
+node ./cli.js client:rotate
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:rotate --clientid <client_id> --noprompt´:"
+TEST_ROTATION_RESULT=`node ./cli.js client:rotate --clientid $TEST_NEW_CLIENT_ID --noprompt`
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+# grab some client details for cleanup
+TEST_ROTATION_ID=`echo $TEST_ROTATION_RESULT | jq '.client.id' -r`
+
+###############################################################################
+###### Testing ´sfcc-ci client:delete´
+###############################################################################
+
+echo "Testing command ´sfcc-ci client:delete´ without option (expected to fail):"
+node ./cli.js client:delete
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:delete --clientid <client_id> --noprompt´:"
+node ./cli.js client:delete --clientid $TEST_NEW_CLIENT_ID --noprompt
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+# cleanup client created during rotation
+node ./cli.js client:delete --clientid $TEST_ROTATION_ID --noprompt
 
 ###############################################################################
 ###### Testing ´sfcc-ci sandbox:realm:list´

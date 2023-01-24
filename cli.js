@@ -9,6 +9,9 @@ var colors = require('colors');
 var program = require('commander');
 var { prompt } = require('inquirer');
 
+var log = require('./lib/log');
+
+
 program
     .version(require('./package.json').version, '-V, --version')
     .option('-D, --debug', 'enable verbose output', function() {
@@ -138,8 +141,10 @@ program
     .option('--start <start>','Zero-based index of first item to return (default is 0)')
     .option('--clientid <clientid>','id of the Oauth client to get details for')
     .option('-j, --json', 'Formats the output in json')
+    .option('-v, --verbose', 'Outputs additional details')
     .action(function(options) {
         var asJson = ( options.json ? options.json : false );
+        var verbose = ( options.verbose ? options.verbose : false );
         var start = ( options.start ? options.start : 0 );
         var count = ( options.count ? options.count : 25 );
 
@@ -147,7 +152,7 @@ program
         if (id) {
             require('./lib/client').cli.info(id, asJson);
         } else {
-            require('./lib/client').cli.list(start, count, asJson);
+            require('./lib/client').cli.list(start, count, asJson, verbose);
         }
     }).on('--help', function() {
         console.log('');
@@ -156,13 +161,15 @@ program
         console.log('  Lists Oauth clients you have access to');
         console.log('');
         console.log('  This requires permissions in Account Manager to manage API clients of the org,');
-        console.log('  the client belongs to.');
+        console.log('  the client belongs to. By default client ids are displayed as a short version with');
+        console.log('  the first 7 characters only. Use --verbose to display the full details.')
         console.log('');
         console.log('  Use --clientid to get details of a single Oauth client.');
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci client:list');
+        console.log('    $ sfcc-ci client:list --verbose');
         console.log('    $ sfcc-ci client:list --count 50');
         console.log('    $ sfcc-ci client:list --count 50 --start 1');
         console.log('    $ sfcc-ci client:list --clientid xxxx-yyyy-zzzz');
@@ -176,15 +183,43 @@ program
     .option('-c, --configuration <configuration>', 'Configuration of for Oauth client as json')
     .option('-f, --file <file>', 'Configuration of the Oauth client as utf-8 encoded text file containing json')
     .option('-j, --json', 'Formats the output in json')
-    .action(function(options) {
+    .option('-N, --noprompt','No prompt to confirm creation')
+    .action(async function(options) {
         var configuration = ( options.configuration ? JSON.parse(options.configuration) : null );
         var asJson = ( options.json ? options.json : false );
         var file = ( options.file ? options.file : null );
+        var noPrompt = ( options.noprompt ? options.noprompt : false );
+
+        // determine fallback organization from authenticated subject
+        var fallbackOrgId;
+        try {
+            fallbackOrgId = await require('./lib/auth').getOrgOfAuthenticatedSubject();
+        } catch (e) {
+            console.error(e.message);
+        }
+
         if ( !configuration && !file) {
-            require('./lib/log').error('Configuration missing. Please specify configuration using -c,--configuration' +
-                'or -f, --file.');
+            log.error('Configuration missing. Please specify configuration using -c,' +
+                '--configuration or -f, --file.');
+        } else if ( noPrompt ) {
+            require('./lib/client').cli.create(configuration, file, fallbackOrgId, asJson);
         } else {
-            require('./lib/client').cli.create(configuration, file, asJson);
+            if (fallbackOrgId) {
+                console.info('The Oauth client will be created for org ' + fallbackOrgId +
+                    ', if no other org was specified.');
+            }
+            return prompt({
+                type : 'confirm',
+                name : 'ok',
+                default : false,
+                message : `Create new Oauth client. Are you sure?`
+            }).then((answers) => {
+                if (answers['ok']) {
+                    require('./lib/client').cli.create(configuration, file, fallbackOrgId, asJson);
+                } else {
+                    console.info('Operation aborted');
+                }
+            });
         }
     }).on('--help', function() {
         console.log('');
@@ -192,14 +227,20 @@ program
         console.log();
         console.log('  Creates a new Oauth client');
         console.log('');
-        console.log('  This requires permissions in Account Manager to manage API clients of the org,');
-        console.log('  the client belongs to. You can pass client confguration as JSON string through option');
-        console.log('  -c,--configuration or as a utf-8 encoded text file containing JSON through option -f,--file.');
+        console.log('  This requires permissions in Account Manager to manage API clients. You can pass');
+        console.log('  the client confguration as JSON string through option -c,--configuration or as a');
+        console.log('  utf-8 encoded text file containing JSON through option -f,--file.');
+        console.log('');
+        console.log('  If not specified, the new Oauth client will be created in the primary organization');
+        console.log('  of the authenticated user. If no user is authenticated, the new Oauth client will');
+        console.log('  be created in the same org as the authenticated API client, unless the authenticated');
+        console.log('  client belongs to multiple organizations.');
         console.log('');
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci client:create --configuration \'{"active": true}\'');
+        console.log('    $ sfcc-ci client:create --configuration \'{"name": "my new client","active": true}\'');
         console.log('    $ sfcc-ci client:create --file \'path/to/file.json\'');
+        console.log('    $ sfcc-ci client:create --file \'path/to/file.json\' --noprompt');
         console.log();
     });
 
@@ -218,9 +259,9 @@ program
         var noPrompt = ( options.noprompt ? options.noprompt : false );
         var file = ( options.file ? options.file : null );
         if ( !id ) {
-            require('./lib/log').error('Missing required --clientid. Use -h,--help for help.');
+            log.error('Missing required --clientid. Use -h,--help for help.');
         } else if ( !changes && !file ) {
-            require('./lib/log').error('Changes missing. Please specify changes using -c,--change or -f, --file.');
+            log.error('Changes missing. Please specify changes using -c,--change or -f, --file.');
         } else if ( noPrompt ) {
             require('./lib/client').cli.update(id, changes, file, asJson);
         } else {
@@ -228,10 +269,12 @@ program
                 type : 'confirm',
                 name : 'ok',
                 default : false,
-                message : `Update Oauth client ${id}. Are you sure?`
+                message : `Update Oauth client ${require('./lib/client').trimClientID(id)}. Are you sure?`
             }).then((answers) => {
                 if (answers['ok']) {
                     require('./lib/client').cli.update(id, changes, file, asJson);
+                } else {
+                    console.info('Operation aborted');
                 }
             });
         }
@@ -263,7 +306,7 @@ program
         var noPrompt = ( options.noprompt ? options.noprompt : false );
 
         if ( !id ) {
-            require('./lib/log').error('Missing required --clientid. Use -h,--help for help.');
+            log.error('Missing required --clientid. Use -h,--help for help.');
         } else if ( noPrompt ) {
             require('./lib/client').cli.rotate(id, asJson);
         } else {
@@ -271,7 +314,8 @@ program
                 type : 'confirm',
                 name : 'ok',
                 default : false,
-                message : `Rotate credentials of Oauth client. Are you sure?`
+                message : `Rotate credentials for Oauth client ${require('./lib/client').trimClientID(id)}. ` +
+                    `Are you sure?`
             }).then((answers) => {
                 if (answers['ok']) {
                     require('./lib/client').cli.rotate(id, asJson);
@@ -284,8 +328,17 @@ program
         console.log();
         console.log('  Rotates credentials of an Oauth client');
         console.log('');
-        console.log('  This generates a new client secret and resets the existing secret. The operation requires');
-        console.log('  permissions in Account Manager to manage API clients of the org the client belongs to.');
+        console.log('  This generates a new Oauth client with a new client id and client secret. It uses the client');
+        console.log('  referenced through --clientid and replicates the same client configuration into the new Oauth');
+        console.log('  client. The operation requires permissions in Account Manager to manage API clients of the');
+        console.log('  org the client belongs to. The client referenced by --clientid will not be changed as part of');
+        console.log('  this operation. Deactivation and deletion of the reference client is not done.');
+        console.log('');
+        console.log('  Configuration and credentials of the new Oauth client will be returned through stdout.');
+        console.log('');
+        console.log('  The operation does not check if the reference Oauth client was already rotated before. To');
+        console.log('  avoid unnecessary creation of Oauth clients please ensure you have not rotated the same');
+        console.log('  client before.')
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -304,23 +357,19 @@ program
         var asJson = ( options.json ? options.json : false );
         var noPrompt = ( options.noprompt ? options.noprompt : false );
 
-        var deleteClient = function(id, asJson) {
-            require('./lib/client').cli.delete(id, asJson);
-        };
-
         if ( !id ) {
-            require('./lib/log').error('Missing required --clientid. Use -h,--help for help.');
+            log.error('Missing required --clientid. Use -h,--help for help.');
         } else if ( noPrompt ) {
-            deleteClient(id, asJson);
+            require('./lib/client').cli.delete(id, asJson);
         } else {
             prompt({
                 type : 'confirm',
                 name : 'ok',
                 default : false,
-                message : 'Delete Oauth client ' + id + '. Are you sure?'
+                message : `Delete Oauth client ${require('./lib/client').trimClientID(id)}. Are you sure?`
             }).then((answers) => {
                 if (answers['ok']) {
-                    deleteClient(id, asJson);
+                    require('./lib/client').cli.delete(id, asJson);
                 }
             });
         }
@@ -1449,9 +1498,9 @@ program
         var asJson = ( options.json ? options.json : false )
 
         if ( !code ) {
-            require('./lib/log').error('Code version missing. Please pass a code version using -c,--code.');
+            log.error('Code version missing. Please pass a code version using -c,--code.');
         } else if ( !instance ) {
-            require('./lib/log').error('Instance missing. Please pass an instance using -i,--instance.');
+            log.error('Instance missing. Please pass an instance using -i,--instance.');
         } else if ( noPrompt ) {
             require('./lib/code').cli.delete(instance, code, asJson);
         } else {
@@ -1852,7 +1901,7 @@ program
         var asJson = ( options.json ? options.json : false );
 
         if ( instance && scope ) {
-            require('./lib/log').error('Ambiguous options. Use -h,--help for help.');
+            log.error('Ambiguous options. Use -h,--help for help.');
         } else if ( instance ) {
             require('./lib/user').cli.grantLocal(instance, login, role, asJson);
         } else {
@@ -1894,7 +1943,7 @@ program
         var asJson = ( options.json ? options.json : false );
 
         if ( instance && scope ) {
-            require('./lib/log').error('Ambiguous options. Use -h,--help for help.');
+            log.error('Ambiguous options. Use -h,--help for help.');
         } else if ( instance ) {
             require('./lib/user').cli.revokeLocal(instance, login, role, asJson);
         } else {
@@ -1952,7 +2001,7 @@ program
             // get users from AM
             require('./lib/user').cli.list(org, role, login, count, asJson, sortby);
         } else {
-            require('./lib/log').error('Ambiguous options. Please consult the help using --help.');
+            log.error('Ambiguous options. Please consult the help using --help.');
         }
     }).on('--help', function() {
         console.log('');
@@ -2008,9 +2057,9 @@ program
         var user = ( options.user ? JSON.parse(options.user) : null );
         var asJson = ( options.json ? options.json : false );
         if ( ( !org && !instance ) || ( org && instance ) ) {
-            require('./lib/log').error('Ambiguous options. Pass either -o,--org or -i,--instance.');
+            log.error('Ambiguous options. Pass either -o,--org or -i,--instance.');
         } else if ( !login ) {
-            require('./lib/log').error('Login missing. Please pass a login using -l,--login.');
+            log.error('Login missing. Please pass a login using -l,--login.');
         } else if ( instance && login ) {
             // create locally
             require('./lib/user').cli.createLocal(instance, login, user, asJson);
@@ -2018,7 +2067,7 @@ program
             // create in AM
             require('./lib/user').cli.create(org, user, login, null, null, asJson);
         } else {
-            require('./lib/log').error('Ambiguous options. Use -h,--help for help.');
+            log.error('Ambiguous options. Use -h,--help for help.');
         }
     }).on('--help', function() {
         console.log('');
@@ -2069,9 +2118,9 @@ program
         };
 
         if ( !login ) {
-            require('./lib/log').error('Login missing. Please pass a login using -l,--login.');
+            log.error('Login missing. Please pass a login using -l,--login.');
         } else if ( !changes ) {
-            require('./lib/log').error('Changes missing. Please specify changes using -c,--change.');
+            log.error('Changes missing. Please specify changes using -c,--change.');
         } else if ( noPrompt ) {
             updateUser(instance, login, changes, asJson);
         } else {
@@ -2131,7 +2180,7 @@ program
         };
 
         if ( !login ) {
-            require('./lib/log').error('Missing required --login. Use -h,--help for help.');
+            log.error('Missing required --login. Use -h,--help for help.');
         } else if ( noPrompt ) {
             deleteUser(instance, login, purge, asJson);
         } else {
@@ -2373,6 +2422,6 @@ if (!program.args.length) {
 } else if ( typeof(program.args[program.args.length-1]) !== 'object') {
     // the last argument represents the command,
     // if this is not a known Command, exit with error
-    require('./lib/log').error('Unknown command `%s`. Use `sfcc-ci --help` for help.', program.args[0]);
+    log.error('Unknown command `%s`. Use `sfcc-ci --help` for help.', program.args[0]);
     process.exitCode = 1;
 }

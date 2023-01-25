@@ -1,0 +1,52 @@
+name: Bug Report
+description: File a bug report
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide details on how to reproduce your bug. If possible provide as much information in the fields below regarding your environment and versions.
+  - type: input
+    id: version
+    attributes:
+      label: sfcc-ci Version
+      description: Run `sfcc-ci --version`
+      placeholder: x.x.x
+    validations:
+      required: false
+  - type: input
+    id: nodeversion
+    attributes:
+      label: NodeJS Version
+      description: Run `node --version`
+      placeholder: x.x.x
+    validations:
+      required: false
+  - type: input
+    id: path
+    attributes:
+      label: sfcc-ci Path
+      description: Run `which sfcc-ci` on Mac/Linux or `where sfcc-ci` on Windows
+      placeholder: /path/to/sfcc-ci
+    validations:
+      required: false
+  - type: textarea
+    id: hostinfo
+    attributes:
+      label: Host OS Details
+      description: On Mac run `sw_vers` and `uname -a`; on linux `uname -a` and `lsb_release`; Windows `systeminfo` and retrieve the OS Name/Version from the output
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please describe your issue
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant output from the command. If possible use `sfcc-ci -D` for additional debug output. This will be automatically formatted into code, so no need for backticks.
+      render: shell

@@ -49,6 +49,22 @@ Ensure you have a valid Commerce Cloud API key (client ID) set up. If you don't 
 
 For automation (e.g. a build server integration) you'll need the API key as well as the API secret for authentication. If you want to use authentication in interactive mode, you have to set _Redirect URIs_ to `http://localhost:8080`. If you want to manage sandboxes you have to set _Default Scopes_ to `roles tenantFilter profile`.
 
+### SLAS Prerequisites ###
+In order to use your API key with SLAS, please ensure the following are configured for your client:
+
+1. Has `Roles` > `Commerce Cloud Developer Experience` > `Sandbox API User` with "All Sandboxes" scope.<br/>
+  ![Account Manager Client ID](docs/images/client-api-user.png)
+2. Set _Default Scopes_ to:
+```txt
+mail
+roles
+tenantFilter
+profile
+openId
+```
+3. Set "Token Endpoint Auth Method" to `client_secret_post`
+4. Set "Access Token Format" to `JWT`
+    
 ### Grant your API key access to your instances ###
 
 In order to perform CLI commands, you have to permit API calls to the Commerce Cloud instance(s) you wish to integrate with. You do that by modifying the Open Commerce API Settings as well as the WebDAV Client Permissions on the Commerce Cloud instance.
@@ -338,6 +354,7 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     user:create [options]                                           Create a new user
     user:update [options]                                           Update a user
     user:delete [options]                                           Delete a user
+    user:reset [options]                                            Reset a user
     slas:tenant:list [options]                                      Lists all tenants that belong to a given organization
     slas:tenant:add [options]                                       Adds a SLAS tenant to a given organization or updates an existing one
     slas:tenant:get [options]                                       Gets a SLAS tenant from a given organization
@@ -403,7 +420,7 @@ The use of environment variables is optional. `sfcc-ci` respects the following e
 * `SFCC_OAUTH_CLIENT_SECRET` client secret used for authentication
 * `SFCC_OAUTH_USER_NAME` user name used for authentication
 * `SFCC_OAUTH_USER_PASSWORD` user password used for authentication
-* `SFCC_SANDBOX_API_HOST` set sandbox API host
+* `SFCC_SANDBOX_API_HOST` set alternative sandbox API host
 * `SFCC_SANDBOX_API_POLLING_TIMEOUT` set timeout for sandbox polling in minutes
 * `DEBUG` enable verbose output
 
@@ -462,7 +479,7 @@ Removing the env var (`unset SFCC_OAUTH_LOCAL_PORT`) will make the CLI use the d
 
 ## Authorization ##
 
-Depending on which activities you want to want to perform, you have to ensure proper permissions have been granted beforehand. The required permissions and where to grant them to depend on the command and whether you want to execute commands interactively (user present) or implement automations (no user present).
+Depending on which activities you want to want to perform, you have to ensure proper permissions have been granted beforehand. The required permissions and how to grant them depends on the commands you want to perform and whether you want to execute commands interactively (with the presence of a user) or implement automations (no user present).
 
 Consult the table below to set permissions depending on the activity desired:
 
@@ -476,13 +493,21 @@ job:* | OCAPI Data API Settings | OCAPI Data API Settings
 cartridge:* | OCAPI Data API Settings | OCAPI Data API Settings
 org:* | Account Administrator role assigned to user | Account Administrator role assigned to API client
 role:* | Account Administrator role assigned to user _or_ OCAPI Data API Settings | Account Administrator role assigned to API client _or_ OCAPI Data API Settings 
-users:* | Account Administrator role assigned to user _or_ OCAPI Data API Settings | Account Administrator role assigned to API client _or_ OCAPI Data API Settings 
+users:* | Account Administrator role assigned to user _or_ OCAPI Data API Settings | Account Administrator role assigned to API client _or_ OCAPI Data API Settings
+
+### Authorizing a User ###
+
+Authorizing a user usually requires assigning the required role to the user in Account Manager. Assigning a role to a user in Account Manager, such as the `Sandbox API User` role, itself requires the Account Administrator role.
+
+### Authorizing an API Client ###
+
+Authorizing an API client requires assigning the required role to the API client in Account Manager or granting permissions to the API client on the B2C Commerce instance via the OCAPI Data API settings. Assigning a role to an API client in Account Manager, such as the `Sandbox API User` role, itself requires the Account Administrator or API Admin role.
 
 ## Sandbox API ##
 
 ### API Server ###
 
-`sfcc-ci` uses a default host for the sandbox API. You can overwrite this host and use an alternative host using the env var `SFCC_SANDBOX_API_HOST`:
+`sfcc-ci` uses a default host for the sandbox API. This is the standard Sandbox API Gateway at admin.dx.commercecloud.salesforce.com. Usually this is fine and you don't need to change this. However, you can overwrite this host and use an alternative host using the env var `SFCC_SANDBOX_API_HOST`:
 
 ```bash
 export SFCC_SANDBOX_API_HOST=<alternative-sandbox-api-host>
@@ -520,16 +545,12 @@ The examples below assume you have defined a set of environment variables:
 
 * an API Key (the client ID)
 * an API Secret (the client secret)
-* your Account Manager User Name
-* your Account Manager User Password
 
 On Linux and MacOS you can set environment variables as follows:
 
 ```bash
 export API_KEY=<my-api-key>
 export API_SECRET=<my-api-secret>
-export API_USER=<my-user>
-export API_USER_PW=<my-user-pw>
 ```
 
 On Windows you set them as follows:
@@ -537,8 +558,6 @@ On Windows you set them as follows:
 ```bash
 set API_KEY=<my-api-key>
 set API_SECRET=<my-api-secret>
-set API_USER=<my-user>
-set API_USER_PW=<my-user-pw>
 ```
 
 The remainder of the examples below assume you are on Linux or MacOS. If you are on Windows you access environment variables using `%MY_ENV_VAR%` instead of `$MY_ENV_VAR`.
@@ -553,21 +572,13 @@ In an interactive mode you usually authenticate as follows:
 sfcc-ci auth:login $API_KEY
 ```
 
-In an automation scenario (where no user is present) authentication is done as follows:
+In an automation scenario (where no user is present) authentication is done using API client credentials as follows:
 
 ```bash
 sfcc-ci client:auth $API_KEY $API_SECRET
 ```
 
-In an automation scenario where you want to manage sandboxes you still need a service user (with role Sandbox API User assigned). In this case authentication is done as follows:
-
-```bash
-sfcc-ci client:auth $API_KEY $API_SECRET
-```
-
-Note, that the service user must not be doing MFA. You may accomplish this by only assigning role Sandbox API User and deactivating MFA for only exactly this role.
-
-Logging out (and removing any traces of secrets from the machine):
+Logging out (and removing auth tokens from the machine):
 
 ```bash
 sfcc-ci auth:logout
@@ -656,20 +667,21 @@ The following APIs are available (assuming `sfcc` refers to `require('sfcc-ci')`
   sfcc.job.run(instance, job_id, job_params, token, callback);
   sfcc.job.status(instance, job_id, job_execution_id, token, callback);
   sfcc.manifest.generate(directories, ignorePatterns, targetDirectory, fileName);
-  sfcc.slas.tenant.add(tenantId, shortcode, description, merchantName, contact, emailAddress, fileName).then(result => ...).catch(err => ...);
-  sfcc.slas.tenant.get(tenantId, shortcode).then(result => ...).catch(err => ...);
-  sfcc.slas.tenant.list(shortcode).then(result => ...).catch(err => ...);
-  sfcc.slas.tenant.delete(tenantId, shortcode).then(result => ...).catch(err => ...);
-  sfcc.slas.client.add(tenantId, shortcode, file, clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis).then(result => ...).catch(err => ...);
-  sfcc.slas.client.get(tenantId, shortcode, clientId).then(result => ...).catch(err => ...);
-  sfcc.slas.client.list(shortcode, tenantId).then(result => ...).catch(err => ...);
-  sfcc.slas.client.delete(tenantId, shortcode, clientId).then(result => ...).catch(err => ...);
+  sfcc.slas.tenant.add(tenantId, shortcode, description, merchantName, contact, emailAddress, fileName, token).then(result => ...).catch(err => ...);
+  sfcc.slas.tenant.get(tenantId, shortcode, token).then(result => ...).catch(err => ...);
+  sfcc.slas.tenant.list(shortcode, token).then(result => ...).catch(err => ...);
+  sfcc.slas.tenant.delete(tenantId, shortcode, token).then(result => ...).catch(err => ...);
+  sfcc.slas.client.add(tenantId, shortcode, file, clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, callbackuris, token).then(result => ...).catch(err => ...);
+  sfcc.slas.client.get(tenantId, shortcode, clientId, token).then(result => ...).catch(err => ...);
+  sfcc.slas.client.list(shortcode, tenantId, token).then(result => ...).catch(err => ...);
+  sfcc.slas.client.delete(tenantId, shortcode, clientId, token).then(result => ...).catch(err => ...);
   sfcc.user.create(org, user, mail, firstName, lastName, token).then(result => ...).catch(err => ...);
   sfcc.user.list(org, role, login, count, sortBy, token).then(result => ...).catch(err => ...);
   sfcc.user.update(login, changes, token).then(result => ...).catch(err => ...);
   sfcc.user.grant(login, role, scope, token).then(result => ...).catch(err => ...);
   sfcc.user.revoke(login, role, scope, token).then(result => ...).catch(err => ...);
   sfcc.user.delete(login, purge, token).then(result => ...).catch(err => ...);
+  sfcc.user.reset(login, token).then(result => ...).catch(err => ...);
   sfcc.user.createLocal(instance, login, user, token).then(result => ...).catch(err => ...);
   sfcc.user.searchLocal(instance, login, query, role, sortBy, count, start, token).then(result => ...).catch(err => ...);
   sfcc.user.updateLocal(instance, login, changes, token).then(result => ...).catch(err => ...);

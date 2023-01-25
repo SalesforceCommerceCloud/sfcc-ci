@@ -527,15 +527,23 @@ program
 program
     .command('sandbox:ips')
     .description('List inbound and outbound IP addresses for sandboxes')
+    .option('-r, --realm <realm>','Realm to get IP details for')
     .option('-j, --json','Formats the output in json')
     .action(function(options) {
+        var realm = ( options.realm ? options.realm : null );
         var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.ips(asJson);
+        require('./lib/sandbox').cli.ips(realm, asJson);
     }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Use the optional --realm parameter to only retrieve IP addresses relevant for a particular');
+        console.log('  realm.');
         console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:ips');
+        console.log('    $ sfcc-ci sandbox:ips --realm zzzz');
         console.log('    $ sfcc-ci sandbox:ips --json');
         console.log();
     });
@@ -1817,13 +1825,15 @@ program
     .option('-o, --org <org>','Organization to get details for')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sortby <sortby>', 'Sort by specifying any field')
+    .option('--auditlogs', 'Returns audit logs for changes made to an org')
     .action(function(options) {
         var count = ( options.count ? options.count : null );
         var all = ( options.all ? options.all : false );
         var org = ( options.org ? options.org : null );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortBy ? options.sortBy : null );
-        require('./lib/org').cli.list(org, count, all, asJson, sortby);
+        var auditlogs = ( options.auditlogs ? options.auditlogs : null );
+        require('./lib/org').cli.list(org, auditlogs, count, all, asJson, sortby);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -1834,6 +1844,7 @@ program
         console.log();
         console.log('  Use --org to get details of a single org.');
         console.log();
+        console.log('  Use option --auditlogs to return audit logs for changes made to a single org.');
         console.log('');
         console.log('  Examples:');
         console.log();
@@ -1841,6 +1852,7 @@ program
         console.log('    $ sfcc-ci org:list -c 10')
         console.log('    $ sfcc-ci org:list --org "my-org"')
         console.log('    $ sfcc-ci org:list --sortby "name"')
+        console.log('    $ sfcc-ci org:list --org "my-org" --auditlogs')
         console.log();
     });
 
@@ -1974,13 +1986,14 @@ program
     .description('List users eligible to manage')
     .option('-c, --count <count>','Max count of list items (default is 25)')
     .option('--start <start>','Zero-based index of first item to return (default is 0)')
-    .option('-o, --org <org>','Org to return users for (only works in combination with <role>)')
+    .option('-o, --org <org>','Org to return users for')
     .option('-i, --instance <instance>','Instance to search users for. Can be an instance alias.')
     .option('-l, --login <login>','Login of a user to get details for')
     .option('-r, --role <role>','Limit users to a certain role')
     .option('-q, --query <query>','Query to search users for')
     .option('-j, --json', 'Formats the output in json')
     .option('-s, --sortby <sortby>', 'Sort by specifying any field')
+    .option('--auditlogs', 'Returns audit logs for changes made to a user')
     .action(function(options) {
         var count = ( options.count ? options.count : null );
         var start = ( options.start ? options.start : null );
@@ -1991,6 +2004,7 @@ program
         var query = ( options.query ? JSON.parse(options.query) : null );
         var asJson = ( options.json ? options.json : false );
         var sortby = ( options.sortby ? options.sortby : null );
+        var auditlogs = ( options.auditlogs ? options.auditlogs : null );
         if ( instance && login ) {
             // get users on the instance with role
             require('./lib/user').cli.searchLocal(instance, login, query, null, null, null, null, asJson);
@@ -1999,7 +2013,7 @@ program
             require('./lib/user').cli.searchLocal(instance, login, query, role, sortby, count, start, asJson);
         } else if ( ( org && role ) || ( !org && role ) || !( org && role ) ) {
             // get users from AM
-            require('./lib/user').cli.list(org, role, login, count, asJson, sortby);
+            require('./lib/user').cli.list(org, role, login, count, asJson, sortby, auditlogs);
         } else {
             log.error('Ambiguous options. Please consult the help using --help.');
         }
@@ -2013,8 +2027,9 @@ program
         console.log();
         console.log('  Use --login to get details of a single user.');
         console.log();
-        console.log('  If options --org and --role are used, you can filter users by organization and');
-        console.log('  role. --org only works in combination with --role. Only enabled users are returned.');
+        console.log('  Use option --auditlogs to return audit logs for changes made to a single user.');
+        console.log();
+        console.log('  Use options --org and --role, to filter users by organization, role or both.');
         console.log();
         console.log('  If option --instance is used, local users from this Commerce Cloud instance');
         console.log('  are being returned. Use --query to narrow down the users.');
@@ -2037,7 +2052,9 @@ program
         console.log('    $ sfcc-ci user:list --instance my-instance --role Administrator');
         console.log('    $ sfcc-ci user:list --login my-login');
         console.log('    $ sfcc-ci user:list --login my-login -j');
+        console.log('    $ sfcc-ci user:list --login my-login --auditlogs');
         console.log('    $ sfcc-ci user:list --role account-admin');
+        console.log('    $ sfcc-ci user:list --org my-org');
         console.log('    $ sfcc-ci user:list --org my-org --role bm-user');
         console.log();
     });
@@ -2078,7 +2095,7 @@ program
         console.log('  If an org is passed using -o,--org, the user will be created in the Account Manager');
         console.log('  for the passed org. The login (an email) must be unique. After a successful');
         console.log('  creation the user will receive a confirmation e-mail with a link to activate his');
-        console.log('  account. Default roles of the user in Account Manager are "xchange-user" and "doc-user".');
+        console.log('  account.');
         console.log('');
         console.log('  Use -i,--instance to create a local user is on the Commerce Cloud instance.');
         console.log('  The login must be unique. By default no roles will be assigned to the user on the instance.');
@@ -2088,7 +2105,7 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci user:create --org my-org --login jdoe@email.org --user \'{"firstName":' +
-            '"John", "lastName":"Doe", "roles": ["xchange-user"]}\'');
+            '"John", "lastName":"Doe", "roles": ["controlcenter-user"]}\'');
         console.log('    $ sfcc-ci user:create --instance my-instance --login "my-user" --user \'{"email":' +
             '"jdoe@email.org", "first_name":"John", "last_name":"Doe", "roles": ["Administrator"]}\'');
         console.log();
@@ -2220,6 +2237,55 @@ program
 
 
 program
+    .command('user:reset')
+    .description('Reset a user')
+    .option('-l, --login <login>', 'Login of the user to reset')
+    .option('-j, --json', 'Formats the output in json')
+    .option('-N, --noprompt', 'No prompt to confirm reset')
+    .action(function (options) {
+        var login = options.login;
+        var asJson = (options.json ? options.json : false);
+        var noPrompt = (options.noprompt ? options.noprompt : false);
+
+        var resetUser = function (login, asJson) {
+            require('./lib/user').cli.reset(login, asJson);
+        };
+
+        if (!login) {
+            require('./lib/log').error('Missing required --login. Use -h,--help for help.');
+        } else if (noPrompt) {
+            resetUser(login, asJson);
+        } else {
+            prompt({
+                type: 'confirm',
+                name: 'ok',
+                default: false,
+                message: 'Reset user ' + login +
+                    '. Are you sure?'
+            }).then((answers) => {
+                if (answers['ok']) {
+                    resetUser(login, asJson);
+                }
+            });
+        }
+    }).on('--help', function () {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Reset a user. This is useful when the user forgot their password or');
+        console.log('  when you want to unlink the Account Manager user account from a Salesforce account.');
+        console.log('  An email is automatically sent to the user\'s email address with an activation link.');
+        console.log('');
+        console.log('  This requires permissions in Account Manager to adminstrate the org,');
+        console.log('  the user belongs to.');
+        console.log('');
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci user:reset --login jdoe@email.org');
+        console.log();
+    });
+
+program
     .command('slas:tenant:list')
     .description('Lists all tenants that belong to a given organization')
     .option('--shortcode <shortcode>', 'the organizations short code')
@@ -2308,6 +2374,7 @@ program
     .option('--channels <channels>', 'comma separated list of site IDs this API client should support')
     .option('--scopes <scopes>', 'comma separated list of auth z scopes this API client should support')
     .option('--redirecturis <redirecturis>', 'comma separated list of redirect uris this API client should support')
+    .option('--callbackuris <callbackuris>', 'comma separated list of callback uris this API client should support')
 
     .option('-j, --json', 'Formats the output in json')
     .action(async function(options) {
@@ -2321,11 +2388,13 @@ program
         const secret = options.secret;
         const channels = !options.channels || options.channels.split(',').map(item => item.trim());
         const scopes = !options.scopes || options.scopes.split(',').map(item => item.trim());
-        const redirecturis = !options.redirecturis || options.redirecturis.split(',').map(item => item.trim());
+        const redirecturis = options.redirecturis ? options.redirecturis.split(',').map(item => item.trim()) : [];
+        const callbackuris = options.callbackuris ? options.callbackuris.split(',').map(item => item.trim()) : [];
 
         const slas = require('./lib/slas');
         await slas.cli.client.add(options.tenant, options.shortcode, options.file,
-            clientid, clientname, privateclient, ecomtenant, ecomsite, secret, channels, scopes, redirecturis, asJson);
+            clientid, clientname, privateclient, ecomtenant, ecomsite, secret,
+            channels, scopes, redirecturis, callbackuris, asJson);
 
     }).on('--help', function() {
         console.log();
@@ -2378,7 +2447,7 @@ program
         var asJson = ( options.json ? options.json : false );
 
         const slas = require('./lib/slas');
-        await slas.cli.client.get(options.tenant, options.shortcode, options.clientid, asJson);
+        await slas.cli.client.delete(options.tenant, options.shortcode, options.clientid, asJson);
 
     }).on('--help', function() {
         console.log();
@@ -2394,7 +2463,7 @@ program.on('--help', function() {
     console.log('    $SFCC_OAUTH_CLIENT_SECRET          client secret used for authentication');
     console.log('    $SFCC_OAUTH_USER_NAME              user name used for authentication');
     console.log('    $SFCC_OAUTH_USER_PASSWORD          user password used for authentication');
-    console.log('    $SFCC_SANDBOX_API_HOST             set sandbox API host');
+    console.log('    $SFCC_SANDBOX_API_HOST             set alternative sandbox API host');
     console.log('    $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes')
     console.log('    $SFCC_SCAPI_SHORTCODE              the Salesforce Commerce (Headless) API Shortcode');
     console.log('    $SFCC_SCAPI_TENANTID               the Salesforce Commerce (Headless) API TenantId')

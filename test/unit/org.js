@@ -373,7 +373,7 @@ describe('Tests for lib/org.js', function() {
                     'json' : jsonStub
                 }
             });
-            org.cli.list('myorg', null, null, true, undefined);
+            org.cli.list('myorg', false, null, null, true, undefined);
 
             const logArgs = jsonStub.getCall(0).args;
             expect(logArgs[0]).to.eql({id:1,name:"myorg"});

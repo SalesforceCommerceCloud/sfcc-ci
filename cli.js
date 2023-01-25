@@ -139,7 +139,7 @@ program
     .description('Lists a Oauth clients you have access to')
     .option('-c, --count <count>','Max count of list items (default is 25)')
     .option('--start <start>','Zero-based index of first item to return (default is 0)')
-    .option('--clientid <clientid>','id of the Oauth client to get details for')
+    .option('-a, --clientid <clientid>','id of the Oauth client to get details for')
     .option('-j, --json', 'Formats the output in json')
     .option('-v, --verbose', 'Outputs additional details')
     .action(function(options) {
@@ -205,8 +205,8 @@ program
             require('./lib/client').cli.create(configuration, file, fallbackOrgId, asJson);
         } else {
             if (fallbackOrgId) {
-                console.info('The Oauth client will be created for org ' + fallbackOrgId +
-                    ', if no other org was specified.');
+                console.info('The Oauth client will be created for org (id ' + fallbackOrgId.slice(0,7) +
+                    '), if no other org was specified.');
             }
             return prompt({
                 type : 'confirm',
@@ -297,7 +297,7 @@ program
 program
     .command('client:rotate')
     .description('Rotate credentials of an Oauth client')
-    .option('--clientid <clientid>','id of the Oauth client to rotate')
+    .option('-a, --clientid <clientid>','id of the Oauth client to rotate')
     .option('-j, --json', 'Formats the output in json')
     .option('-N, --noprompt','No prompt to confirm rotation')
     .action(function(options) {
@@ -349,7 +349,7 @@ program
 program
     .command('client:delete')
     .description('Delete an Oauth client')
-    .option('--clientid <clientid>','id of the Oauth client to delete')
+    .option('-a, --clientid <clientid>','id of the Oauth client to delete')
     .option('-j, --json', 'Formats the output in json')
     .option('-N, --noprompt','No prompt to confirm deletion')
     .action(function(options) {

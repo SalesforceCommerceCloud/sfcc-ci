@@ -191,9 +191,9 @@ else
 	exit 1
 fi
 
-# we have to re-authenticate with API key and user first
-echo "Running ´sfcc-ci client:auth <api_key> <secret> <user> <pwd>´:"
-node ./cli.js client:auth "$ARG_CLIENT_ID" "$ARG_CLIENT_SECRET" "$ARG_USER" "$ARG_USER_PW"
+# Acquire new access token beforehand
+echo "Acquire new access token using ´sfcc-ci client:auth <api_key>´:"
+node ./cli.js client:auth "$ARG_CLIENT_ID" "$ARG_CLIENT_SECRET"
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -215,7 +215,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci client:create --configuration <configuration>´ --noprompt:"
-TEST_NEW_CLIENT_RESULT=`node ./cli.js client:create --configuration '{"name": "My new client", "password": "%2secret(Sauce7?!"}' --json`
+TEST_NEW_CLIENT_RESULT=`node ./cli.js client:create --configuration '{"name": "Temp test client", "password": "%2secret(Sauce7?!"}' --noprompt --json`
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -292,7 +292,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci client:rotate --clientid <client_id> --noprompt´:"
-TEST_ROTATION_RESULT=`node ./cli.js client:rotate --clientid $TEST_NEW_CLIENT_ID --noprompt`
+TEST_ROTATION_RESULT=`node ./cli.js client:rotate --clientid $TEST_NEW_CLIENT_ID --noprompt --json`
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

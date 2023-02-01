@@ -293,7 +293,7 @@ You are now ready to use the tool by running the main command `sfcc-ci`.
 Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of commands available:
 
 ```bash
-    Usage: cli [options] [command]
+  Usage: cli [options] [command]
 
   Options:
     -V, --version                                                   output the version number
@@ -301,7 +301,6 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     --selfsigned                                                    allow connection to hosts using self-signed certificates
     -I, --ignorewarnings                                            ignore any warnings logged to the console
     -h, --help                                                      output usage information
-    -j, --json                                                      print output as JSON instead of plain text
 
   Commands:
     auth:login [options] [client] [secret]                          Authenticate a present user for interactive use
@@ -309,6 +308,11 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     client:auth [options] [client] [secret] [user] [user_password]  Authenticate an API client with an optional user for automation use
     client:auth:renew                                               Renews the client authentication. Requires the initial client authentication to be run with the --renew option.
     client:auth:token                                               Return the current authentication token
+    client:list [options]                                           Lists a Oauth clients you have access to
+    client:create [options]                                         Creates a new Oauth client
+    client:update [options]                                         Update an Oauth client
+    client:rotate [options]                                         Rotate credentials of an Oauth client
+    client:delete [options]                                         Delete an Oauth client
     data:upload [options]                                           Uploads a file onto a Commerce Cloud instance
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
     sandbox:realm:update [options]                                  Update realm settings
@@ -336,9 +340,9 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     code:deploy [options] <archive>                                 Deploys a custom code archive onto a Commerce Cloud instance
     code:activate [options] <version>                               Activate the custom code version on a Commerce Cloud instance
     code:delete [options]                                           Delete a custom code version
-    code:manifest:generate <localdirectorypaths>                    Generates the manifest file based on the given local directories
-    code:compare <localdirectorypaths>                              Compares the given local directories with the given code version (or the active one if none specified) of the Commerce Cloud instance and provide a diff between the two
-    code:deploy:diff <codeversion> <localdirectorypaths>            Deploys only the local changes to the instance and not a full new code version
+    code:manifest:generate [options] <localdirectorypaths>          Generates the manifest file based on the given local directories.
+    code:compare [options] <localdirectorypaths>                    Compare the given local directories with the given code version (or the active one if none specified) of the Commerce Cloud instance and provide a diff between the two.
+    code:deploy:diff [options] <codeversion> <localdirectorypaths>  Generate a manifest for the given local directories. Compare this manifest with the one within the active code version of the instance. Deploy only the files which have been updated locally comparing to the remote, within a newly created code version.Activate this newly generated code version if required in the options
     job:run [options] <job_id> [job_parameters...]                  Starts a job execution on a Commerce Cloud instance
     job:status [options] <job_id> <job_execution_id>                Get the status of a job execution on a Commerce Cloud instance
     cartridge:add [options] <cartridgename>                         Adds a cartridge-name to the site cartridge path
@@ -360,32 +364,32 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     slas:client:list [options]                                      Lists all SLAS clients that belong to a given tenant
     slas:client:delete [options]                                    Deletes a SLAS client from a given tenant
 
-  Environment:
+    Environment:
 
-    $SFCC_LOGIN_URL                    set login url used for authentication
-    $SFCC_OAUTH_LOCAL_PORT             set Oauth local port for authentication flow
-    $SFCC_OAUTH_CLIENT_ID              client id used for authentication
-    $SFCC_OAUTH_CLIENT_SECRET          client secret used for authentication
-    $SFCC_OAUTH_USER_NAME              user name used for authentication
-    $SFCC_OAUTH_USER_PASSWORD          user password used for authentication
-    $SFCC_SANDBOX_API_HOST             set alternative sandbox API host
-    $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes
-    $SFCC_SCAPI_SHORTCODE              the Salesforce Commerce (Headless) API Shortcode
-    $SFCC_SCAPI_TENANTID               the Salesforce Commerce (Headless) API TenantId
-    $DEBUG                             enable verbose output
+      $SFCC_LOGIN_URL                    set login url used for authentication
+      $SFCC_OAUTH_LOCAL_PORT             set Oauth local port for authentication flow
+      $SFCC_OAUTH_CLIENT_ID              client id used for authentication
+      $SFCC_OAUTH_CLIENT_SECRET          client secret used for authentication
+      $SFCC_OAUTH_USER_NAME              user name used for authentication
+      $SFCC_OAUTH_USER_PASSWORD          user password used for authentication
+      $SFCC_SANDBOX_API_HOST             set sandbox API host
+      $SFCC_SANDBOX_API_POLLING_TIMEOUT  set timeout for sandbox polling in minutes
+      $SFCC_SCAPI_SHORTCODE              the Salesforce Commerce (Headless) API Shortcode
+      $SFCC_SCAPI_TENANTID               the Salesforce Commerce (Headless) API TenantId
+      $DEBUG                             enable verbose output
 
-  Detailed Help:
+    Detailed Help:
 
-    Use sfcc-ci <sub:command> --help to get detailed help and example usage of sub:commands
+      Use sfcc-ci <sub:command> --help to get detailed help and example usage of sub:commands
 
-  Useful Resources:
+    Useful Resources:
 
-    Salesforce Commerce Cloud CLI Release Notes: https://sfdc.co/sfcc-cli-releasenotes
-    Salesforce Commerce Cloud CLI Readme: https://sfdc.co/sfcc-cli-readme
-    Salesforce Commerce Cloud CLI Cheatsheet: https://sfdc.co/sfcc-cli-cheatsheet
-    Salesforce Commerce Cloud Account Manager: https://account.demandware.com
-    Salesforce Commerce Cloud API Explorer: https://api-explorer.commercecloud.salesforce.com
-    Salesforce Commerce Cloud Documentation: https://documentation.b2c.commercecloud.salesforce.com
+      Salesforce Commerce Cloud CLI Release Notes: https://sfdc.co/sfcc-cli-releasenotes
+      Salesforce Commerce Cloud CLI Readme: https://sfdc.co/sfcc-cli-readme
+      Salesforce Commerce Cloud CLI Cheatsheet: https://sfdc.co/sfcc-cli-cheatsheet
+      Salesforce Commerce Cloud Account Manager: https://account.demandware.com
+      Salesforce Commerce Cloud API Explorer: https://api-explorer.commercecloud.salesforce.com
+      Salesforce Commerce Cloud Documentation: https://documentation.b2c.commercecloud.salesforce.com
 ```
 
 Use `sfcc-ci <sub:command> --help` to get detailed help and example usage of a sub:command.

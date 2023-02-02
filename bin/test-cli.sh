@@ -15,8 +15,11 @@ if [ $? -eq 1 ]; then
 	exit 1
 fi
 
+# reset to track the time elapsed 
+SECONDS=0
+
 # pass parameters in the following order: 
-# $ bin/test-cli.sh <CLIENT_ID> <CLIENT_SECRET> <USER> <USER_PW> <HOST> <SANDBOX_REALM>
+# $ bin/test-cli.sh <CLIENT_ID> <CLIENT_SECRET> <USER> <USER_PW> <HOST> <SANDBOX_REALM> <TEST_ORG> <TEST_USER>
 
 # mapping input parameters
 ARG_CLIENT_ID=$1
@@ -25,6 +28,8 @@ ARG_USER=$3
 ARG_USER_PW=$4
 ARG_HOST=$5
 ARG_SANDBOX_REALM=$6
+ARG_TEST_ORG=$7
+ARG_TEST_USER=$8
 
 # check on host
 if [ "$ARG_HOST" = "" ]; then
@@ -186,19 +191,145 @@ else
 	exit 1
 fi
 
-###############################################################################
-###### Testing ´sfcc-ci sandbox:realm:list´
-###############################################################################
-
-# we have to re-authenticate with API key and user first
-echo "Running ´sfcc-ci client:auth <api_key> <secret> <user> <pwd>´:"
-node ./cli.js client:auth "$ARG_CLIENT_ID" "$ARG_CLIENT_SECRET" "$ARG_USER" "$ARG_USER_PW"
+# Acquire new access token beforehand
+echo "Acquire new access token using ´sfcc-ci client:auth <api_key>´:"
+node ./cli.js client:auth "$ARG_CLIENT_ID" "$ARG_CLIENT_SECRET"
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
 	echo -e "\t> FAILED"
 	exit 1
 fi
+
+###############################################################################
+###### Testing ´sfcc-ci client:create´
+###############################################################################
+
+echo "Testing command ´sfcc-ci client:create´ without option (expected to fail):"
+node ./cli.js client:create
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:create --configuration <configuration>´ --noprompt:"
+TEST_NEW_CLIENT_RESULT=`node ./cli.js client:create --configuration '{"name": "Temp test client", "password": "%2secret(Sauce7?!"}' --noprompt --json`
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+# grab some client details for next set of tests
+TEST_NEW_CLIENT_ID=`echo $TEST_NEW_CLIENT_RESULT | jq '.client.id' -r`
+
+###############################################################################
+###### Testing ´sfcc-ci client:list´
+###############################################################################
+
+echo "Testing command ´sfcc-ci client:list´:"
+node ./cli.js client:list
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:list´ --clientid <INVALID_CLIENT>´ (expected to fail):"
+node ./cli.js client:list --clientid INVALID_CLIENT
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:list´ --clientid <client_id>´:"
+node ./cli.js client:list --clientid $TEST_NEW_CLIENT_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci client:update´
+###############################################################################
+
+echo "Testing command ´sfcc-ci client:update´ without option (expected to fail):"
+node ./cli.js client:update
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:update --clientid <client_id> --changes <changes> --noprompt´:"
+node ./cli.js client:update --clientid $TEST_NEW_CLIENT_ID --changes '{"active": false}' --noprompt
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci client:rotate´
+###############################################################################
+
+echo "Testing command ´sfcc-ci client:rotate´ without option (expected to fail):"
+node ./cli.js client:rotate
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:rotate --clientid <client_id> --noprompt´:"
+TEST_ROTATION_RESULT=`node ./cli.js client:rotate --clientid $TEST_NEW_CLIENT_ID --noprompt --json`
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+# grab some client details for cleanup
+TEST_ROTATION_ID=`echo $TEST_ROTATION_RESULT | jq '.client.id' -r`
+
+###############################################################################
+###### Testing ´sfcc-ci client:delete´
+###############################################################################
+
+echo "Testing command ´sfcc-ci client:delete´ without option (expected to fail):"
+node ./cli.js client:delete
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci client:delete --clientid <client_id> --noprompt´:"
+node ./cli.js client:delete --clientid $TEST_NEW_CLIENT_ID --noprompt
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+# cleanup client created during rotation
+node ./cli.js client:delete --clientid $TEST_ROTATION_ID --noprompt
+
+###############################################################################
+###### Testing ´sfcc-ci sandbox:realm:list´
+###############################################################################
 
 echo "Testing command ´sfcc-ci sandbox:realm:list´:"
 node ./cli.js sandbox:realm:list
@@ -307,6 +438,37 @@ else
 fi
 echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --default-sandbox-ttl <previous>´ (restore):"
 node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --default-sandbox-ttl $TEST_REALM_DEFAULT_SANDBOX_TTL
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci sandbox:ips´
+###############################################################################
+
+echo "Testing command ´sfcc-ci sandbox:ips´:"
+node ./cli.js sandbox:ips
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:ips --realm (expected to fail)´:"
+node ./cli.js sandbox:ips --realm
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:ips --realm <realm>´:"
+node ./cli.js sandbox:ips --realm $ARG_SANDBOX_REALM
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -565,104 +727,6 @@ fi
 
 echo "Testing command ´sfcc-ci sandbox:update <sandbox> --ttl 2´:"
 node ./cli.js sandbox:update --sandbox $TEST_NEW_SANDBOX_ID --ttl 1
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-###############################################################################
-###### Testing ´sfcc-ci sandbox:start´
-###############################################################################
-
-echo "Testing command ´sfcc-ci sandbox:start´ (expected to fail):"
-node ./cli.js sandbox:start
-if [ $? -eq 1 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:start --sandbox <INVALID_ID>´ (expected to fail):"
-node ./cli.js sandbox:start --sandbox INVALID_ID
-if [ $? -eq 1 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:start --sandbox <sandbox>´:"
-node ./cli.js sandbox:start --sandbox $TEST_NEW_SANDBOX_ID
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:start --sandbox <sandbox>´ (using <realm>-<instance> as id):"
-node ./cli.js sandbox:start --sandbox $ARG_SANDBOX_REALM"_"$TEST_NEW_SANDBOX_INSTANCE
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:start --sandbox <sandbox> --sync´:"
-node ./cli.js sandbox:start --sandbox $TEST_NEW_SANDBOX_ID --sync
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-###############################################################################
-###### Testing ´sfcc-ci sandbox:stop´
-###############################################################################
-
-echo "Testing command ´sfcc-ci sandbox:stop (expected to fail):"
-node ./cli.js sandbox:stop
-if [ $? -eq 1 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:stop --sandbox <INVALID_ID>´ (expected to fail):"
-node ./cli.js sandbox:stop --sandbox INVALID_ID
-if [ $? -eq 1 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox>´:"
-node ./cli.js sandbox:stop --sandbox $TEST_NEW_SANDBOX_ID
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox>´ (using <realm>-<instance> as id):"
-node ./cli.js sandbox:stop --sandbox $ARG_SANDBOX_REALM"_"$TEST_NEW_SANDBOX_INSTANCE
-if [ $? -eq 0 ]; then
-    echo -e "\t> OK"
-else
-	echo -e "\t> FAILED"
-	exit 1
-fi
-
-echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox> --sync´:"
-node ./cli.js sandbox:stop --sandbox $TEST_NEW_SANDBOX_ID --sync
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -1072,6 +1136,104 @@ else
 fi
 
 ###############################################################################
+###### Testing ´sfcc-ci sandbox:start´
+###############################################################################
+
+echo "Testing command ´sfcc-ci sandbox:start´ (expected to fail):"
+node ./cli.js sandbox:start
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:start --sandbox <INVALID_ID>´ (expected to fail):"
+node ./cli.js sandbox:start --sandbox INVALID_ID
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:start --sandbox <sandbox>´:"
+node ./cli.js sandbox:start --sandbox $TEST_NEW_SANDBOX_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:start --sandbox <sandbox>´ (using <realm>-<instance> as id):"
+node ./cli.js sandbox:start --sandbox $ARG_SANDBOX_REALM"_"$TEST_NEW_SANDBOX_INSTANCE
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:start --sandbox <sandbox> --sync´:"
+node ./cli.js sandbox:start --sandbox $TEST_NEW_SANDBOX_ID --sync
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci sandbox:stop´
+###############################################################################
+
+echo "Testing command ´sfcc-ci sandbox:stop (expected to fail):"
+node ./cli.js sandbox:stop
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <INVALID_ID>´ (expected to fail):"
+node ./cli.js sandbox:stop --sandbox INVALID_ID
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox>´:"
+node ./cli.js sandbox:stop --sandbox $TEST_NEW_SANDBOX_ID
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox>´ (using <realm>-<instance> as id):"
+node ./cli.js sandbox:stop --sandbox $ARG_SANDBOX_REALM"_"$TEST_NEW_SANDBOX_INSTANCE
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci sandbox:stop --sandbox <sandbox> --sync´:"
+node ./cli.js sandbox:stop --sandbox $TEST_NEW_SANDBOX_ID --sync
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
 ###### Testing ´sfcc-ci sandbox:delete´
 ###############################################################################
 
@@ -1115,6 +1277,24 @@ else
 	exit 1
 fi
 
+echo "Testing command ´sfcc-ci org:list´ with option -c:"
+node ./cli.js org:list -c 2
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci org:list´ with option --all:"
+node ./cli.js org:list --all
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
 echo "Testing command ´sfcc-ci org:list --org <org>´ with invalid org (expected to fail):"
 node ./cli.js org:list --org does_not_exist
 if [ $? -eq 1 ]; then
@@ -1123,3 +1303,100 @@ else
 	echo -e "\t> FAILED"
 	exit 1
 fi
+
+echo "Testing command ´sfcc-ci org:list --org <org>´:"
+node ./cli.js org:list --org "$ARG_TEST_ORG"
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci user:create´
+###############################################################################
+
+echo "Testing command ´sfcc-ci user:create´ without option (expected to fail):"
+node ./cli.js user:create
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci user:create --login <login>´:"
+node ./cli.js user:create --org "$ARG_TEST_ORG" --login "$ARG_TEST_USER" --user '{"firstName": "John", "lastName": "Doe"}'
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci user:list´
+###############################################################################
+
+echo "Testing command ´sfcc-ci user:list´ without option:"
+node ./cli.js user:list
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci user:list --login <login>´ with invalid user (expected to fail):"
+node ./cli.js user:list --login does_not_exist
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci user:list --login <login>´:"
+node ./cli.js user:list --login "$ARG_TEST_USER"
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
+###### Testing ´sfcc-ci user:delete´
+###############################################################################
+
+echo "Testing command ´sfcc-ci user:delete without option (expected to fail):"
+node ./cli.js user:delete
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci user:delete --login <login>´ --noprompt with invalid user (expected to fail):"
+node ./cli.js user:delete --login does_not_exist --noprompt
+if [ $? -eq 1 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+echo "Testing command ´sfcc-ci user:delete --login <login> --purge --noprompt:"
+node ./cli.js user:delete --login "$ARG_TEST_USER" --purge --noprompt
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+# log time elapsed
+duration=$SECONDS
+echo -e "SUCCESS! Tests finished after $(($duration / 60)) minutes and $(($duration % 60)) seconds."

@@ -316,7 +316,7 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     data:upload [options]                                           Uploads a file onto a Commerce Cloud instance
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
     sandbox:realm:update [options]                                  Update realm settings
-    sandbox:list [options]                                          List all available sandboxes
+    sandbox:list [options]                                          List available sandboxes and detailed information
     sandbox:ips [options]                                           List inbound and outbound IP addresses for sandboxes
     sandbox:create [options]                                        Create a new sandbox
     sandbox:update [options]                                        Update a sandbox

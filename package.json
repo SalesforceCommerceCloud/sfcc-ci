@@ -1,6 +1,6 @@
 {
   "name": "sfcc-ci",
-  "version": "2.10.0",
+  "version": "2.11.0",
   "description": "Command line tool to allow Continuous Integration practices with Salesforce Commerce Cloud instances",
   "main": "index.js",
   "bin": {
@@ -37,9 +37,10 @@
     "jsonwebtoken": "^9.0.0",
     "node-sha1": "^1.0.1",
     "open": "^6.4.0",
+    "generate-password": "^1.7.0",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
-    "snyk": "^1.1071.0",
+    "snyk": "^1.1073.0",
     "table": "^6.8.1"
   },
   "devDependencies": {

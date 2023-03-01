@@ -140,6 +140,7 @@ program
     .option('-c, --count <count>','Max count of list items (default is 25)')
     .option('--start <start>','Zero-based index of first item to return (default is 0)')
     .option('-a, --clientid <clientid>','id of the Oauth client to get details for')
+    .option('--auditlogs', 'Returns audit logs for changes made to an Oauth client')
     .option('-j, --json', 'Formats the output in json')
     .option('-v, --verbose', 'Outputs additional details')
     .action(function(options) {
@@ -147,10 +148,11 @@ program
         var verbose = ( options.verbose ? options.verbose : false );
         var start = ( options.start ? options.start : 0 );
         var count = ( options.count ? options.count : 25 );
+        var auditlogs = ( options.auditlogs ? options.auditlogs : null );
 
         var id = options.clientid;
         if (id) {
-            require('./lib/client').cli.info(id, asJson);
+            require('./lib/client').cli.info(id, auditlogs, asJson);
         } else {
             require('./lib/client').cli.list(start, count, asJson, verbose);
         }
@@ -166,6 +168,8 @@ program
         console.log('');
         console.log('  Use --clientid to get details of a single Oauth client.');
         console.log('');
+        console.log('  Use option --auditlogs to return audit logs for changes made to a single org.');
+        console.log('');
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci client:list');
@@ -174,6 +178,7 @@ program
         console.log('    $ sfcc-ci client:list --count 50 --start 1');
         console.log('    $ sfcc-ci client:list --clientid xxxx-yyyy-zzzz');
         console.log('    $ sfcc-ci client:list --clientid xxxx-yyyy-zzzz --json');
+        console.log('    $ sfcc-ci client:list --clientid xxxx-yyyy-zzzz --auditlogs');
         console.log();
     });
 

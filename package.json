@@ -13,7 +13,7 @@
     "test:unit:coverage": "npx nyc@15.1.0 mocha test/unit",
     "test:functional:cli": "bin/test-cli.sh",
     "dist": "npx pkg@5.5.2 . --out-path dist/",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect"
   },
   "repository": {
@@ -24,6 +24,7 @@
   "license": "BSD-3-Clause",
   "homepage": "https://github.com/SalesforceCommerceCloud/sfcc-ci#readme",
   "dependencies": {
+    "@snyk/protect": "^1.1110.0",
     "archiver": "^5.3.1",
     "chalk": "^2.4.1",
     "colors": "1.4.0",
@@ -31,16 +32,15 @@
     "conf": "^4.0.2",
     "del": "^5.1.0",
     "dotenv": "^8.6.0",
+    "generate-password": "^1.7.0",
     "globby": "^11.1.0",
     "inquirer": "^7.3.3",
     "jsondiffpatch": "^0.4.1",
     "jsonwebtoken": "^9.0.0",
     "node-sha1": "^1.0.1",
     "open": "^6.4.0",
-    "generate-password": "^1.7.0",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
-    "snyk": "^1.1076.0",
     "table": "^6.8.1"
   },
   "devDependencies": {

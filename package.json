@@ -40,7 +40,7 @@
     "generate-password": "^1.7.0",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
-    "snyk": "^1.1076.0",
+    "snyk": "^1.1100.0",
     "table": "^6.8.1"
   },
   "devDependencies": {

@@ -759,8 +759,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:update <sandbox> --ttl 2 --start-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}' --stop-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}'´:"
-node ./cli.js sandbox:update --sandbox $TEST_NEW_SANDBOX_ID --ttl 1 --start-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}' --stop-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}'
+echo "Testing command ´sfcc-ci sandbox:update <sandbox> --start-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}' --stop-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}'´:"
+node ./cli.js sandbox:update --sandbox $TEST_NEW_SANDBOX_ID  --start-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}' --stop-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}'
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -768,8 +768,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:update <sandbox> --ttl 2 --start-scheduler 'null' --stop-scheduler 'null'´:"
-node ./cli.js sandbox:update --sandbox $TEST_NEW_SANDBOX_ID --ttl 1 --start-scheduler 'null' --stop-scheduler 'null'
+echo "Testing command ´sfcc-ci sandbox:update <sandbox>  --start-scheduler 'null' --stop-scheduler 'null'´:"
+node ./cli.js sandbox:update --sandbox $TEST_NEW_SANDBOX_ID  --start-scheduler 'null' --stop-scheduler 'null'
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else

@@ -479,8 +479,8 @@ program
     .option('-r, --realm <realm>', 'Realm to update')
     .option('-m, --max-sandbox-ttl <maxSandboxTTL>', 'Maximum number of hours a sandbox can live in the realm')
     .option('-d, --default-sandbox-ttl <defaultSandboxTTL>', 'Number of hours a sandbox lives in the realm by default')
-    .option('-st, --start-scheduler <startScheduler>', 'Start schedule for all sandboxes under this realm')
-    .option('-sp, --stop-scheduler <stopScheduler>', 'Stop schedule for all sandboxes under this realm')
+    .option('--start-scheduler <startScheduler>', 'Start schedule for all sandboxes under this realm')
+    .option('--stop-scheduler <stopScheduler>', 'Stop schedule for all sandboxes under this realm')
     .option('-j, --json', 'Formats the output in json')
     .action(function (options) {
         var realm = (options.realm ? options.realm : null);
@@ -521,7 +521,7 @@ program
         console.log('  provisioning (must adhere to the maximum TTL quota).');
         console.log();
         console.log('  Use --start-scheduler and --stop-scheduler to update the start and stop schedule for the ');
-        console.log('  sandbox. You can use the value \'null\' to remove the existing schedule from the sandbox');
+        console.log('  realm. You can use the value \'null\' to remove the existing schedule from the sandbox');
         console.log();
         console.log();
         console.log('  Examples:');
@@ -586,8 +586,8 @@ program
     .option('-r, --realm <realm>','Realm to create the sandbox for')
     .option('-t, --ttl <hours>','Number of hours the sandbox will live')
     .option('--auto-scheduled', 'Sets the sandbox as being auto scheduled')
-    .option('-st, --start-scheduler <startScheduler>', 'Start schedule for the sandbox')
-    .option('-sp, --stop-scheduler <stopScheduler>', 'Stop schedule for the sandbox')
+    .option('--start-scheduler <startScheduler>', 'Start schedule for the sandbox')
+    .option('--stop-scheduler <stopScheduler>', 'Stop schedule for the sandbox')
     .option('-p, --profile <profile>','Resource profile used for the sandbox, "medium" is the default')
     .option('--ocapi-settings <json>','Additional OCAPI settings applied to the sandbox')
     .option('--webdav-settings <json>','Additional WebDAV permissions applied to the sandbox')
@@ -637,7 +637,7 @@ program
         console.log('  schedule configured at sandbox realm level. By default or if omitted the sandbox is not auto');
         console.log('  scheduled.');
         console.log();
-        console.log('  Use --start-scheduler and --stop-scheduler to update the start and stop schedule for the ');
+        console.log('  Use --start-scheduler and --stop-scheduler to add the start and stop schedule for the ');
         console.log('  sandbox.');
         console.log();
         console.log('  Use the optional --profile <profile> to set the resource allocation for the sandbox, "medium"');
@@ -755,8 +755,8 @@ program
     .option('-s, --sandbox <id>','sandbox to update')
     .option('-t, --ttl <hours>','number of hours to add to the sandbox lifetime')
     .option('--auto-scheduled <flag>','Sets the sandbox as being auto scheduled')
-    .option('-st, --start-scheduler <startScheduler>', 'Start schedule for the sandbox')
-    .option('-sp, --stop-scheduler <stopScheduler>', 'Stop schedule for the sandbox')
+    .option('--start-scheduler <startScheduler>', 'Start schedule for the sandbox')
+    .option('--stop-scheduler <stopScheduler>', 'Stop schedule for the sandbox')
     .description('Update a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );

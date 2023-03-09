@@ -1303,6 +1303,39 @@ token         | (String)    | The Oauth token to use use for authentication
 
 ***
 
+### Roles ###
+APIs available in `require('sfcc-ci').role`:
+
+List all the roles.
+
+`list(token, count)`
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+token         | (String)    | The Oauth token to use use for authentication
+count         | (Number)    | count the max count of list items
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is a boolean value that confirms if the user has been deleted or not.
+
+***
+
+`listLocal(instance, role, query, token, sortBy, count)`
+
+List all the roles into an instance.
+
+Param         | Type        | Description
+------------- | ------------| --------------------------------
+instance      | (String)    | The instance to list the role on
+role          | (String)    | The role to revoke
+query         | (String)    | The query to search role for
+token         | (String)    | The Oauth token to use use for authentication
+sortBy        | (String)    | (Optional) field to sort users by
+count         | (Number)    | (Optional) number of items per page
+
+**Returns:** (Promise) The [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) with its `resolve` or `reject` methods called respectively with the `result` or the `error`. The `result` variable here is a boolean value that confirms if the user has been deleted or not.
+
+***
+
 ### Manifest ###
 
 APIs available in `require('sfcc-ci').manifest`:

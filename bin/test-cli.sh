@@ -15,10 +15,10 @@ if [ $? -eq 1 ]; then
 	exit 1
 fi
 
-# reset to track the time elapsed 
+# reset to track the time elapsed
 SECONDS=0
 
-# pass parameters in the following order: 
+# pass parameters in the following order:
 # $ bin/test-cli.sh <CLIENT_ID> <CLIENT_SECRET> <USER> <USER_PW> <HOST> <SANDBOX_REALM> <TEST_ORG> <TEST_USER>
 
 # mapping input parameters
@@ -41,7 +41,7 @@ fi
 # check on realm
 if [ "$ARG_SANDBOX_REALM" = "" ]; then
     echo -e "Realm for sandbox API unknown."
-	echo 
+	echo
 	exit 1
 fi
 
@@ -444,8 +444,8 @@ else
 	echo -e "\t> FAILED"
 	exit 1
 fi
-echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --default-sandbox-ttl 100 --start-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}' --stop-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}':"
-node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --default-sandbox-ttl 100 --start-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}' --stop-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}'
+echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm>  --start-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}' --stop-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}':"
+node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --start-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}' --stop-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}'
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -453,8 +453,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm> --default-sandbox-ttl 100 --start-scheduler 'null' --stop-scheduler 'null':"
-node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM --default-sandbox-ttl 100 --start-scheduler 'null' --stop-scheduler 'null'
+echo "Testing command ´sfcc-ci sandbox:realm:update --realm <realm>  --start-scheduler 'null' --stop-scheduler 'null':"
+node ./cli.js sandbox:realm:update --realm $ARG_SANDBOX_REALM  --start-scheduler 'null' --stop-scheduler 'null'
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -599,7 +599,7 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:create --realm <realm> --ttl 1 ´ --start-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}' --stop-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}':"
+echo "Testing command ´sfcc-ci sandbox:create --realm <realm> --ttl 1  --start-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}' --stop-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}':"
 node ./cli.js sandbox:create --realm $ARG_SANDBOX_REALM --ttl 1  --start-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}' --stop-scheduler '{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}'
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"

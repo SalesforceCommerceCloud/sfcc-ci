@@ -476,21 +476,40 @@ program
 program
     .command('sandbox:realm:update')
     .description('Update realm settings')
-    .option('-r, --realm <realm>','Realm to update')
-    .option('-m, --max-sandbox-ttl <maxSandboxTTL>','Maximum number of hours a sandbox can live in the realm')
-    .option('-d, --default-sandbox-ttl <defaultSandboxTTL>','Number of hours a sandbox lives in the realm by default')
-    .option('-j, --json','Formats the output in json')
-    .action(function(options) {
-        var realm = ( options.realm ? options.realm : null );
+    .option('-r, --realm <realm>', 'Realm to update')
+    .option('-m, --max-sandbox-ttl <maxSandboxTTL>', 'Maximum number of hours a sandbox can live in the realm')
+    .option('-d, --default-sandbox-ttl <defaultSandboxTTL>', 'Number of hours a sandbox lives in the realm by default')
+    .option('--start-scheduler <startScheduler>', 'Start schedule for all sandboxes under this realm')
+    .option('--stop-scheduler <stopScheduler>', 'Stop schedule for all sandboxes under this realm')
+    .option('-j, --json', 'Formats the output in json')
+    .action(function (options) {
+        var realm = (options.realm ? options.realm : null);
         if (!realm) {
             this.missingArgument('realm');
             return;
         }
-        var maxSandboxTTL = ( options.maxSandboxTtl ? parseInt(options.maxSandboxTtl) : false );
-        var defaultSandboxTTL = ( options.defaultSandboxTtl ? parseInt(options.defaultSandboxTtl) : false );
-        var asJson = ( options.json ? options.json : false );
-        require('./lib/sandbox').cli.realm.update(realm, maxSandboxTTL, defaultSandboxTTL, asJson);
-    }).on('--help', function() {
+        var maxSandboxTTL = (options.maxSandboxTtl ? parseInt(options.maxSandboxTtl) : false);
+        var defaultSandboxTTL = (options.defaultSandboxTtl ? parseInt(options.defaultSandboxTtl) : false);
+        var scheduleOk = true;
+        try {
+            var startScheduler = options.startScheduler ?
+                (options.startScheduler === "null" ? "null" : JSON.parse(options.startScheduler)) : null;
+            var stopScheduler = options.stopScheduler ?
+                (options.stopScheduler === "null" ? "null" : JSON.parse(options.stopScheduler)) : null;
+        } catch (objError) {
+            scheduleOk = false;
+            if (objError instanceof SyntaxError) {
+                log.error(objError.name + ' : Invalid JSON format for scheduler. Use -h,--help for help.');
+            } else {
+                log.error(objError.message);
+            }
+        }
+        var asJson = (options.json ? options.json : false);
+        if (scheduleOk) {
+            require('./lib/sandbox').cli.realm.update(realm, maxSandboxTTL, defaultSandboxTTL, startScheduler,
+                stopScheduler, asJson);
+        }
+    }).on('--help', function () {
         console.log('');
         console.log('  Details:');
         console.log();
@@ -501,10 +520,19 @@ program
         console.log('  update the number of hours a sandbox lives in the realm when no TTL was given upon');
         console.log('  provisioning (must adhere to the maximum TTL quota).');
         console.log();
+        console.log('  Use --start-scheduler and --stop-scheduler to update the start and stop schedule for the ');
+        console.log('  realm. You can use the value \'null\' to remove the existing schedule from the sandbox');
+        console.log();
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci sandbox:realm:update --realm zzzz --max-sandbox-ttl 72');
         console.log('    $ sfcc-ci sandbox:realm:update --realm zzzz --default-sandbox-ttl 24');
+        console.log('    $ sfcc-ci sandbox:realm:update --realm zzzz --default-sandbox-ttl 24');
+        console.log('    $ sfcc-ci sandbox:realm:update --realm zzzz --start-scheduler ' +
+            '\'{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}\'');
+        console.log('    $ sfcc-ci sandbox:realm:update --realm zzzz --stop-scheduler ' +
+            '\'{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}\'');
         console.log();
     });
 
@@ -558,6 +586,8 @@ program
     .option('-r, --realm <realm>','Realm to create the sandbox for')
     .option('-t, --ttl <hours>','Number of hours the sandbox will live')
     .option('--auto-scheduled', 'Sets the sandbox as being auto scheduled')
+    .option('--start-scheduler <startScheduler>', 'Start schedule for the sandbox')
+    .option('--stop-scheduler <stopScheduler>', 'Stop schedule for the sandbox')
     .option('-p, --profile <profile>','Resource profile used for the sandbox, "medium" is the default')
     .option('--ocapi-settings <json>','Additional OCAPI settings applied to the sandbox')
     .option('--webdav-settings <json>','Additional WebDAV permissions applied to the sandbox')
@@ -577,8 +607,22 @@ program
         var alias = ( options.setAlias ? options.setAlias : null );
         var ocapiSettings = ( options.ocapiSettings ? options.ocapiSettings : null );
         var webdavSettings = ( options.webdavSettings ? options.webdavSettings : null );
-        require('./lib/sandbox').cli.create(realm, alias, ttl, profile, autoScheduled, ocapiSettings, webdavSettings,
-            asJson, sync, setAsDefault);
+        var scheduleOk = true;
+        try {
+            var startScheduler = options.startScheduler ? JSON.parse(options.startScheduler) : null;
+            var stopScheduler = options.stopScheduler ? JSON.parse(options.stopScheduler) : null;
+        } catch (objError) {
+            scheduleOk = false;
+            if (objError instanceof SyntaxError) {
+                log.error(objError.name + ' : Invalid JSON format for scheduler. Use -h,--help for help.');
+            } else {
+                log.error(objError.message);
+            }
+        }
+        if (scheduleOk) {
+            require('./lib/sandbox').cli.create(realm, alias, ttl, profile, autoScheduled, startScheduler,
+                stopScheduler, ocapiSettings, webdavSettings, asJson, sync, setAsDefault);
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -592,6 +636,9 @@ program
         console.log('  The --auto-scheduled flag controls if the sandbox is being auto scheduled according to the');
         console.log('  schedule configured at sandbox realm level. By default or if omitted the sandbox is not auto');
         console.log('  scheduled.');
+        console.log();
+        console.log('  Use --start-scheduler and --stop-scheduler to add the start and stop schedule for the ');
+        console.log('  sandbox.');
         console.log();
         console.log('  Use the optional --profile <profile> to set the resource allocation for the sandbox, "medium"');
         console.log('  is the default. Be careful, more powerful profiles consume more credits. Supported values');
@@ -629,6 +676,11 @@ program
         console.log('    $ sfcc-ci sandbox:create -r my-realm --ttl 6');
         console.log('    $ sfcc-ci sandbox:create -r my-realm --auto-scheduled');
         console.log('    $ sfcc-ci sandbox:create -r my-realm -p large');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm --start-scheduler ' +
+            '\'{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}\'');
+        console.log('    $ sfcc-ci sandbox:create -r my-realm --stop-scheduler ' +
+            '\'{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}\'');
+        console.log();
         console.log();
     });
 
@@ -703,6 +755,8 @@ program
     .option('-s, --sandbox <id>','sandbox to update')
     .option('-t, --ttl <hours>','number of hours to add to the sandbox lifetime')
     .option('--auto-scheduled <flag>','Sets the sandbox as being auto scheduled')
+    .option('--start-scheduler <startScheduler>', 'Start schedule for the sandbox')
+    .option('--stop-scheduler <stopScheduler>', 'Stop schedule for the sandbox')
     .description('Update a sandbox')
     .action(function(options) {
         var sandbox_id = ( options.sandbox ? options.sandbox : null );
@@ -721,7 +775,23 @@ program
         var ttl = ( options.ttl ? parseInt(options.ttl) : null );
         var autoScheduled = ( options.autoScheduled !== null ?
             ( options.autoScheduled === 'true' ? true : false ) : null );
-        require('./lib/sandbox').cli.update(spec, ttl, autoScheduled, false);
+        var scheduleOk = true;
+        try {
+            var startScheduler = options.startScheduler ?
+                (options.startScheduler === "null" ? "null" : JSON.parse(options.startScheduler)) : null;
+            var stopScheduler = options.stopScheduler ?
+                (options.stopScheduler === "null" ? "null" : JSON.parse(options.stopScheduler)) : null;
+        } catch (objError) {
+            scheduleOk = false;
+            if (objError instanceof SyntaxError) {
+                log.error(objError.name + ' : Invalid JSON format for scheduler. Use -h,--help for help.');
+            } else {
+                log.error(objError.message);
+            }
+        }
+        if (scheduleOk) {
+            require('./lib/sandbox').cli.update(spec, ttl, autoScheduled, false, startScheduler, stopScheduler);
+        }
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -733,6 +803,9 @@ program
         console.log('  The --auto-scheduled flag controls if the sandbox is being autoscheduled according to the');
         console.log('  schedule configured at sandbox realm level.');
         console.log();
+        console.log('  Use --start-scheduler and --stop-scheduler to update the start and stop schedule for the ');
+        console.log('  sandbox. You can use the value \'null\' to remove the existing schedule from the sandbox');
+        console.log();
         console.log('  The sandbox to update must be identified by its id. Use may use `sfcc-ci sandbox:list` to');
         console.log('  identify the id of your sandboxes.');
         console.log();
@@ -743,6 +816,10 @@ program
         console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --ttl 8');
         console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --auto-scheduled true');
         console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --auto-scheduled false');
+        console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --start-scheduler ' +
+            '\'{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"08:00:00+03:00"}\'');
+        console.log('    $ sfcc-ci sandbox:update --sandbox my-sandbox-id --stop-scheduler ' +
+            '\'{"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],"time":"19:00:00Z"}\'');
         console.log();
     });
 

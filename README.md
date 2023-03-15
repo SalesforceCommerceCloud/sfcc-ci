@@ -14,9 +14,9 @@ As of version 2.3.0 this project is released under the BSD-3-Clause license. For
 
 To contribute to this project, follow the [Contribution Guidelines](CONTRIBUTING.md). All external contributors must sign the [Contributor License Agreement (CLA)](https://cla.salesforce.com/sign-cla).
 
-# Who do I talk to? #
+# How to get further support? #
 
-Feel free to create issues and enhancement requests or discuss on the existing ones, this will help us understanding in which area the biggest need is. Please refer to documentation below before doing so.
+Feel free to create issues and enhancement requests or browse and discuss existing ones at https://github.com/SalesforceCommerceCloud/sfcc-ci/issues, this will help us understanding in which area the biggest need is. Please refer to documentation below before doing so. If you need help, advice, discuss something, start a thread in our community at https://sfcc-unofficial.slack.com/ in channel #sfcc-ci ([request an invitation here](https://docs.google.com/forms/d/e/1FAIpQLSdy875PlJuib35naCkr3-Frn2qtaSuuRgYezRSb2uBYkhXt7g/viewform)).
 
 * Maintainer: @tobiaslohr
 

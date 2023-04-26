@@ -105,6 +105,7 @@ program
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -r');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -a account.demandware.com');
+        console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -t client_credentials');
         console.log('    $ sfcc-ci client:auth');
         console.log();
     });

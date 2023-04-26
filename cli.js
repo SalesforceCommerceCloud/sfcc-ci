@@ -77,11 +77,11 @@ program
     .option('-a, --authserver [authserver]','The authorization server used to authenticate')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
         'once the token expires.')
-    .option('-t, --granttype [granttype]','The grant type to use (password or client_credentials)')
+    .option('-t, --type [type]','The grant type to use (password or client_credentials)')
     .description('Authenticate an API client with an optional user for automation use')
     .action(function(client, secret, user, user_password, options) {
         var renew = ( options.renew ? options.renew : false );
-        var grantType = ( options.granttype === 'client_credentials' ? 'client_credentials' : 'password' );
+        var grantType = ( options.type === 'client_credentials' ? 'client_credentials' : 'password' );
         require('./lib/auth').auth(client, secret, user, user_password, renew, options.authserver, grantType);
     }).on('--help', function() {
         console.log('');

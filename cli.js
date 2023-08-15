@@ -1047,6 +1047,7 @@ program
     .option('-h, --host <host>','hostname alias to register')
     .option('-j, --json', 'Optional, formats the output in json')
     .option('-u, --unique', 'Optional, define alias as unique, false by default')
+    .option('-c, --cert', 'Optional, to automatically generate a certificate for your unique alias, false by default')
     .description('Registers a hostname alias for a sandbox.')
     .action(function(options) {
         var sandbox = options.sandbox;
@@ -1070,8 +1071,10 @@ program
             return;
         }
         var asJson = ( options.json ? options.json : false );
-        var unique = ( options.unique ? options.unique : false );
-        require('./lib/sandbox').cli.alias.create(spec, aliasName, unique, asJson);
+        // if cert is specified, a unique alias is required
+        var unique = ( !!(options.unique || options.cert) );
+        var cert = ( options.cert ? options.cert : false );
+        require('./lib/sandbox').cli.alias.create(spec, aliasName, unique, asJson, cert);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -1086,6 +1089,12 @@ program
         console.log('  The domain verification record value is generated and returned. By default the alias is not');
         console.log('  unique.');
         console.log('');
+        console.log('  The --cert flag allows you to automatically generate a certificate for your unique alias')
+        console.log('  A certificate can not be created for non-unique aliases; adding the --cert flag will create')
+        console.log('  a unique alias. The generated certificate certifies the specific host used during')
+        console.log('  alias creation. The certificate is required to show the storefront as secure.')
+        console.log('  If you do not generate a certificate, your storefront shows as insecure.')
+        console.log('');
         console.log('  Use --json to only print the created alias incl. either the registration link or the');
         console.log('  the domain verification record.');
         console.log('');
@@ -1093,6 +1102,7 @@ program
         console.log();
         console.log('    $ sfcc-ci sandbox:alias:add -s my-sandbox-id -h sbx1.merchant.com');
         console.log('    $ sfcc-ci sandbox:alias:add -s my-sandbox-id -h sbx1.merchant.com -j');
+        console.log('    $ sfcc-ci sandbox:alias:add -s my-sandbox-id -h sbx1.merchant.com -u -c -j');
         console.log();
     });
 

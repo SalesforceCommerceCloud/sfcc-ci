@@ -1094,7 +1094,7 @@ program
         console.log('');
         console.log('  Use the --request-letsencrypt-certificate flag allows you to request a valid certificate ');
         console.log('  to be generated on the fly through Lets Encrypt. This action consumes certificate requests ');
-        console.log('  from the domain quota imposed by Let\'s Encrypt, please read the Alias documentation ');
+        console.log('  from the domain quota imposed by Lets Encrypt, please read the Alias documentation ');
         console.log('  carefully. You have to specify --unique flag as true when you enable this flag.');
         console.log('');
         console.log('  Use --json to only print the created alias incl. either the registration link or the');

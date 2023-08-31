@@ -96,6 +96,10 @@ describe('Alias Tests for lib/sandbox.js', function() {
                     responseHandler("Alias not found.", {statusCode: 404, body: {}});
                     return
                 }
+                if (url.includes('nonUniqueAlias')) {
+                    responseHandler("Can not request certificate for a non-unique alias.", {statusCode: 409, body: {}});
+                    return
+                }
                 if (url.endsWith('/aliases')) {
                     if (method === 'GET') {
                         responseHandler("", {statusCode: 200, body: aliasList});
@@ -167,6 +171,10 @@ describe('Alias Tests for lib/sandbox.js', function() {
             sinon.assert.calledWith(consJson, {error: "Cannot find sandbox with given ID."});
             sandbox.cli.alias.create({id: "unknownSandboxId"},"alias", false, false);
             sinon.assert.calledWith(consError, "Cannot find sandbox with given ID.");
+        });
+        it('Create SBX alias with cert request', () => {
+            sandbox.cli.alias.create({id: "s1"},"alias", false, true, true);
+            sinon.assert.calledWith(consJson, existingAlias.data);
         });
     })
 

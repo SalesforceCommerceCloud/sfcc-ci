@@ -1090,10 +1090,12 @@ program
         console.log('  Use the --unique flag allows you to configure the alias to be unique across all aliases');
         console.log('  registered. This requires that you have to proof ownership of the host on a DNS level.');
         console.log('  The domain verification record value is generated and returned. By default the alias is not');
-        console.log('  unique. If requesting for a Letsencrypt certificate, this needs to be true');
+        console.log('  unique. If requesting for a Letsencrypt certificate, this flag needs to be true');
         console.log('');
-        console.log('  Use the --request-letsencrypt-certificate flag allows you request for a Letsencrypt ');
-        console.log('  certificate. You have to specify --unique flag as true to enable this.');
+        console.log('  Use the --request-letsencrypt-certificate flag allows you to request a valid certificate ');
+        console.log('  to be generated on the fly through Lets Encrypt. This action consumes certificate requests ');
+        console.log('  from the domain quota imposed by Let\'s Encrypt, please read the Alias documentation ');
+        console.log('  carefully. You have to specify --unique flag as true when you enable this flag.');
         console.log('');
         console.log('  Use --json to only print the created alias incl. either the registration link or the');
         console.log('  the domain verification record.');

@@ -1047,6 +1047,8 @@ program
     .option('-h, --host <host>','hostname alias to register')
     .option('-j, --json', 'Optional, formats the output in json')
     .option('-u, --unique', 'Optional, define alias as unique, false by default')
+    .option('-l, --request-letsencrypt-certificate', 'Optional, ' +
+        'Request Letsencrypt certificate, false by default')
     .description('Registers a hostname alias for a sandbox.')
     .action(function(options) {
         var sandbox = options.sandbox;
@@ -1071,7 +1073,13 @@ program
         }
         var asJson = ( options.json ? options.json : false );
         var unique = ( options.unique ? options.unique : false );
-        require('./lib/sandbox').cli.alias.create(spec, aliasName, unique, asJson);
+        var requestLetsncrypt =
+            ( options.requestLetsencryptCertificate ? options.requestLetsencryptCertificate : false );
+        if (requestLetsncrypt === true && unique === false) {
+            this.missingArgument('unique');
+            return;
+        }
+        require('./lib/sandbox').cli.alias.create(spec, aliasName, unique, asJson, requestLetsncrypt);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -1084,7 +1092,12 @@ program
         console.log('  Use the --unique flag allows you to configure the alias to be unique across all aliases');
         console.log('  registered. This requires that you have to proof ownership of the host on a DNS level.');
         console.log('  The domain verification record value is generated and returned. By default the alias is not');
-        console.log('  unique.');
+        console.log('  unique. If requesting for a Letsencrypt certificate, this flag needs to be true');
+        console.log('');
+        console.log('  Use the --request-letsencrypt-certificate flag allows you to request a valid certificate ');
+        console.log('  to be generated on the fly through Lets Encrypt. This action consumes certificate requests ');
+        console.log('  from the domain quota imposed by Lets Encrypt, please read the Alias documentation ');
+        console.log('  carefully. You have to specify --unique flag as true when you enable this flag.');
         console.log('');
         console.log('  Use --json to only print the created alias incl. either the registration link or the');
         console.log('  the domain verification record.');
@@ -1093,6 +1106,7 @@ program
         console.log();
         console.log('    $ sfcc-ci sandbox:alias:add -s my-sandbox-id -h sbx1.merchant.com');
         console.log('    $ sfcc-ci sandbox:alias:add -s my-sandbox-id -h sbx1.merchant.com -j');
+        console.log('    $ sfcc-ci sandbox:alias:add -s my-sandbox-id -h sbx1.merchant.com -u true -l true -j');
         console.log();
     });
 

@@ -855,7 +855,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci sandbox:alias:add´ with request for letsencrypt:"
-ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.newalias.com --unique true --request-letsencrypt-certificate true --json`
+ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.newalias.com --unique  --request-letsencrypt-certificate  --json`
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -863,8 +863,8 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:alias:add´ with request for letsencrypt and unique as false :"
-ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.newalias.com --unique false --request-letsencrypt-certificate true --json`
+echo "Testing command ´sfcc-ci sandbox:alias:add´ with request for letsencrypt and unique as false ( should fail ) :"
+ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.newalias.com  --request-letsencrypt-certificate --json`
 if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else

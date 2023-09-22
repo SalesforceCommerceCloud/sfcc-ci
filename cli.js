@@ -1047,7 +1047,7 @@ program
     .option('-h, --host <host>','hostname alias to register')
     .option('-j, --json', 'Optional, formats the output in json')
     .option('-u, --unique', 'Optional, define alias as unique, false by default')
-    .option('-l, --request-letsencrypt-certificate <requestLetsncrypt>', 'Optional, ' +
+    .option('-l, --request-letsencrypt-certificate', 'Optional, ' +
         'Request Letsencrypt certificate, false by default')
     .description('Registers a hostname alias for a sandbox.')
     .action(function(options) {
@@ -1073,9 +1073,11 @@ program
         }
         var asJson = ( options.json ? options.json : false );
         var unique = ( options.unique ? options.unique : false );
-        var requestLetsncrypt = ( options.requestLetsncrypt ? options.requestLetsncrypt : false );
-        if (requestLetsncrypt && !unique) {
-            this.missingArgument(unique)
+        var requestLetsncrypt =
+            ( options.requestLetsencryptCertificate ? options.requestLetsencryptCertificate : false );
+        if (requestLetsncrypt === true && unique === false) {
+            this.missingArgument('unique');
+            return;
         }
         require('./lib/sandbox').cli.alias.create(spec, aliasName, unique, asJson, requestLetsncrypt);
     }).on('--help', function() {

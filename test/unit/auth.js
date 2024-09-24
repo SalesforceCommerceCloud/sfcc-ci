@@ -145,6 +145,19 @@ describe('Tests for lib/auth.js', function() {
                 const postArgs = requestStub.post.getCall(0).args[0];
                 expect(postArgs.uri).to.equal('https://account-pod5.demandware.net/dw/oauth2/access_token');
             });
+
+            it('use password grant type if no grantType param is provided', function() {
+                auth.auth(clientKey, clientSecret, user, password);
+                const postArgs = requestStub.post.getCall(0).args[0];
+                expect(postArgs.form.grant_type).to.equal('password');
+            });
+
+            it('use client_credentials grant type if grantType param is provided', function() {
+                const grantType = 'client_credentials';
+                auth.auth(clientKey, clientSecret, user, password, false, null, grantType);
+                const postArgs = requestStub.post.getCall(0).args[0];
+                expect(postArgs.form.grant_type).to.equal('client_credentials');
+            });
         });
     });
 

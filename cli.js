@@ -77,10 +77,12 @@ program
     .option('-a, --authserver [authserver]','The authorization server used to authenticate')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
         'once the token expires.')
+    .option('-t, --type [type]','The grant type to use (password or client_credentials)')
     .description('Authenticate an API client with an optional user for automation use')
     .action(function(client, secret, user, user_password, options) {
         var renew = ( options.renew ? options.renew : false );
-        require('./lib/auth').auth(client, secret, user, user_password, renew, options.authserver);
+        var grantType = ( options.type === 'client_credentials' ? 'client_credentials' : 'password' );
+        require('./lib/auth').auth(client, secret, user, user_password, renew, options.authserver, grantType);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -103,6 +105,7 @@ program
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -r');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -a account.demandware.com');
+        console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -t client_credentials');
         console.log('    $ sfcc-ci client:auth');
         console.log();
     });
@@ -1793,14 +1796,14 @@ program
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2"');
-        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+        console.log('    $ sfcc-ci code:deploy:diff "newcodeversion" "/path/to/repo1,/path/to/repo2"');
+        console.log('    $ sfcc-ci code:deploy:diff "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
             '-i my-instance-alias');
-        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+        console.log('    $ sfcc-ci code:deploy:diff "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
             '-i my-instance.demandware.net');
-        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+        console.log('    $ sfcc-ci code:deploy:diff "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
             '-i my-instance.demandware.net -a');
-        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+        console.log('    $ sfcc-ci code:deploy:diff "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
             '-i my-instance.demandware.net -a -c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
         console.log();
     });

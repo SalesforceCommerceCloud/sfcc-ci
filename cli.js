@@ -99,6 +99,9 @@ program
         console.log('  current working directory. You may use environment variables SFCC_OAUTH_USER_NAME and');
         console.log('  SFCC_OAUTH_USER_PASSWORD to pass the user credentails alternatively.');
         console.log();
+        console.log('  Pass flag -t client_credentials to prevent lookup of user credentials from a dw.json or')
+        console.log('  well-known env vars.');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret user_name user_password');

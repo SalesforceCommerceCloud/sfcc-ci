@@ -1141,6 +1141,19 @@ else
 fi
 
 ###############################################################################
+###### Testing ´sfcc-ci data:download
+###############################################################################
+
+echo "Testing command ´sfcc-ci data:download´:"
+node ./cli.js data:download --instance $ARG_HOST --path impex/src/instance/site_import.zip --target ./test/cli/site_import.zip
+if [ $? -eq 0 ]; then
+    echo -e "\t> OK"
+else
+	echo -e "\t> FAILED"
+	exit 1
+fi
+
+###############################################################################
 ###### Testing ´sfcc-ci instance:export´
 ###############################################################################
 

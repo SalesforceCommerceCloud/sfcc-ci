@@ -314,6 +314,7 @@ Use `sfcc-ci --help` or just `sfcc-ci` to get started and see the full list of c
     client:rotate [options]                                         Rotate credentials of an Oauth client
     client:delete [options]                                         Delete an Oauth client
     data:upload [options]                                           Uploads a file onto a Commerce Cloud instance
+    data:download [options]                                         Downloads a file from a Commerce Cloud instance
     sandbox:realm:list [options]                                    List realms eligible to manage sandboxes for
     sandbox:realm:update [options]                                  Update realm settings
     sandbox:list [options]                                          List all available sandboxes

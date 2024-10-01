@@ -19,7 +19,7 @@ var jsonStub = testbase.jsonLogStub;
 var infoStub = testbase.infoLogStub;
 
 describe('Tests for lib/user.js', function() {
-
+    var organization = 'myorg';
     var user = proxyquire('../../lib/user', {
         'request': requestStub,
         './auth': {
@@ -28,7 +28,7 @@ describe('Tests for lib/user.js', function() {
         },
         './org': {
             'getOrg' : function (id, undefined, callback) {
-                callback(undefined, { id : 'myorg' });
+                callback(undefined, { id : organization });
             }
         }
     });
@@ -37,12 +37,12 @@ describe('Tests for lib/user.js', function() {
         firstName : 'John',
         lastName : 'Doe',
         displayName : 'John Doe',
-        userState : 'ok',
+        userState : 'ENABLED',
         roles : ['admin','expert','ECOM_ADMIN','ECOM_USER'],
         roleTenantFilter : 'expert:here,there;ECOM_ADMIN:zzzz_stg;ECOM_USER:zzzz_prd',
-        primaryOrganization : 'doe org',
+        primaryOrganization : organization,
         mail : 'john@doe.org',
-        organizations : ['doe org','other org'],
+        organizations : [organization],
         externalNames : 'foo',
         links : 'coding'
     };
@@ -50,12 +50,12 @@ describe('Tests for lib/user.js', function() {
         firstName : 'John',
         lastName : 'Doe',
         displayName : 'John Doe',
-        userState : 'ok',
+        userState : 'ENABLED',
         roles : ['admin','expert','ECOM_ADMIN','ECOM_USER'],
         roleTenantFilter : {expert : ['here', 'there'],'bm-admin':['zzzz_stg'],'bm-user':['zzzz_prd']},
-        primaryOrganization : 'doe org',
+        primaryOrganization : organization,
         mail : 'john@doe.org',
-        organizations : ['doe org','other org']
+        organizations : [organization]
     };
 
     var localUserObj = {
@@ -71,11 +71,35 @@ describe('Tests for lib/user.js', function() {
         });
 
         it('makes a post request', function() {
-            user.cli.create('myorg', undefined, 'john@doe.org', 'John', 'Doe', true);
+            user.cli.create(organization, undefined, 'john@doe.org', 'John', 'Doe', true);
 
             const reqArgs = requestStub.getCall(0).args[0];
             expect(reqArgs.uri).to.equal('https://am.host/dw/rest/v1/users');
             expect(reqArgs.method).to.equal('POST');
+        });
+
+        it('makes request to create user with correct parameters', function() {
+            var user = proxyquire('../../lib/user', {
+                'request': function (opts, callback) {
+                    callback(undefined, {statusCode: 200}, opts.body);
+                },
+                './auth': {
+                    'getToken' : () => 'mytoken',
+                    'getAMHost' : () => 'am.host'
+                },
+                './log': {
+                    'json' : jsonStub
+                },
+                './org': {
+                    'getOrg' : function (id, undefined, callback) {
+                        callback(undefined, { id : organization });
+                    }
+                }
+            });
+            user.cli.create(organization, cleanUserObj, 'john@doe.org', 'John', 'Doe', true);
+
+            const logArgs = jsonStub.getCall(0).args;
+            expect(logArgs[0]).to.eql(cleanUserObj);
         });
 
         it('returns the created user', function() {
@@ -96,12 +120,13 @@ describe('Tests for lib/user.js', function() {
                     }
                 }
             });
-            user.cli.create('myorg', undefined, 'john@doe.org', 'John', 'Doe', true);
+            user.cli.create(organization, undefined, 'john@doe.org', 'John', 'Doe', true);
 
             const logArgs = jsonStub.getCall(0).args;
             expect(logArgs[0]).to.eql(cleanUserObj);
         });
     });
+
 
     describe('cli.list function', function() {
 
@@ -140,11 +165,11 @@ describe('Tests for lib/user.js', function() {
                 },
                 './org': {
                     'getOrg' : function (id, undefined, callback) {
-                        callback(undefined, { id : 'myorg' });
+                        callback(undefined, { id : organization });
                     }
                 }
             });
-            user.cli.list('myorg', null, null, null, true, undefined);
+            user.cli.list(organization, null, null, null, true, undefined);
 
             const reqArgs = requestStub.getCall(0).args[0];
             expect(reqArgs.uri).to.equal('https://am.host/dw/rest/v1/users/search/findByOrg?organization=myorg');
@@ -165,11 +190,11 @@ describe('Tests for lib/user.js', function() {
                 },
                 './org': {
                     'getOrg' : function (id, undefined, callback) {
-                        callback(undefined, { id : 'myorg' });
+                        callback(undefined, { id : organization });
                     }
                 }
             });
-            user.cli.list('myorg', null, null, null, true, undefined);
+            user.cli.list(organization, null, null, null, true, undefined);
 
             const logArgs = jsonStub.getCall(0).args;
             expect(logArgs[0]).to.eql([{id:1,firstName:'John'},{id:2,firstName:'Jane'}]);
@@ -189,11 +214,11 @@ describe('Tests for lib/user.js', function() {
                 },
                 './org': {
                     'getOrg' : function (id, undefined, callback) {
-                        callback(undefined, { id : 'myorg' });
+                        callback(undefined, { id : organization });
                     }
                 }
             });
-            user.cli.list('myorg', null, 'john@doe.org', null, true, undefined);
+            user.cli.list(organization, null, 'john@doe.org', null, true, undefined);
 
             const logArgs = jsonStub.getCall(0).args;
             expect(logArgs[0]).to.eql({id:1,firstName:'John'});
@@ -229,7 +254,7 @@ describe('Tests for lib/user.js', function() {
                 },
                 './org': {
                     'getOrg' : function (id, undefined, callback) {
-                        callback(undefined, { id : 'myorg' });
+                        callback(undefined, { id : organization });
                     }
                 }
             });

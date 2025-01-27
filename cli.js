@@ -796,7 +796,7 @@ program
             }
         }
         if (scheduleOk) {
-            require('./lib/sandbox').cli.update(spec, ttl, autoScheduled, false, startScheduler, stopScheduler);
+            require('./lib/sandbox').cli.update(spec, ttl, autoScheduled, startScheduler, stopScheduler, false);
         }
     }).on('--help', function() {
         console.log('');

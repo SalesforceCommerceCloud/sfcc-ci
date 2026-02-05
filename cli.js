@@ -648,7 +648,7 @@ program
         console.log();
         console.log('  Use the optional --profile <profile> to set the resource allocation for the sandbox, "medium"');
         console.log('  is the default. Be careful, more powerful profiles consume more credits. Supported values');
-        console.log('  are: medium, large, xlarge.');
+        console.log('  are: medium, large, xlarge, xxlarge.');
         console.log();
         console.log('  You can force the command to wait until the creation of the sandbox has been finished and the');
         console.log('  sandbox is available to use (in "started" status) by using the --sync flag. By default the');

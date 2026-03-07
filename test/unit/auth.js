@@ -102,7 +102,7 @@ describe('Tests for lib/auth.js', function() {
                 auth.auth(clientKey, clientSecret);
                 const postArgs = requestStub.post.getCall(0).args[0];
                 expect(postArgs.form.grant_type).to.equal('client_credentials');
-                expect(postArgs.uri).to.equal('https://account.demandware.com/dw/oauth2/access_token');
+                expect(postArgs.uri).to.equal('https://account.demandware.com/dwsso/oauth2/access_token');
                 expect(postArgs.json).to.be.true;
                 expect(postArgs.auth.user).to.equal(clientKey);
                 expect(postArgs.auth.pass).to.equal(clientSecret);
@@ -120,7 +120,7 @@ describe('Tests for lib/auth.js', function() {
                 const accountManager = AMURI1;
                 auth.auth(clientKey, clientSecret, null, null, false, accountManager);
                 const postArgs = requestStub.post.getCall(0).args[0];
-                expect(postArgs.uri).to.equal('https://account-pod5.demandware.net/dw/oauth2/access_token');
+                expect(postArgs.uri).to.equal('https://account-pod5.demandware.net/dwsso/oauth2/access_token');
             });
 
             it('will look up client/secret from secrets if needed', function() {
@@ -135,7 +135,7 @@ describe('Tests for lib/auth.js', function() {
                 dwjsonMock['account-manager'] = AMURI2;
                 auth.auth();
                 const postArgs = requestStub.post.getCall(0).args[0];
-                expect(postArgs.uri).to.equal('https://account-pod99.demandware.edu/dw/oauth2/access_token');
+                expect(postArgs.uri).to.equal('https://account-pod99.demandware.edu/dwsso/oauth2/access_token');
             });
 
             it('will use accountManager function arg over dwjson config value', function() {
@@ -143,7 +143,7 @@ describe('Tests for lib/auth.js', function() {
                 dwjsonMock['account-manager'] = AMURI2;
                 auth.auth(clientKey, clientSecret, null, null, false, accountManager);
                 const postArgs = requestStub.post.getCall(0).args[0];
-                expect(postArgs.uri).to.equal('https://account-pod5.demandware.net/dw/oauth2/access_token');
+                expect(postArgs.uri).to.equal('https://account-pod5.demandware.net/dwsso/oauth2/access_token');
             });
 
             it('use password grant type if no grantType param is provided', function() {

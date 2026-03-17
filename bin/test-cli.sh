@@ -808,7 +808,7 @@ else
 fi
 
 echo "Testing command ´sfcc-ci sandbox:alias:add´:"
-ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.newalias.com --json`
+ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.brandnewalias.com --json`
 if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
@@ -854,18 +854,19 @@ else
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:alias:add´ with request for letsencrypt:"
-ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.newalias.com --unique  --request-letsencrypt-certificate  --json`
-if [ $? -eq 0 ]; then
+echo "Testing command ´sfcc-ci sandbox:alias:add´ with request for letsencrypt and unique as false (should fail) :"
+node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.newaliasunique.com --request-letsencrypt-certificate --json
+if [ $? -eq 1 ]; then
     echo -e "\t> OK"
 else
 	echo -e "\t> FAILED"
 	exit 1
 fi
 
-echo "Testing command ´sfcc-ci sandbox:alias:add´ with request for letsencrypt and unique as false ( should fail ) :"
-ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.newalias.com  --request-letsencrypt-certificate --json`
-if [ $? -eq 1 ]; then
+# Note: This test creates a unique alias. Running the same test suite again before the sandbox and/or the alias have been deleted will fail.
+echo "Testing command ´sfcc-ci sandbox:alias:add´ with request for letsencrypt:"
+ALIAS_RESULT=`node ./cli.js sandbox:alias:add --sandbox $TEST_NEW_SANDBOX_ID -h my.newaliasunique.com --unique --request-letsencrypt-certificate --json`
+if [ $? -eq 0 ]; then
     echo -e "\t> OK"
 else
 	echo -e "\t> FAILED"

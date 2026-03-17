@@ -77,10 +77,12 @@ program
     .option('-a, --authserver [authserver]','The authorization server used to authenticate')
     .option('-r, --renew','Controls whether the authentication should be automatically renewed, ' +
         'once the token expires.')
+    .option('-t, --type [type]','The grant type to use (password or client_credentials)')
     .description('Authenticate an API client with an optional user for automation use')
     .action(function(client, secret, user, user_password, options) {
         var renew = ( options.renew ? options.renew : false );
-        require('./lib/auth').auth(client, secret, user, user_password, renew, options.authserver);
+        var grantType = ( options.type === 'client_credentials' ? 'client_credentials' : 'password' );
+        require('./lib/auth').auth(client, secret, user, user_password, renew, options.authserver, grantType);
     }).on('--help', function() {
         console.log('');
         console.log('  Details:');
@@ -97,12 +99,16 @@ program
         console.log('  current working directory. You may use environment variables SFCC_OAUTH_USER_NAME and');
         console.log('  SFCC_OAUTH_USER_PASSWORD to pass the user credentails alternatively.');
         console.log();
+        console.log('  Pass flag -t client_credentials to prevent lookup of user credentials from a dw.json or')
+        console.log('  well-known env vars.');
+        console.log();
         console.log('  Examples:');
         console.log();
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret user_name user_password');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -r');
         console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -a account.demandware.com');
+        console.log('    $ sfcc-ci client:auth my_client_id my_client_secret -t client_credentials');
         console.log('    $ sfcc-ci client:auth');
         console.log();
     });
@@ -642,7 +648,7 @@ program
         console.log();
         console.log('  Use the optional --profile <profile> to set the resource allocation for the sandbox, "medium"');
         console.log('  is the default. Be careful, more powerful profiles consume more credits. Supported values');
-        console.log('  are: medium, large, xlarge.');
+        console.log('  are: medium, large, xlarge, xxlarge.');
         console.log();
         console.log('  You can force the command to wait until the creation of the sandbox has been finished and the');
         console.log('  sandbox is available to use (in "started" status) by using the --sync flag. By default the');
@@ -790,7 +796,7 @@ program
             }
         }
         if (scheduleOk) {
-            require('./lib/sandbox').cli.update(spec, ttl, autoScheduled, false, startScheduler, stopScheduler);
+            require('./lib/sandbox').cli.update(spec, ttl, autoScheduled, startScheduler, stopScheduler, false);
         }
     }).on('--help', function() {
         console.log('');
@@ -1793,14 +1799,14 @@ program
         console.log();
         console.log('  Examples:');
         console.log();
-        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2"');
-        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+        console.log('    $ sfcc-ci code:deploy:diff "newcodeversion" "/path/to/repo1,/path/to/repo2"');
+        console.log('    $ sfcc-ci code:deploy:diff "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
             '-i my-instance-alias');
-        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+        console.log('    $ sfcc-ci code:deploy:diff "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
             '-i my-instance.demandware.net');
-        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+        console.log('    $ sfcc-ci code:deploy:diff "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
             '-i my-instance.demandware.net -a');
-        console.log('    $ sfcc-ci code:diffdeploy "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
+        console.log('    $ sfcc-ci code:deploy:diff "newcodeversion" "/path/to/repo1,/path/to/repo2" ' +
             '-i my-instance.demandware.net -a -c path/to/my/certificate.p12 -p "myPassphraseForTheCertificate"');
         console.log();
     });

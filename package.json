@@ -25,7 +25,7 @@
   "homepage": "https://github.com/SalesforceCommerceCloud/sfcc-ci#readme",
   "dependencies": {
     "@snyk/protect": "^1.1110.0",
-    "archiver": "^5.3.1",
+    "archiver": "^7.0.0",
     "chalk": "^2.4.1",
     "colors": "1.4.0",
     "commander": "^2.18.0",
@@ -44,7 +44,7 @@
     "table": "^6.8.1"
   },
   "devDependencies": {
-    "archiver": "^5.3.1",
+    "archiver": "^7.0.0",
     "chai": "^4.1.2",
     "chalk": "^2.4.1",
     "del": "^5.1.0",

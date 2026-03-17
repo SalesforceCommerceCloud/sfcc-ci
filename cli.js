@@ -451,6 +451,50 @@ program
     });
 
 program
+    .command('data:download')
+    .option('-i, --instance <instance>','Instance to download the file from. Can be an ' +
+        'instance alias. If not specified the currently configured instance will be used.')
+    .option('-p, --path <path>', 'The path of the file (WebDAV) to download')
+    .option('-t, --target <target>', 'The local file path where to store the file')
+    .option('-o, --overrideLocalFile <overrideLocalFile>', 'Override existing local file')
+    .description('Downloads a file from a Commerce Cloud instance')
+    .action(function(options) {
+        var instance = require('./lib/instance').getInstance(options.instance);
+        var path = ( options.path ? options.path : null );
+        if (!path) {
+            this.missingArgument('path');
+            return;
+        }
+        var target = ( options.target ? options.target : null );
+        if (!target) {
+            this.missingArgument('target');
+            return;
+        }
+        require('./lib/webdav').cli.download(instance, '/' + path, require('./lib/auth').getToken(), target, {
+            overrideLocalFile: options.overrideLocalFile
+        });
+    }).on('--help', function() {
+        console.log('');
+        console.log('  Details:');
+        console.log();
+        console.log('  Downloads file from an instance WebDAV folder into target local folder.');
+        console.log('  Although, there is no defined maximum size for downloaded files. You may want');
+        console.log('  to zip or gzip the file you want to download.');
+        console.log();
+        console.log('  The provided --path <path> is relative to /webdav/Sites/, e.g. "impex/src/myfile.zip".');
+        console.log();
+        console.log('  Supported top level --path are "impex", "static", "catalogs", "libraries" and "dynamic".');
+        console.log('  In order to use "catalogs", "libraries" and "dynamic" you have to set API permissions for');
+        console.log('  a specific catalog, library or dynamic folder in WebDAV Client Permissions.');
+        console.log();
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ sfcc-ci data:download --instance my-instance.demandware.net ' +
+            '--path impex/src/instance/myfile.zip --target myfile.zip');
+        console.log();
+    });
+
+program
     .command('sandbox:realm:list')
     .description('List realms eligible to manage sandboxes for')
     .option('-r, --realm <realm>','Realm to get details for')

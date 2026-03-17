@@ -2586,7 +2586,6 @@ program.on('--help', function() {
     console.log('');
 });
 
-console.log('Lawrence patched version');
 program.parse(process.argv);
 
 if (!program.args.length) {

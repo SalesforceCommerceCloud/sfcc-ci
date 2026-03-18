@@ -1,3 +1,17 @@
+> [!WARNING]
+> ## This project is deprecated
+>
+> **sfcc-ci** is no longer actively maintained. Please use **[@salesforce/b2c-cli](https://www.npmjs.com/package/@salesforce/b2c-cli)** instead.
+>
+> **Install:**
+> ```
+> npm install -g @salesforce/b2c-cli
+> ```
+>
+> For migration details, see the [sfcc-ci Migration Guide](https://salesforcecommercecloud.github.io/b2c-developer-tooling/guide/sfcc-ci-migration.html).
+
+---
+
 # Salesforce Commerce Cloud CLI #
 
 The Salesforce Commerce Cloud CLI is a command line interface (CLI) for Salesforce Commerce Cloud. It can be used to facilitate deployment and continuous integration practices using Salesforce B2C Commerce.

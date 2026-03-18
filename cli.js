@@ -11,6 +11,20 @@ var { prompt } = require('inquirer');
 
 var log = require('./lib/log');
 
+// Deprecation warning (skip in JSON mode to avoid polluting machine-readable output)
+if (!process.argv.includes('--json') && !process.argv.includes('-j')) {
+    process.stderr.write(
+        '\n' +
+        colors.yellow('WARNING: sfcc-ci is deprecated and no longer actively maintained.\n') +
+        colors.yellow('Please migrate to @salesforce/b2c-cli:\n') +
+        '\n' +
+        '  npm install -g @salesforce/b2c-cli\n' +
+        '\n' +
+        'Migration guide:\n' +
+        '  https://salesforcecommercecloud.github.io/b2c-developer-tooling/guide/sfcc-ci-migration.html\n' +
+        '\n'
+    );
+}
 
 program
     .version(require('./package.json').version, '-V, --version')

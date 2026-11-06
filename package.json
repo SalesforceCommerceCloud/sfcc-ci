@@ -38,7 +38,7 @@
     "jsondiffpatch": "^0.4.1",
     "jsonwebtoken": "^9.0.0",
     "node-sha1": "^1.0.1",
-    "open": "^6.4.0",
+    "open": "^11.0.0",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
     "table": "^6.8.1"
